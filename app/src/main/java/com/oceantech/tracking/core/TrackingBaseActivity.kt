@@ -18,6 +18,7 @@ package com.oceantech.tracking.core
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
@@ -25,15 +26,19 @@ import android.view.MenuItem
 import android.view.View
 import androidx.annotation.CallSuper
 import androidx.annotation.MenuRes
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
+import com.oceantech.tracking.R
 import com.oceantech.tracking.di.DaggerTrackingComponent
 
 import com.oceantech.tracking.di.HasScreenInjector
@@ -61,6 +66,19 @@ abstract class TrackingBaseActivity<VB : ViewBinding> : AppCompatActivity(), Has
                 observer(it)
             }
     }
+    fun showBackIcon() {
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
+        supportActionBar?.setBackgroundDrawable(
+            ColorDrawable(
+                ContextCompat.getColor(
+                    this,
+                    R.color.black
+                )
+            )
+        )
+    }
 
     private lateinit var fragmentFactory: FragmentFactory
 
@@ -75,7 +93,7 @@ abstract class TrackingBaseActivity<VB : ViewBinding> : AppCompatActivity(), Has
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
         Timber.i("onCreate Activity ${javaClass.simpleName}")
-
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         nimpeComponent = DaggerTrackingComponent.factory().create(this)
         val timeForInjection = measureTimeMillis {
             injectWith(nimpeComponent)
@@ -98,16 +116,7 @@ abstract class TrackingBaseActivity<VB : ViewBinding> : AppCompatActivity(), Has
 
         initUiAndData()
 
-        val titleRes = getTitleRes()
-        if (titleRes != -1) {
-            supportActionBar?.let {
-                it.setTitle(titleRes)
-            } ?: run {
-                setTitle(titleRes)
-            }
-        }
     }
-
     /**
      * This method has to be called for the font size setting be supported correctly.
      */
@@ -157,7 +166,8 @@ abstract class TrackingBaseActivity<VB : ViewBinding> : AppCompatActivity(), Has
         }
     }
 
-    override fun onMultiWindowModeChanged(isInMultiWindowMode: Boolean, newConfig: Configuration?) {
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onMultiWindowModeChanged(isInMultiWindowMode: Boolean, newConfig: Configuration) {
         super.onMultiWindowModeChanged(isInMultiWindowMode, newConfig)
 
         Timber.w("onMultiWindowModeChanged. isInMultiWindowMode: $isInMultiWindowMode")

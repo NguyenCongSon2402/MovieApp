@@ -38,7 +38,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
 import timber.log.Timber
-abstract class TrackingBaseFragment<VB: ViewBinding> : BaseMvRxFragment(), HasScreenInjector {
+abstract class TrackingBaseFragment<VB: ViewBinding> : BaseMvRxFragment() {
 
     protected val nimpeBaseActivity: TrackingBaseActivity<*> by lazy {
         activity as TrackingBaseActivity<*>
@@ -100,6 +100,8 @@ abstract class TrackingBaseFragment<VB: ViewBinding> : BaseMvRxFragment(), HasSc
         _binding = getBinding(inflater, container)
         return views.root
     }
+    open fun onFirstDisplay() {
+    }
 
     abstract fun getBinding(inflater: LayoutInflater, container: ViewGroup?): VB
 
@@ -136,9 +138,9 @@ abstract class TrackingBaseFragment<VB: ViewBinding> : BaseMvRxFragment(), HasSc
         super.onDestroy()
     }
 
-    override fun injector(): TrackingComponent{
-        return screenComponent
-    }
+//    override fun injector(): TrackingComponent{
+//        return screenComponent
+//    }
 
     /* ==========================================================================================
      * Restorable
