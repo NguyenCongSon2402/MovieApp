@@ -11,6 +11,7 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.oceantech.tracking.R
+import com.oceantech.tracking.adapters.HomeItemsController
 import com.oceantech.tracking.core.TrackingBaseFragment
 import com.oceantech.tracking.databinding.FragmentFeedBinding
 import kotlin.math.min
@@ -20,7 +21,7 @@ class FeedFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
 //    private lateinit var viewModel: MediaViewModel
 //    private lateinit var feedViewModel: FeedViewModel
-//    private lateinit var feedItemsController: FeedItemsController
+    private lateinit var homeItemsController: HomeItemsController
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -74,8 +75,9 @@ class FeedFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         })
 
 
-//        feedItemsController = FeedItemsController(this::handleMediaClick)
-//        views.feedItemsList.adapter = feedItemsController.adapter
+        homeItemsController = HomeItemsController()
+        views.feedItemsList.adapter = homeItemsController.adapter
+        homeItemsController.requestModelBuild()
 
         views.tvShowsTv.setOnClickListener {
 //            val intent = Intent(requireActivity(), PopularTvActivity::class.java)

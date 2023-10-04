@@ -36,14 +36,14 @@
             android:divider="@drawable/divider"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingHorizontal="16dp"
+            android:paddingHorizontal="15dp"
             android:showDividers="middle"
             app:layout_scrollFlags="scroll|enterAlways">
 
             <ImageView
                 android:scaleType="centerCrop"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="52dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="-8dp"
                 android:src="@drawable/icon_logo" />
 
@@ -54,12 +54,12 @@
 
             <ImageView
                 android:id="@+id/search_icon"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:background="?selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
-                android:padding="4dp"
+                android:padding="5dp"
                 android:src="@drawable/ic_search" />
         </LinearLayout>
 

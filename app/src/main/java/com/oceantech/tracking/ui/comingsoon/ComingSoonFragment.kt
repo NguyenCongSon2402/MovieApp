@@ -1,4 +1,4 @@
-package dev.son.moviestreamhub.screens
+package com.oceantech.tracking.ui.comingsoon
 
 import android.os.Bundle
 import android.view.Gravity

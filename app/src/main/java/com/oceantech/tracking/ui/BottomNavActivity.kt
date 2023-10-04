@@ -7,7 +7,7 @@ import com.oceantech.tracking.TrackingApplication
 import com.oceantech.tracking.core.TrackingBaseActivity
 import com.oceantech.tracking.databinding.ActivityBottomNavBinding
 import com.oceantech.tracking.ui.home.FeedFragment
-import dev.son.moviestreamhub.screens.ComingSoonFragment
+import com.oceantech.tracking.ui.comingsoon.ComingSoonFragment
 import dev.son.moviestreamhub.screens.DownloadsFragment
 
 

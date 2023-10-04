@@ -93,7 +93,7 @@ abstract class TrackingBaseActivity<VB : ViewBinding> : AppCompatActivity(), Has
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
         Timber.i("onCreate Activity ${javaClass.simpleName}")
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowCompat.setDecorFitsSystemWindows(window, true)
         nimpeComponent = DaggerTrackingComponent.factory().create(this)
         val timeForInjection = measureTimeMillis {
             injectWith(nimpeComponent)
