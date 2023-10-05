@@ -1,6 +1,5 @@
 package com.oceantech.tracking.ui.home
 
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.provider.MediaStore.Audio.Media
@@ -8,25 +7,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.mvrx.Fail
+import com.airbnb.mvrx.Success
+import com.airbnb.mvrx.activityViewModel
+import com.airbnb.mvrx.withState
 import com.oceantech.tracking.R
 import com.oceantech.tracking.adapters.HomeItemsController
 import com.oceantech.tracking.core.TrackingBaseFragment
 import com.oceantech.tracking.databinding.FragmentFeedBinding
+import com.oceantech.tracking.utils.checkStatusApiRes
+import timber.log.Timber
 import kotlin.math.min
 
 
-class FeedFragment : TrackingBaseFragment<FragmentFeedBinding>() {
+class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
-//    private lateinit var viewModel: MediaViewModel
+    //    private lateinit var viewModel: MediaViewModel
 //    private lateinit var feedViewModel: FeedViewModel
     private lateinit var homeItemsController: HomeItemsController
-
+    private val homeViewModel: HomeViewModel by activityViewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        homeViewModel.handle(HomeViewAction.getHome)
         setupUI()
         setupViewModel()
         //(requireActivity() as BottomNavActivity).onFeedFragmentViewCreated()
@@ -46,7 +52,7 @@ class FeedFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 //        startActivity(intent)
     }
 
-    private fun handleMediaClick(media: Media) {
+//    private fun handleMediaClick(media: Media) {
 //        var id: Int? = null
 //        if (media is Media.Movie) {
 //            MediaDetailsBottomSheet.newInstance(media.toMediaBsData())
@@ -55,7 +61,7 @@ class FeedFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 //            MediaDetailsBottomSheet.newInstance(media.toMediaBsData())
 //                .show(requireActivity().supportFragmentManager, id.toString())
 //        }
-    }
+//    }
 
     private fun setupUI() {
         calculateAndSetListTopPadding()
@@ -75,9 +81,9 @@ class FeedFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         })
 
 
-        homeItemsController = HomeItemsController()
-        views.feedItemsList.adapter = homeItemsController.adapter
-        homeItemsController.requestModelBuild()
+//        homeItemsController = HomeItemsController()
+//        views.feedItemsList.adapter = homeItemsController.adapter
+        //homeItemsController.requestModelBuild()
 
         views.tvShowsTv.setOnClickListener {
 //            val intent = Intent(requireActivity(), PopularTvActivity::class.java)
@@ -124,6 +130,29 @@ class FeedFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         val blue: Int = Color.blue(color)
         val alpha: Int = (Color.alpha(color) * (fraction)).toInt()
         return Color.argb(alpha, red, green, blue)
+    }
+
+    override fun invalidate(): Unit = withState(homeViewModel) {
+        when (it.homes) {
+            is Success -> {
+                Timber.e("HomeFragment invalidate Success: ${it.homes}")
+                Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
+                homeItemsController = HomeItemsController()
+                views.feedItemsList.adapter = homeItemsController.adapter
+                homeItemsController.recentlyActive = it.homes.invoke().data!!
+                //homeItemsController.requestModelBuild()
+                homeViewModel.handleRemoveState()
+            }
+
+            is Fail -> {
+                Timber.e("HomeFragment invalidate Fail:")
+                Toast.makeText(
+                    requireContext(), getString(checkStatusApiRes(it.homes)), Toast.LENGTH_SHORT
+                ).show()
+                homeViewModel.handleRemoveState()
+            }
+        }
+
     }
 }
 

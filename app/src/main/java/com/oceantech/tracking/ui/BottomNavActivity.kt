@@ -6,23 +6,29 @@ import com.oceantech.tracking.R
 import com.oceantech.tracking.TrackingApplication
 import com.oceantech.tracking.core.TrackingBaseActivity
 import com.oceantech.tracking.databinding.ActivityBottomNavBinding
-import com.oceantech.tracking.ui.home.FeedFragment
+import com.oceantech.tracking.ui.home.HomeFragment
 import com.oceantech.tracking.ui.comingsoon.ComingSoonFragment
+import com.oceantech.tracking.ui.home.HomeViewModel
+import com.oceantech.tracking.ui.home.HomeViewState
 import dev.son.moviestreamhub.screens.DownloadsFragment
+import javax.inject.Inject
 
 
 @Suppress("DEPRECATION")
-class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>() {
+class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), HomeViewModel.Factory {
 
 
     // Flags to know whether bottom tab fragments are displayed at least once
     private val fragmentFirstDisplay = mutableListOf(false, false, false)
 
-    private val feedFragment = FeedFragment()
+    private val homeFragment = HomeFragment()
     private val comingSoonFragment = ComingSoonFragment()
     private val downloadsFragment = DownloadsFragment()
     private val fragmentManager = supportFragmentManager
-    private var activeFragment: Fragment = feedFragment
+    private var activeFragment: Fragment = homeFragment
+
+    @Inject
+    lateinit var homeViewModel: HomeViewModel.Factory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as TrackingApplication).trackingComponent.inject(this)
@@ -39,15 +45,15 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>() {
         fragmentManager.beginTransaction().apply {
             add(R.id.container, downloadsFragment, "downloads").hide(downloadsFragment)
             add(R.id.container, comingSoonFragment, "coming_soon").hide(comingSoonFragment)
-            add(R.id.container, feedFragment, "home")
+            add(R.id.container, homeFragment, "home")
         }.commit()
 
         views.bottomNavView.setOnNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.home -> {
                     fragmentManager.beginTransaction().hide(activeFragment)
-                        .show(feedFragment).commit()
-                    activeFragment = feedFragment
+                        .show(homeFragment).commit()
+                    activeFragment = homeFragment
                     true
                 }
 
@@ -81,7 +87,7 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>() {
     }
 
     override fun onAttachFragment(fragment: Fragment) {
-        if (fragment is FeedFragment) {
+        if (fragment is HomeFragment) {
 //            fragmentFirstDisplay[0] = true
 //            fragment.onFirstDisplay()
         }
@@ -90,7 +96,11 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>() {
     fun onFeedFragmentViewCreated() {
         if (!fragmentFirstDisplay[0]) {
             fragmentFirstDisplay[0] = true
-            feedFragment.onFirstDisplay()
+            homeFragment.onFirstDisplay()
         }
+    }
+
+    override fun create(initialState: HomeViewState): HomeViewModel {
+        return homeViewModel.create(initialState)
     }
 }

@@ -1,6 +1,7 @@
 package com.oceantech.tracking.model
 
 import android.view.View
+import android.view.animation.AnimationUtils
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import com.airbnb.epoxy.EpoxyAttribute
@@ -20,6 +21,10 @@ abstract class HeaderItemModel : EpoxyModelWithHolder<HeaderItemModel.Holder>() 
         super.bind(holder)
         holder.title.text = title1
         Glide.with(holder.background_image).load(POSTER_IMAGE1).into(holder.background_image)
+        val animZoomOut =
+            AnimationUtils.loadAnimation(holder.background_image.context, R.anim.zoom_out)
+        holder.background_image.startAnimation(animZoomOut)
+
     }
 
     class Holder : EpoxyHolder() {

@@ -41,13 +41,12 @@ import androidx.viewbinding.ViewBinding
 import com.oceantech.tracking.R
 import com.oceantech.tracking.di.DaggerTrackingComponent
 
-import com.oceantech.tracking.di.HasScreenInjector
 import com.oceantech.tracking.di.TrackingComponent
 import io.reactivex.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 import kotlin.system.measureTimeMillis
 
-abstract class TrackingBaseActivity<VB : ViewBinding> : AppCompatActivity(), HasScreenInjector {
+abstract class TrackingBaseActivity<VB : ViewBinding> : AppCompatActivity(){
 
     protected lateinit var views: VB
 
@@ -174,9 +173,9 @@ abstract class TrackingBaseActivity<VB : ViewBinding> : AppCompatActivity(), Has
 //        bugReporter.inMultiWindowMode = isInMultiWindowMode
     }
 
-    override fun injector(): TrackingComponent {
-        return nimpeComponent
-    }
+//    override fun injector(): TrackingComponent {
+//        return nimpeComponent
+//    }
 
     protected open fun injectWith(injector: TrackingComponent) = Unit
 

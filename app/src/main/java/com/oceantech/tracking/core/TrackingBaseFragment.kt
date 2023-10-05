@@ -30,7 +30,6 @@ import androidx.annotation.CallSuper
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
 import com.airbnb.mvrx.BaseMvRxFragment
-import com.oceantech.tracking.di.HasScreenInjector
 import com.oceantech.tracking.di.TrackingComponent
 
 import io.reactivex.android.schedulers.AndroidSchedulers

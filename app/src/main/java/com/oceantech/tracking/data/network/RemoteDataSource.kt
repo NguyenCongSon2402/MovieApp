@@ -34,7 +34,7 @@ class RemoteDataSource() {
 
     companion object {
         private const val BASE_URL =
-            "http://android-tracking.oceantech.com.vn/mita/"
+            "https://ophim1.com"
         private const val DEFAULT_USER_AGENT = "Nimpe-Android"
         private const val DEFAULT_CONTENT_TYPE = "application/json"
     }

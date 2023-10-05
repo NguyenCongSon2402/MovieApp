@@ -9,5 +9,11 @@
     <string name="we_ll_download_a_personalized">Chúng tôi sẽ tải về một bộ sưu tập phim và chương trình truyền hình cá nhân hóa dành riêng cho bạn, để luôn có điều gì đó để xem trên điện thoại của bạn.</string>
     <string name="set_up">CÀI ĐẶT</string>
     <string name="find_something_to_download">Tìm Điều gì đó để Tải về</string>
+    <string name="success">Success</string>
+    <string name="http200">200</string>
+    <string name="http401">401</string>
+    <string name="http403">403</string>
+    <string name="http404">404</string>
+    <string name="http500">500</string>
 
 </resources>

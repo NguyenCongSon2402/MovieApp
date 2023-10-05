@@ -24,7 +24,7 @@ open class TrackingApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        //trackingComponent.inject(this)
+        trackingComponent.inject(this)
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }

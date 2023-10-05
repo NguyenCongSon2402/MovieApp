@@ -9,4 +9,10 @@
     <string name="we_ll_download_a_personalized">We\\\'ll download a personalized selection of movies and shows for you, so there\\\'s always something to watch on your phone.</string>
     <string name="set_up">SET UP</string>
     <string name="find_something_to_download">Find Something to Download</string>
+    <string name="success">Success</string>
+    <string name="http200">200</string>
+    <string name="http401">401</string>
+    <string name="http403">403</string>
+    <string name="http404">404</string>
+    <string name="http500">500</string>
 </resources>
