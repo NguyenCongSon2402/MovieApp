@@ -19,6 +19,6 @@ data class Items (
   @SerializedName("lang"            ) var lang           : String?             = null,
   @SerializedName("year"            ) var year           : Int?                = null,
   @SerializedName("category"        ) var category       : ArrayList<Category> = arrayListOf(),
-  @SerializedName("country"         ) var country        : ArrayList<Country>  = arrayListOf()
+  @SerializedName("country"         ) var country        : ArrayList<Country>  = arrayListOf(),
 
 )

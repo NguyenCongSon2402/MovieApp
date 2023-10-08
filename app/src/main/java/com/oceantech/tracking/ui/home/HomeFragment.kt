@@ -2,7 +2,6 @@ package com.oceantech.tracking.ui.home
 
 import android.graphics.Color
 import android.os.Bundle
-import android.provider.MediaStore.Audio.Media
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,8 +14,9 @@ import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.withState
 import com.oceantech.tracking.R
-import com.oceantech.tracking.adapters.HomeItemsController
+import com.oceantech.tracking.adapters.MainEpoxyController
 import com.oceantech.tracking.core.TrackingBaseFragment
+import com.oceantech.tracking.data.models.Data
 import com.oceantech.tracking.databinding.FragmentFeedBinding
 import com.oceantech.tracking.utils.checkStatusApiRes
 import timber.log.Timber
@@ -25,22 +25,18 @@ import kotlin.math.min
 
 class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
-    //    private lateinit var viewModel: MediaViewModel
-//    private lateinit var feedViewModel: FeedViewModel
-    private lateinit var homeItemsController: HomeItemsController
+    private lateinit var mainEpoxyController: MainEpoxyController
     private val homeViewModel: HomeViewModel by activityViewModel()
+
+    private val listData: MutableList<Data> = mutableListOf()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        homeViewModel.handle(HomeViewAction.getHome)
         setupUI()
         setupViewModel()
-        //(requireActivity() as BottomNavActivity).onFeedFragmentViewCreated()
     }
 
     override fun onFirstDisplay() {
-//        feedViewModel.getFeedPagedList()
-//            .observe(viewLifecycleOwner) { feedItemsController.submitList(it) }
     }
 
     override fun getBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentFeedBinding {
@@ -81,9 +77,8 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         })
 
 
-//        homeItemsController = HomeItemsController()
-//        views.feedItemsList.adapter = homeItemsController.adapter
-        //homeItemsController.requestModelBuild()
+        mainEpoxyController= MainEpoxyController()
+        views.feedItemsList.adapter= mainEpoxyController.adapter
 
         views.tvShowsTv.setOnClickListener {
 //            val intent = Intent(requireActivity(), PopularTvActivity::class.java)
@@ -137,10 +132,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             is Success -> {
                 Timber.e("HomeFragment invalidate Success: ${it.homes}")
                 Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
-                homeItemsController = HomeItemsController()
-                views.feedItemsList.adapter = homeItemsController.adapter
-                homeItemsController.recentlyActive = it.homes.invoke().data!!
-                //homeItemsController.requestModelBuild()
+                listData.add(it.homes.invoke().data!!)
+                mainEpoxyController.categories= listData
+
                 homeViewModel.handleRemoveState()
             }
 
@@ -152,7 +146,59 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 homeViewModel.handleRemoveState()
             }
         }
+        when (it.phimBo) {
+            is Success -> {
+                Timber.e("HomeFragment invalidate Success: ${it.phimBo}")
+                Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
+                listData.add(it.phimBo.invoke().data!!)
+                mainEpoxyController.categories= listData
+                homeViewModel.handleRemoveState()
+            }
 
+            is Fail -> {
+                Timber.e("HomeFragment invalidate Fail:")
+                Toast.makeText(
+                    requireContext(), getString(checkStatusApiRes(it.phimBo)), Toast.LENGTH_SHORT
+                ).show()
+                homeViewModel.handleRemoveState()
+            }
+        }
+        when (it.phimLe) {
+            is Success -> {
+                Timber.e("HomeFragment invalidate Success: ${it.phimLe}")
+                Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
+                listData.add(it.phimLe.invoke().data!!)
+                mainEpoxyController.categories= listData
+                homeViewModel.handleRemoveState()
+            }
+
+            is Fail -> {
+                Timber.e("HomeFragment invalidate Fail:")
+                Toast.makeText(
+                    requireContext(), getString(checkStatusApiRes(it.phimLe)), Toast.LENGTH_SHORT
+                ).show()
+                homeViewModel.handleRemoveState()
+            }
+        }
+        when (it.phimHoatHinh) {
+            is Success -> {
+                Timber.e("HomeFragment invalidate Success: ${it.phimHoatHinh}")
+                Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
+                listData.add(it.phimHoatHinh.invoke().data!!)
+                mainEpoxyController.categories= listData
+                homeViewModel.handleRemoveState()
+            }
+
+            is Fail -> {
+                Timber.e("HomeFragment invalidate Fail:")
+                Toast.makeText(
+                    requireContext(),
+                    getString(checkStatusApiRes(it.phimHoatHinh)),
+                    Toast.LENGTH_SHORT
+                ).show()
+                homeViewModel.handleRemoveState()
+            }
+        }
     }
 }
 

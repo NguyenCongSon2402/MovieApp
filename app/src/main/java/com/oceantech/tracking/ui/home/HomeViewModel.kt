@@ -24,17 +24,41 @@ class HomeViewModel @AssistedInject constructor(
     override fun handle(action: HomeViewAction) {
         when (action) {
             is HomeViewAction.getHome -> handleGetHome()
+            is HomeViewAction.getPhimBo -> handleGetPhimBo()
+            is HomeViewAction.getPhimLe -> handleGetPhimLe()
+            is HomeViewAction.getPhimHoatHinh -> handleGetPhimHoatHinh()
         }
     }
 
     fun handleRemoveState() =
-        setState { copy(homes = Uninitialized) }
+        setState { copy(homes = Uninitialized, phimBo= Uninitialized, phimLe =Uninitialized, phimHoatHinh = Uninitialized) }
 
 
     private fun handleGetHome() {
         setState { copy(homes = Uninitialized) }
         homeRepo.getHome().execute {
             copy(homes = it)
+        }
+
+    }
+
+    private fun handleGetPhimBo() {
+        setState { copy(phimBo = Uninitialized) }
+        homeRepo.getPhimBo().execute {
+            copy(phimBo = it)
+        }
+    }
+    private fun handleGetPhimLe() {
+        setState { copy(phimLe = Uninitialized) }
+        homeRepo.getPhimLe().execute {
+            copy(phimLe = it)
+        }
+
+    }
+    private fun handleGetPhimHoatHinh() {
+        setState { copy(phimHoatHinh = Uninitialized) }
+        homeRepo.getPhimHoatHinh().execute {
+            copy(phimHoatHinh = it)
         }
 
     }

@@ -2,12 +2,14 @@ package com.oceantech.tracking.ui
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import com.airbnb.mvrx.viewModel
 import com.oceantech.tracking.R
 import com.oceantech.tracking.TrackingApplication
 import com.oceantech.tracking.core.TrackingBaseActivity
 import com.oceantech.tracking.databinding.ActivityBottomNavBinding
 import com.oceantech.tracking.ui.home.HomeFragment
 import com.oceantech.tracking.ui.comingsoon.ComingSoonFragment
+import com.oceantech.tracking.ui.home.HomeViewAction
 import com.oceantech.tracking.ui.home.HomeViewModel
 import com.oceantech.tracking.ui.home.HomeViewState
 import dev.son.moviestreamhub.screens.DownloadsFragment
@@ -27,14 +29,24 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), Home
     private val fragmentManager = supportFragmentManager
     private var activeFragment: Fragment = homeFragment
 
+    private val homeViewModel: HomeViewModel by viewModel()
+
     @Inject
-    lateinit var homeViewModel: HomeViewModel.Factory
+    lateinit var homeViewModelFactory: HomeViewModel.Factory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as TrackingApplication).trackingComponent.inject(this)
         setTheme(R.style.Base_Theme_MovieStreamHub)
         super.onCreate(savedInstanceState)
+        getData()
         setupUI()
+    }
+
+    private fun getData() {
+        homeViewModel.handle(HomeViewAction.getHome)
+        homeViewModel.handle(HomeViewAction.getPhimBo)
+        homeViewModel.handle(HomeViewAction.getPhimLe)
+        homeViewModel.handle(HomeViewAction.getPhimHoatHinh)
     }
 
     override fun getBinding(): ActivityBottomNavBinding {
@@ -101,6 +113,6 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), Home
     }
 
     override fun create(initialState: HomeViewState): HomeViewModel {
-        return homeViewModel.create(initialState)
+        return homeViewModelFactory.create(initialState)
     }
 }
