@@ -30,8 +30,15 @@ class HomeViewModel @AssistedInject constructor(
         }
     }
 
-    fun handleRemoveState() =
-        setState { copy(homes = Uninitialized, phimBo= Uninitialized, phimLe =Uninitialized, phimHoatHinh = Uninitialized) }
+    fun handleRemoveStateHome() =
+        setState { copy(homes = Uninitialized) }
+
+    fun handleRemoveStatePhimBo() =
+        setState { copy(phimBo= Uninitialized) }
+    fun handleRemoveStatePhimle() =
+        setState { copy(phimLe =Uninitialized) }
+    fun handleRemoveStatePhimHoatHinh() =
+        setState { copy(phimHoatHinh = Uninitialized) }
 
 
     private fun handleGetHome() {

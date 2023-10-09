@@ -2,6 +2,7 @@ package com.oceantech.tracking.ui.home
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ import com.oceantech.tracking.R
 import com.oceantech.tracking.adapters.MainEpoxyController
 import com.oceantech.tracking.core.TrackingBaseFragment
 import com.oceantech.tracking.data.models.Data
+import com.oceantech.tracking.data.models.Items
 import com.oceantech.tracking.databinding.FragmentFeedBinding
 import com.oceantech.tracking.utils.checkStatusApiRes
 import timber.log.Timber
@@ -33,7 +35,6 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupUI()
-        setupViewModel()
     }
 
     override fun onFirstDisplay() {
@@ -48,16 +49,6 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 //        startActivity(intent)
     }
 
-//    private fun handleMediaClick(media: Media) {
-//        var id: Int? = null
-//        if (media is Media.Movie) {
-//            MediaDetailsBottomSheet.newInstance(media.toMediaBsData())
-//                .show(requireActivity().supportFragmentManager, id.toString())
-//        } else if (media is Media.Tv) {
-//            MediaDetailsBottomSheet.newInstance(media.toMediaBsData())
-//                .show(requireActivity().supportFragmentManager, id.toString())
-//        }
-//    }
 
     private fun setupUI() {
         calculateAndSetListTopPadding()
@@ -77,7 +68,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         })
 
 
-        mainEpoxyController= MainEpoxyController()
+        mainEpoxyController= MainEpoxyController(this::handleMediaClick)
         views.feedItemsList.adapter= mainEpoxyController.adapter
 
         views.tvShowsTv.setOnClickListener {
@@ -90,16 +81,10 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 //            startActivity(intent)
         }
     }
-
-    private fun setupViewModel() {
-//        viewModel = ViewModelProvider(
-//            this,
-//            Injection.provideMediaViewModelFactory()
-//        ).get(MediaViewModel::class.java)
-//        feedViewModel = ViewModelProvider(
-//            this,
-//            Injection.provideFeedViewModelFactory()
-//        ).get(FeedViewModel::class.java)
+    private fun handleMediaClick(items: Items) {
+        Toast.makeText(requireActivity(),items.name,Toast.LENGTH_SHORT).show()
+        MediaDetailsBottomSheet.newInstance(items)
+            .show(requireActivity().supportFragmentManager, items.Id.toString())
     }
 
     private fun calculateAndSetListTopPadding() {
@@ -130,12 +115,15 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
     override fun invalidate(): Unit = withState(homeViewModel) {
         when (it.homes) {
             is Success -> {
-                Timber.e("HomeFragment invalidate Success: ${it.homes}")
+                Log.e("TAG", "homes")
                 Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
-                listData.add(it.homes.invoke().data!!)
+                val data = it.homes.invoke().data.apply {
+                    this?.titlePage = "Phim Mới"
+                }
+                data?.let { it1 -> listData.add(it1) }
                 mainEpoxyController.categories= listData
 
-                homeViewModel.handleRemoveState()
+                homeViewModel.handleRemoveStateHome()
             }
 
             is Fail -> {
@@ -143,16 +131,16 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 Toast.makeText(
                     requireContext(), getString(checkStatusApiRes(it.homes)), Toast.LENGTH_SHORT
                 ).show()
-                homeViewModel.handleRemoveState()
+                homeViewModel.handleRemoveStateHome()
             }
         }
         when (it.phimBo) {
             is Success -> {
-                Timber.e("HomeFragment invalidate Success: ${it.phimBo}")
+                Log.e("TAG", "phimBo")
                 Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
                 listData.add(it.phimBo.invoke().data!!)
                 mainEpoxyController.categories= listData
-                homeViewModel.handleRemoveState()
+                homeViewModel.handleRemoveStatePhimBo()
             }
 
             is Fail -> {
@@ -160,16 +148,16 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 Toast.makeText(
                     requireContext(), getString(checkStatusApiRes(it.phimBo)), Toast.LENGTH_SHORT
                 ).show()
-                homeViewModel.handleRemoveState()
+                homeViewModel.handleRemoveStatePhimBo()
             }
         }
         when (it.phimLe) {
             is Success -> {
-                Timber.e("HomeFragment invalidate Success: ${it.phimLe}")
+                Log.e("TAG", "phimLe")
                 Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
                 listData.add(it.phimLe.invoke().data!!)
                 mainEpoxyController.categories= listData
-                homeViewModel.handleRemoveState()
+                homeViewModel.handleRemoveStatePhimle()
             }
 
             is Fail -> {
@@ -177,16 +165,16 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 Toast.makeText(
                     requireContext(), getString(checkStatusApiRes(it.phimLe)), Toast.LENGTH_SHORT
                 ).show()
-                homeViewModel.handleRemoveState()
+                homeViewModel.handleRemoveStatePhimle()
             }
         }
         when (it.phimHoatHinh) {
             is Success -> {
-                Timber.e("HomeFragment invalidate Success: ${it.phimHoatHinh}")
+                Log.e("TAG", "phimHoatHinh")
                 Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
                 listData.add(it.phimHoatHinh.invoke().data!!)
                 mainEpoxyController.categories= listData
-                homeViewModel.handleRemoveState()
+                homeViewModel.handleRemoveStatePhimHoatHinh()
             }
 
             is Fail -> {
@@ -196,7 +184,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                     getString(checkStatusApiRes(it.phimHoatHinh)),
                     Toast.LENGTH_SHORT
                 ).show()
-                homeViewModel.handleRemoveState()
+                homeViewModel.handleRemoveStatePhimHoatHinh()
             }
         }
     }
