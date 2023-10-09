@@ -133,6 +133,8 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 ).show()
                 homeViewModel.handleRemoveStateHome()
             }
+
+            else -> {}
         }
         when (it.phimBo) {
             is Success -> {
@@ -150,6 +152,8 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 ).show()
                 homeViewModel.handleRemoveStatePhimBo()
             }
+
+            else -> {}
         }
         when (it.phimLe) {
             is Success -> {
@@ -167,6 +171,8 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 ).show()
                 homeViewModel.handleRemoveStatePhimle()
             }
+
+            else -> {}
         }
         when (it.phimHoatHinh) {
             is Success -> {
@@ -186,6 +192,8 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 ).show()
                 homeViewModel.handleRemoveStatePhimHoatHinh()
             }
+
+            else -> {}
         }
     }
 }

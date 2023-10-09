@@ -1,4 +1,5 @@
 package com.oceantech.tracking.adapters
+
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
@@ -29,7 +30,7 @@ class MainEpoxyController(private val onMediaClick: (Items) -> Unit) : AsyncEpox
         HeaderModel_()
             .id("header")
             .data(categories[0])
-            .onInfoClick{onMediaClick(categories[0]?.items[0])}
+            .onInfoClick { onMediaClick(categories[0]?.items!![0]) }
             .addTo(this)
 
         categories.mapIndexed { index, category ->
@@ -82,6 +83,7 @@ abstract class HeaderModel : EpoxyModelWithHolder<HeaderModel.HeaderHolder>() {
 abstract class CategoryModel : EpoxyModelWithHolder<CategoryModel.FeedItemHorizontalListHolder>() {
     @EpoxyAttribute
     lateinit var data: Data
+
     @EpoxyAttribute
     lateinit var onItemClick: (Items) -> Unit
 
@@ -110,11 +112,11 @@ class MediaItemsController(val onMediaClick: (Items) -> Unit) :
     TypedEpoxyController<List<Items>>() {
     override fun buildModels(it: List<Items>) {
         it.mapIndexed { index, item ->
-            media {
-                id(index)
-                items(item)
-                onClick { onMediaClick(item) }
-            }
+            MediaModel_()
+                .id(index)
+                .items(item)
+                .onClick { onMediaClick(item) }
+                .addTo(this)
         }
     }
 }
@@ -124,6 +126,7 @@ abstract class MediaModel :
     EpoxyModelWithHolder<MediaModel.MediaHolder>() {
     @EpoxyAttribute
     lateinit var items: Items
+
     @EpoxyAttribute
     lateinit var onClick: () -> Unit
 

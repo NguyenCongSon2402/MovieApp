@@ -12,6 +12,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.netflixclone.constants.BASE_IMG
 import com.oceantech.tracking.data.models.Items
 import com.oceantech.tracking.databinding.BottomSheetMediaDetailsBinding
+import com.oceantech.tracking.ui.MovieDetailsActivity
 
 class MediaDetailsBottomSheet(private val items: Items) : BottomSheetDialogFragment() {
     lateinit var binding: BottomSheetMediaDetailsBinding
@@ -32,10 +33,10 @@ class MediaDetailsBottomSheet(private val items: Items) : BottomSheetDialogFragm
     private fun setupUI() {
         binding.closeIcon.setOnClickListener { dismiss() }
         binding.detailsButton.setOnClickListener {
-//            val intent = Intent(activity, MovieDetailsActivity::class.java)
-//            intent.putExtra("name", items.name)
-//            startActivity(intent)
-//            dismiss()
+            val intent = Intent(activity, MovieDetailsActivity::class.java)
+            intent.putExtra("name", items.name)
+            startActivity(intent)
+            dismiss()
         }
     }
 
@@ -44,7 +45,7 @@ class MediaDetailsBottomSheet(private val items: Items) : BottomSheetDialogFragm
             .into(binding.posterImage)
         binding.titleText.text = items.name
         binding.yearText.text = items.year.toString()
-        binding.runtimeText.text ="  \u2022 "+ items.time
+        binding.runtimeText.text = "  \u2022 " + items.time
         val categoryNames = items.category.joinToString("-") { it.name ?: "" }
         binding.overviewText.text = categoryNames
     }
