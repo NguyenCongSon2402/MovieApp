@@ -1,9 +1,9 @@
-package com.oceantech.tracking.data.models
+package com.oceantech.tracking.data.models.Slug
 
 import com.google.gson.annotations.SerializedName
 
 
-data class Modified (
+data class Created (
 
   @SerializedName("time" ) var time : String? = null
 

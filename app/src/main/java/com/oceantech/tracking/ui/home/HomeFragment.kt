@@ -17,8 +17,8 @@ import com.airbnb.mvrx.withState
 import com.oceantech.tracking.R
 import com.oceantech.tracking.adapters.MainEpoxyController
 import com.oceantech.tracking.core.TrackingBaseFragment
-import com.oceantech.tracking.data.models.Data
-import com.oceantech.tracking.data.models.Items
+import com.oceantech.tracking.data.models.home.Data
+import com.oceantech.tracking.data.models.home.Items
 import com.oceantech.tracking.databinding.FragmentFeedBinding
 import com.oceantech.tracking.utils.checkStatusApiRes
 import timber.log.Timber

@@ -11,6 +11,7 @@ import com.oceantech.tracking.R
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
+import java.util.regex.Pattern
 
 fun Location?.toText(): String {
     return if (this != null) {
@@ -57,6 +58,15 @@ fun <T : Fragment> AppCompatActivity.addFragmentToBackstack(
         option?.invoke(this)
         replace(frameId, fragmentClass, null, tag).addToBackStack(tag)
     }
+}
+
+fun extractVideoIdFromUrl(url: String): String? {
+    val pattern = Pattern.compile("watch\\?v=([a-zA-Z0-9_-]+)")
+    val matcher = pattern.matcher(url)
+    if (matcher.find()) {
+        return matcher.group(1)
+    }
+    return null
 }
 
 fun <T> checkStatusApiRes(err: Fail<T>): Int {

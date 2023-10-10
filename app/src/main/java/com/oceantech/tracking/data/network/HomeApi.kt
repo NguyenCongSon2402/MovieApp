@@ -1,11 +1,13 @@
 package com.oceantech.tracking.data.network
 
-import com.oceantech.tracking.data.models.Home
-import com.oceantech.tracking.data.models.PhimBo
-import com.oceantech.tracking.data.models.PhimHoatHinh
-import com.oceantech.tracking.data.models.PhimLe
+import com.oceantech.tracking.data.models.Slug.Slug
+import com.oceantech.tracking.data.models.home.Home
+import com.oceantech.tracking.data.models.home.PhimBo
+import com.oceantech.tracking.data.models.home.PhimHoatHinh
+import com.oceantech.tracking.data.models.home.PhimLe
 import retrofit2.http.GET
 import io.reactivex.Observable
+import retrofit2.http.Path
 
 interface HomeApi {
     @GET("/v1/api/home")
@@ -17,4 +19,7 @@ interface HomeApi {
     fun getPhimLe(): Observable<PhimLe>
     @GET("/v1/api/danh-sach/hoat-hinh")
     fun getPhimHoatHinh(): Observable<PhimHoatHinh>
+
+    @GET("/v1/api/phim/{Slug}")
+    fun Slug(@Path("Slug") name:String): Observable<Slug>
 }

@@ -2,6 +2,7 @@ package com.oceantech.tracking.ui.home
 
 import com.airbnb.mvrx.ActivityViewModelContext
 import com.airbnb.mvrx.FragmentViewModelContext
+import com.airbnb.mvrx.Loading
 
 import com.airbnb.mvrx.MvRxViewModelFactory
 
@@ -20,15 +21,18 @@ import kotlinx.coroutines.Job
 class HomeViewModel @AssistedInject constructor(
     @Assisted state: HomeViewState, private val homeRepo: HomeRepository
 ) : TrackingViewModel<HomeViewState, HomeViewAction, HomeViewEvent>(state) {
-    private var job: Job? = null
+//    private var job: Job? = null
     override fun handle(action: HomeViewAction) {
         when (action) {
             is HomeViewAction.getHome -> handleGetHome()
             is HomeViewAction.getPhimBo -> handleGetPhimBo()
             is HomeViewAction.getPhimLe -> handleGetPhimLe()
             is HomeViewAction.getPhimHoatHinh -> handleGetPhimHoatHinh()
+            is HomeViewAction.getSlug -> handleGetSlug(action.name)
         }
     }
+
+
 
     fun handleRemoveStateHome() =
         setState { copy(homes = Uninitialized) }
@@ -39,35 +43,42 @@ class HomeViewModel @AssistedInject constructor(
         setState { copy(phimLe =Uninitialized) }
     fun handleRemoveStatePhimHoatHinh() =
         setState { copy(phimHoatHinh = Uninitialized) }
+    fun handleRemoveStateSlug() =
+        setState { copy(slug = Uninitialized) }
 
 
     private fun handleGetHome() {
-        setState { copy(homes = Uninitialized) }
+        setState { copy(homes = Loading()) }
         homeRepo.getHome().execute {
             copy(homes = it)
         }
 
     }
+    private fun handleGetSlug(name: String) {
+        setState { copy(slug = Loading()) }
+        homeRepo.slug(name).execute {
+            copy(slug = it)
+        }
+    }
 
     private fun handleGetPhimBo() {
-        setState { copy(phimBo = Uninitialized) }
+        setState { copy(phimBo = Loading()) }
         homeRepo.getPhimBo().execute {
             copy(phimBo = it)
         }
     }
     private fun handleGetPhimLe() {
-        setState { copy(phimLe = Uninitialized) }
+        setState { copy(phimLe = Loading()) }
         homeRepo.getPhimLe().execute {
             copy(phimLe = it)
         }
 
     }
     private fun handleGetPhimHoatHinh() {
-        setState { copy(phimHoatHinh = Uninitialized) }
+        setState { copy(phimHoatHinh = Loading()) }
         homeRepo.getPhimHoatHinh().execute {
             copy(phimHoatHinh = it)
         }
-
     }
 
 

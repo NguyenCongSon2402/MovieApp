@@ -1,9 +1,9 @@
-package com.oceantech.tracking.data.models
+package com.oceantech.tracking.data.models.home
 
 import com.google.gson.annotations.SerializedName
 
 
-data class PhimHoatHinh (
+data class Home (
 
   @SerializedName("status"  ) var status  : String? = null,
   @SerializedName("message" ) var message : String? = null,

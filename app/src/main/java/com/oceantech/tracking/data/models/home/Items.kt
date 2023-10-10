@@ -1,4 +1,4 @@
-package com.oceantech.tracking.data.models
+package com.oceantech.tracking.data.models.home
 
 import com.google.gson.annotations.SerializedName
 
@@ -21,4 +21,4 @@ data class Items (
   @SerializedName("category"        ) var category       : ArrayList<Category> = arrayListOf(),
   @SerializedName("country"         ) var country        : ArrayList<Country>  = arrayListOf(),
 
-)
+  )

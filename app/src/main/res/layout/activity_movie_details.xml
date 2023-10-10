@@ -6,9 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".screens.MovieDetailsActivity"
-    tools:ignore="UnusedAttribute"
-    tools:targetApi="m">
+    tools:context=".ui.MovieDetailsActivity"
+    tools:ignore="UnusedAttribute">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"

@@ -15,8 +15,8 @@ import com.airbnb.epoxy.TypedEpoxyController
 import com.bumptech.glide.Glide
 import com.netflixclone.constants.BASE_IMG
 import com.oceantech.tracking.R
-import com.oceantech.tracking.data.models.Data
-import com.oceantech.tracking.data.models.Items
+import com.oceantech.tracking.data.models.home.Data
+import com.oceantech.tracking.data.models.home.Items
 
 class MainEpoxyController(private val onMediaClick: (Items) -> Unit) : AsyncEpoxyController() {
     var categories: MutableList<Data> = mutableListOf()

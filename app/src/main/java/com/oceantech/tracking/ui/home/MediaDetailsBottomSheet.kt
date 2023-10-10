@@ -5,18 +5,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.netflixclone.constants.BASE_IMG
-import com.oceantech.tracking.data.models.Items
+import com.oceantech.tracking.data.models.home.Items
 import com.oceantech.tracking.databinding.BottomSheetMediaDetailsBinding
 import com.oceantech.tracking.ui.MovieDetailsActivity
 
 class MediaDetailsBottomSheet(private val items: Items) : BottomSheetDialogFragment() {
     lateinit var binding: BottomSheetMediaDetailsBinding
-
+    //private val homeViewModel: HomeViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -33,8 +34,9 @@ class MediaDetailsBottomSheet(private val items: Items) : BottomSheetDialogFragm
     private fun setupUI() {
         binding.closeIcon.setOnClickListener { dismiss() }
         binding.detailsButton.setOnClickListener {
+            //homeViewModel.handle(HomeViewAction.getSlug(items.slug!!))
             val intent = Intent(activity, MovieDetailsActivity::class.java)
-            intent.putExtra("name", items.name)
+            intent.putExtra("name", items.slug)
             startActivity(intent)
             dismiss()
         }

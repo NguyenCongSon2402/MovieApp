@@ -1,9 +1,9 @@
-package com.oceantech.tracking.data.models
+package com.oceantech.tracking.data.models.Slug
 
 import com.google.gson.annotations.SerializedName
 
 
-data class Home (
+data class Slug (
 
   @SerializedName("status"  ) var status  : String? = null,
   @SerializedName("message" ) var message : String? = null,

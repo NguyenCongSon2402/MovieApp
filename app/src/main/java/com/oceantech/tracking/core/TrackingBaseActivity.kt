@@ -98,9 +98,6 @@ abstract class TrackingBaseActivity<VB : ViewBinding> : AppCompatActivity(){
             injectWith(nimpeComponent)
         }
         Timber.v("Injecting dependencies into ${javaClass.simpleName} took $timeForInjection ms")
-        //fragmentFactory = nimpeComponent.fragmentFactory()
-//        viewModelFactory = nimpeComponent.viewModelFactory()
-        //supportFragmentManager.fragmentFactory = fragmentFactory
         super.onCreate(savedInstanceState)
 
         doBeforeSetContentView()
@@ -173,9 +170,6 @@ abstract class TrackingBaseActivity<VB : ViewBinding> : AppCompatActivity(){
 //        bugReporter.inMultiWindowMode = isInMultiWindowMode
     }
 
-//    override fun injector(): TrackingComponent {
-//        return nimpeComponent
-//    }
 
     protected open fun injectWith(injector: TrackingComponent) = Unit
 
@@ -279,14 +273,14 @@ abstract class TrackingBaseActivity<VB : ViewBinding> : AppCompatActivity(){
     /**
      * Configure the Toolbar, with default back button.
      */
-    protected fun configureToolbar(toolbar: Toolbar, displayBack: Boolean = true) {
-        setSupportActionBar(toolbar)
-        supportActionBar?.let {
-            it.setDisplayShowHomeEnabled(displayBack)
-            it.setDisplayHomeAsUpEnabled(displayBack)
-            it.title = null
-        }
-    }
+//    protected fun configureToolbar(toolbar: Toolbar, displayBack: Boolean = true) {
+//        setSupportActionBar(toolbar)
+//        supportActionBar?.let {
+//            it.setDisplayShowHomeEnabled(displayBack)
+//            it.setDisplayHomeAsUpEnabled(displayBack)
+//            it.title = null
+//        }
+//    }
 
     // ==============================================================================================
     // Handle loading view (also called waiting view or spinner view)

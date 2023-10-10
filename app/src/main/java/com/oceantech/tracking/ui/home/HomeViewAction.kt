@@ -7,5 +7,6 @@ sealed class HomeViewAction : NimpeViewModelAction {
     object getPhimBo : HomeViewAction()
     object getPhimLe : HomeViewAction()
     object getPhimHoatHinh : HomeViewAction()
+    data class getSlug(val name: String) : HomeViewAction()
 
 }

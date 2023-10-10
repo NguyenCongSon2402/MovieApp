@@ -1,4 +1,4 @@
-package com.oceantech.tracking.data.models
+package com.oceantech.tracking.data.models.home
 
 import com.google.gson.annotations.SerializedName
 

@@ -1,9 +1,9 @@
-package com.oceantech.tracking.data.models
+package com.oceantech.tracking.data.models.Slug
 
 import com.google.gson.annotations.SerializedName
 
 
-data class Category (
+data class Country (
 
   @SerializedName("id"   ) var id   : String? = null,
   @SerializedName("name" ) var name : String? = null,
