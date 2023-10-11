@@ -1,17 +1,29 @@
 package com.oceantech.tracking.ui
 
 import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
+import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.View
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.viewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.material.tabs.TabLayout
+import com.oceantech.tracking.R
 import com.oceantech.tracking.TrackingApplication
-import com.oceantech.tracking.adapters.MoviesAdapter
 import com.oceantech.tracking.adapters.VideosController
 import com.oceantech.tracking.core.TrackingBaseActivity
 import com.oceantech.tracking.data.models.Slug.Item
@@ -32,11 +44,19 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.Abs
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.regex.Pattern
 import javax.inject.Inject
 
 class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>(),
     HomeViewModel.Factory {
+
+    var exoPlayer: ExoPlayer? = null
+    var isFullScreen = false
+    var isLock = false
+    private lateinit var bt_fullscreen: ImageView
+    private lateinit var bt_lockscreen: ImageView
+    var handler: Handler? = null
+
+
     private val homeViewModel: HomeViewModel by viewModel()
 
     //private lateinit var similarMoviesItemsAdapter: MoviesAdapter
@@ -54,6 +74,9 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as TrackingApplication).trackingComponent.inject(this)
         super.onCreate(savedInstanceState)
+        setUpPlayVideo()
+
+
         movieSlug?.let { homeViewModel.handle(HomeViewAction.getSlug(name = it)) }
         setupUI()
         homeViewModel.subscribe(this) {
@@ -78,8 +101,143 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         }
     }
 
+    private fun setUpPlayVideo() {
+        handler = Handler(Looper.getMainLooper())
+        // nút chuyển đổi với biểu tượng thay đổi toàn màn hình hoặc thoát toàn màn hình
+        // màn hình có thể xoay dựa trên cảm biến hướng góc của bạn
+        bt_fullscreen = findViewById(R.id.bt_fullscreen)
+        bt_lockscreen = findViewById(R.id.exo_lock)
+        // nút chuyển đổi với biểu tượng thay đổi toàn màn hình hoặc thoát toàn màn hình
+        // màn hình có thể xoay dựa trên cảm biến hướng góc của bạn
+        bt_fullscreen.setOnClickListener {
+            requestedOrientation = if (!isFullScreen) {
+                bt_fullscreen.setImageDrawable(
+                    ContextCompat
+                        .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen_exit)
+                )
+                views.toolbar.hide()
+                views.content.hide()
+                ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+            } else {
+                bt_fullscreen.setImageDrawable(
+                    ContextCompat
+                        .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen)
+                )
+                views.toolbar.show()
+                views.content.show()
+                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            }
+            isFullScreen = !isFullScreen
+        }
+        bt_lockscreen.setOnClickListener {
+            //change icon base on toggle lock screen or unlock screen
+            if (!isLock) {
+                bt_lockscreen.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        applicationContext,
+                        R.drawable.ic_baseline_lock
+                    )
+                )
+            } else {
+                bt_lockscreen.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        applicationContext,
+                        R.drawable.ic_outline_lock_open
+                    )
+                )
+            }
+            isLock = !isLock
+            //method for toggle will do next
+            lockScreen(isLock)
+        }
+
+        //ví dụ trình phát có thời lượng tua lại 5 giây hoặc tua đi 5 giây
+        //5000 mili giây = 5 giây
+        //5000 millisecond = 5 second
+        exoPlayer = ExoPlayer.Builder(this)
+            .setSeekBackIncrementMs(5000)
+            .setSeekForwardIncrementMs(5000)
+            .build()
+        views.player.setPlayer(exoPlayer)
+        //screen alway active
+        views.player.setKeepScreenOn(true)
+        exoPlayer!!.addListener(object : Player.Listener {
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                //when data video fetch stream from internet
+                if (playbackState == Player.STATE_BUFFERING) {
+                    views.progressBar.setVisibility(View.VISIBLE)
+                } else if (playbackState == Player.STATE_READY) {
+                    //then if streamed is loaded we hide the progress bar
+                    views.progressBar.setVisibility(View.GONE)
+                }
+                if (!exoPlayer!!.playWhenReady) {
+                    handler!!.removeCallbacks(updateProgressAction)
+                } else {
+                    onProgress()
+                }
+            }
+        })
+        views.header.playLl.setOnClickListener {
+            isFullScreen = !isFullScreen
+            views.videoPlayerView.show()
+            bt_fullscreen.setImageDrawable(
+                ContextCompat
+                    .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen_exit)
+            )
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE)
+            views.player.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT); // Đặt giá trị RESIZE_MODE_FIT
+            views.thumbnail.container.hide()
+            views.youtubePlayerView.hide()
+            views.toolbar.hide()
+            views.content.hide()
+
+            //pass the video link and play
+            val videoUrl = Uri.parse("https://vie2.opstream7.com/20230904/966_6adc7641/index.m3u8")
+            val media = MediaItem.fromUri(videoUrl)
+            exoPlayer!!.setMediaItem(media)
+            exoPlayer!!.prepare()
+            exoPlayer!!.play()
+        }
+    }
+
+    private val updateProgressAction = Runnable { onProgress() }
+    private fun onProgress() {
+        val player = exoPlayer
+        val position = player?.currentPosition ?: 0
+        handler!!.removeCallbacks(updateProgressAction)
+        val playbackState = player?.playbackState ?: Player.STATE_IDLE
+        if (playbackState != Player.STATE_IDLE && playbackState != Player.STATE_ENDED) {
+            var delayMs: Long
+            if (player!!.playWhenReady && playbackState == Player.STATE_READY) {
+                delayMs = 1000 - position % 1000
+                if (delayMs < 200) {
+                    delayMs += 1000
+                }
+            } else {
+                delayMs = 1000
+            }
+            handler!!.postDelayed(updateProgressAction, delayMs)
+        }
+    }
+
+    private fun lockScreen(lock: Boolean) {
+//just hide the control for lock screen and vise versa
+
+        //just hide the control for lock screen and vise versa
+        val sec_mid = findViewById<LinearLayout>(R.id.sec_controlvid1)
+        val sec_bottom = findViewById<LinearLayout>(R.id.sec_controlvid2)
+        if (lock) {
+            sec_mid.visibility = View.INVISIBLE
+            sec_bottom.visibility = View.INVISIBLE
+        } else {
+            sec_mid.visibility = View.VISIBLE
+            sec_bottom.visibility = View.VISIBLE
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        exoPlayer!!.release()
         views.youtubePlayerView.removeYouTubePlayerListener(youTubePlayerListener)
         views.tabLayout.removeOnTabSelectedListener(tabSelectedListener)
     }
@@ -105,9 +263,9 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             views.header.overviewText.maxLines = 10
             views.header.overviewText.isClickable = false
         }
-        views.header.playLl.setOnClickListener {
-
-        }
+//        views.header.playLl.setOnClickListener {
+//            playVideo()
+//        }
 
         views.youtubePlayerView.addYouTubePlayerListener(youTubePlayerListener)
         views.tabLayout.addOnTabSelectedListener(tabSelectedListener)
@@ -169,6 +327,17 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             }
         } else {
             views.thumbnail.playContainer.hide()
+        }
+    }
+
+    private fun playVideo() {
+        if (player != null) {
+            player!!.seekTo(0f)
+            lifecycleScope.launch {
+                delay(500)
+                views.youtubePlayerView.show()
+                views.thumbnail.container.hide()
+            }
         }
     }
 
@@ -237,6 +406,17 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
 
     override fun create(initialState: HomeViewState): HomeViewModel {
         return homeViewModelFactory.create(initialState)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        exoPlayer!!.stop()
+    }
+
+
+    override fun onPause() {
+        super.onPause()
+        exoPlayer!!.pause()
     }
 
 }

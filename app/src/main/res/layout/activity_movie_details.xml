@@ -7,7 +7,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ui.MovieDetailsActivity"
-    tools:ignore="UnusedAttribute">
+    tools:ignore="UnusedAttribute"
+    tools:targetApi="m">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
@@ -30,6 +31,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:id="@+id/video_player_view"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent">
+
+        <com.google.android.exoplayer2.ui.PlayerView
+            android:id="@+id/player"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:controller_layout_id="@layout/custom_controller"
+            app:use_controller="true" />
+
+        <ProgressBar
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:progressTint="#DC0404"
+            android:id="@+id/progress_bar"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/content"
@@ -59,25 +81,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/black"
-                android:theme="@style/TabLayoutTheme"
                 android:visibility="visible"
+                android:theme="@style/TabLayoutTheme"
                 app:tabIndicatorFullWidth="false"
                 app:tabIndicatorGravity="top"
                 app:tabIndicatorHeight="4dp"
                 app:tabMode="scrollable"
                 app:tabSelectedTextColor="@color/text_primary"
-                app:tabTextAppearance="@style/TabText"
+                android:contentDescription="@string/choose_a_tab"
                 app:tabTextColor="@color/text_secondary">
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/more_like_this"
+                    tools:ignore="HardcodedText" />
 
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="MORE LIKE THIS" />
+                    android:text="@string/trailers_amp_more"
+                    tools:ignore="HardcodedText" />
 
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TRAILERS &amp; MORE" />
 
             </com.google.android.material.tabs.TabLayout>
 

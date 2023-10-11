@@ -15,5 +15,8 @@
     <string name="http403">403</string>
     <string name="http404">404</string>
     <string name="http500">500</string>
+    <string name="more_like_this">MORE LIKE THIS</string>
+    <string name="trailers_amp_more"><![CDATA[TRAILERS & MORE]]></string>
+    <string name="choose_a_tab">Choose a tab</string>
 
 </resources>
