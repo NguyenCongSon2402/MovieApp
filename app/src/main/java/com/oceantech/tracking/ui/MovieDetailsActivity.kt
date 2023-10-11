@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -178,6 +179,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             }
         })
         views.header.playLl.setOnClickListener {
+            player?.pause()
             isFullScreen = !isFullScreen
             views.videoPlayerView.show()
             bt_fullscreen.setImageDrawable(
@@ -188,9 +190,8 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             views.player.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT); // Đặt giá trị RESIZE_MODE_FIT
             views.thumbnail.container.hide()
             views.youtubePlayerView.hide()
-            views.toolbar.hide()
             views.content.hide()
-
+            views.youtubePlayerView.removeYouTubePlayerListener(youTubePlayerListener)
             //pass the video link and play
             val videoUrl = Uri.parse("https://vie2.opstream7.com/20230904/966_6adc7641/index.m3u8")
             val media = MediaItem.fromUri(videoUrl)
@@ -258,7 +259,8 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         views.youtubePlayerView.hide()
         views.thumbnail.container.hide()
         views.thumbnail.playContainer.setOnClickListener { replayVideo() }
-
+        views.youtubePlayerView.addYouTubePlayerListener(youTubePlayerListener)
+        views.tabLayout.addOnTabSelectedListener(tabSelectedListener)
         views.header.overviewText.setOnClickListener {
             views.header.overviewText.maxLines = 10
             views.header.overviewText.isClickable = false
@@ -267,8 +269,6 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
 //            playVideo()
 //        }
 
-        views.youtubePlayerView.addYouTubePlayerListener(youTubePlayerListener)
-        views.tabLayout.addOnTabSelectedListener(tabSelectedListener)
 
 //        similarMoviesItemsAdapter = MoviesAdapter(this::handleMovieClick)
 //        binding.similarMoviesList.adapter = similarMoviesItemsAdapter
@@ -344,8 +344,8 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     private fun replayVideo() {
         if (player != null) {
             player!!.seekTo(0f)
+            player!!.unMute()
             lifecycleScope.launch {
-                delay(500)
                 views.youtubePlayerView.show()
                 views.thumbnail.container.hide()
             }
@@ -359,6 +359,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
                 lifecycleScope.launch {
                     youTubePlayer.seekTo(0f)
                     youTubePlayer.unMute()
+                    Log.e("HAHAHAHAH","OK")
                     //views.youtubePlayerView.getPlayerUiController().showUi(false)
                     delay(50)
                     views.thumbnail.container.hide()
