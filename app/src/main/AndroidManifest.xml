@@ -42,6 +42,10 @@
             android:name=".ui.MovieDetailsActivity"
 
             android:configChanges="uiMode|orientation|screenSize|screenLayout" />
+        <activity
+            android:name=".ui.TvDetailsActivity"
+
+            android:configChanges="uiMode|orientation|screenSize|screenLayout" />
 
     </application>
 

@@ -14,9 +14,11 @@ import com.netflixclone.constants.BASE_IMG
 import com.oceantech.tracking.data.models.home.Items
 import com.oceantech.tracking.databinding.BottomSheetMediaDetailsBinding
 import com.oceantech.tracking.ui.MovieDetailsActivity
+import com.oceantech.tracking.ui.TvDetailsActivity
 
 class MediaDetailsBottomSheet(private val items: Items) : BottomSheetDialogFragment() {
     lateinit var binding: BottomSheetMediaDetailsBinding
+
     //private val homeViewModel: HomeViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,11 +36,17 @@ class MediaDetailsBottomSheet(private val items: Items) : BottomSheetDialogFragm
     private fun setupUI() {
         binding.closeIcon.setOnClickListener { dismiss() }
         binding.detailsButton.setOnClickListener {
-            //homeViewModel.handle(HomeViewAction.getSlug(items.slug!!))
-            val intent = Intent(activity, MovieDetailsActivity::class.java)
-            intent.putExtra("name", items.slug)
-            startActivity(intent)
-            dismiss()
+            if (items.type == "single") {
+                val intent = Intent(activity, MovieDetailsActivity::class.java)
+                intent.putExtra("name", items.slug)
+                startActivity(intent)
+                dismiss()
+            }else{
+                val intent = Intent(activity, TvDetailsActivity::class.java)
+                intent.putExtra("name", items.slug)
+                startActivity(intent)
+                dismiss()
+            }
         }
     }
 
