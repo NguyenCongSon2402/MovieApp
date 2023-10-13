@@ -22,7 +22,7 @@
             app:layout_constraintDimensionRatio="2.3:1"
             app:layout_constraintWidth_percent="0.65"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="@color/dark_gray"/>
+            app:cardBackgroundColor="@color/divider"/>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/title"
@@ -36,7 +36,7 @@
             app:layout_constraintDimensionRatio="10:1"
             app:layout_constraintWidth_percent="0.75"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="@color/dark_gray"/>
+            app:cardBackgroundColor="@color/divider"/>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/menu"
@@ -50,7 +50,7 @@
             app:layout_constraintDimensionRatio="2.5:1"
             app:layout_constraintWidth_percent="0.25"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="@color/dark_gray"/>
+            app:cardBackgroundColor="@color/divider"/>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/media_1"
@@ -64,7 +64,7 @@
             app:layout_constraintDimensionRatio="1:1.4"
             app:layout_constraintWidth_percent="0.26"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="@color/dark_gray"/>
+            app:cardBackgroundColor="@color/divider"/>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/media_2"
@@ -78,7 +78,7 @@
             app:layout_constraintDimensionRatio="1:1.4"
             app:layout_constraintWidth_percent="0.26"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="@color/dark_gray"/>
+            app:cardBackgroundColor="@color/divider"/>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/media_3"
@@ -92,7 +92,7 @@
             app:layout_constraintDimensionRatio="1:1.4"
             app:layout_constraintWidth_percent="0.26"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="@color/dark_gray"/>
+            app:cardBackgroundColor="@color/divider"/>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/media_4"
@@ -106,7 +106,7 @@
             app:layout_constraintDimensionRatio="1:1.4"
             app:layout_constraintWidth_percent="0.26"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="@color/dark_gray"/>
+            app:cardBackgroundColor="@color/divider"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -21,6 +21,8 @@ import com.oceantech.tracking.data.models.home.Data
 import com.oceantech.tracking.data.models.home.Items
 import com.oceantech.tracking.databinding.FragmentFeedBinding
 import com.oceantech.tracking.utils.checkStatusApiRes
+import com.oceantech.tracking.utils.hide
+import com.oceantech.tracking.utils.show
 import timber.log.Timber
 import kotlin.math.min
 
@@ -34,6 +36,8 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        views.loader.root.show()
+        views.loader.root.startShimmer()
         setupUI()
     }
 
@@ -68,8 +72,8 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         })
 
 
-        mainEpoxyController= MainEpoxyController(this::handleMediaClick)
-        views.feedItemsList.adapter= mainEpoxyController.adapter
+        mainEpoxyController = MainEpoxyController(this::handleMediaClick)
+        views.feedItemsList.adapter = mainEpoxyController.adapter
 
         views.tvShowsTv.setOnClickListener {
 //            val intent = Intent(requireActivity(), PopularTvActivity::class.java)
@@ -81,8 +85,8 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 //            startActivity(intent)
         }
     }
+
     private fun handleMediaClick(items: Items) {
-        Toast.makeText(requireActivity(),items.name,Toast.LENGTH_SHORT).show()
         MediaDetailsBottomSheet.newInstance(items)
             .show(requireActivity().supportFragmentManager, items.Id.toString())
     }
@@ -121,8 +125,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                     this?.titlePage = "Phim Mới"
                 }
                 data?.let { it1 -> listData.add(it1) }
-                mainEpoxyController.categories= listData
-
+                mainEpoxyController.categories = listData
+                views.loader.root.stopShimmer()
+                views.loader.root.hide()
                 homeViewModel.handleRemoveStateHome()
             }
 
@@ -141,7 +146,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 Log.e("TAG", "phimBo")
                 Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
                 listData.add(it.phimBo.invoke().data!!)
-                mainEpoxyController.categories= listData
+                mainEpoxyController.categories = listData
+                views.loader.root.stopShimmer()
+                views.loader.root.hide()
                 homeViewModel.handleRemoveStatePhimBo()
             }
 
@@ -160,7 +167,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 Log.e("TAG", "phimLe")
                 Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
                 listData.add(it.phimLe.invoke().data!!)
-                mainEpoxyController.categories= listData
+                mainEpoxyController.categories = listData
+                views.loader.root.stopShimmer()
+                views.loader.root.hide()
                 homeViewModel.handleRemoveStatePhimle()
             }
 
@@ -179,7 +188,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 Log.e("TAG", "phimHoatHinh")
                 Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
                 listData.add(it.phimHoatHinh.invoke().data!!)
-                mainEpoxyController.categories= listData
+                mainEpoxyController.categories = listData
+                views.loader.root.stopShimmer()
+                views.loader.root.hide()
                 homeViewModel.handleRemoveStatePhimHoatHinh()
             }
 

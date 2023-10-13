@@ -4,6 +4,7 @@ import android.content.Context
 import com.oceantech.tracking.TrackingApplication
 import com.oceantech.tracking.ui.BottomNavActivity
 import com.oceantech.tracking.ui.MovieDetailsActivity
+import com.oceantech.tracking.ui.TvDetailsActivity
 import com.oceantech.tracking.ui.home.HomeFragment
 
 import dagger.BindsInstance
@@ -22,6 +23,7 @@ interface TrackingComponent {
     fun inject(homeFragment: HomeFragment)
 
     fun inject(movieDetailsActivity: MovieDetailsActivity)
+    fun inject(tvDetailsActivity: TvDetailsActivity)
 
     //fun fragmentFactory(): FragmentFactory
     //fun viewModelFactory(): ViewModelProvider.Factory

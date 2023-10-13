@@ -1,6 +1,7 @@
 package com.oceantech.tracking.data.network
 
 import com.oceantech.tracking.data.models.Slug.Slug
+import com.oceantech.tracking.data.models.categorymovie.CategoryMovie
 import com.oceantech.tracking.data.models.home.Home
 import com.oceantech.tracking.data.models.home.PhimBo
 import com.oceantech.tracking.data.models.home.PhimHoatHinh
@@ -22,4 +23,6 @@ interface HomeApi {
 
     @GET("/v1/api/phim/{Slug}")
     fun Slug(@Path("Slug") name:String): Observable<Slug>
+    @GET("/v1/api/the-loai/{categories}")
+    fun CategoriesMovies(@Path("categories") name:String): Observable<CategoryMovie>
 }

@@ -2,6 +2,7 @@ package com.oceantech.tracking.data.repository
 
 
 import com.oceantech.tracking.data.models.Slug.Slug
+import com.oceantech.tracking.data.models.categorymovie.CategoryMovie
 import com.oceantech.tracking.data.models.home.Home
 import com.oceantech.tracking.data.models.home.PhimBo
 import com.oceantech.tracking.data.models.home.PhimHoatHinh
@@ -22,4 +23,5 @@ class HomeRepository(val api: HomeApi) {
         api.getPhimHoatHinh().subscribeOn(Schedulers.io())
 
     fun slug(name: String): Observable<Slug> = api.Slug(name).subscribeOn(Schedulers.io())
+    fun categoriesMovies(name: String): Observable<CategoryMovie> = api.CategoriesMovies(name).subscribeOn(Schedulers.io())
 }

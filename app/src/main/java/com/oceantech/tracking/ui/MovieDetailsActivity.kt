@@ -25,10 +25,12 @@ import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.material.tabs.TabLayout
 import com.oceantech.tracking.R
 import com.oceantech.tracking.TrackingApplication
+import com.oceantech.tracking.adapters.MoviesAdapter
 import com.oceantech.tracking.adapters.VideosController
 import com.oceantech.tracking.core.TrackingBaseActivity
 import com.oceantech.tracking.data.models.Slug.Item
 import com.oceantech.tracking.data.models.Slug.Slug
+import com.oceantech.tracking.data.models.categorymovie.CategoryMovie
 import com.oceantech.tracking.data.models.home.Items
 import com.oceantech.tracking.databinding.ActivityMovieDetailsBinding
 import com.oceantech.tracking.ui.home.HomeViewAction
@@ -57,14 +59,15 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     private lateinit var bt_lockscreen: ImageView
     var handler: Handler? = null
 
-
+    private var url = ""
     private val homeViewModel: HomeViewModel by viewModel()
 
-    //private lateinit var similarMoviesItemsAdapter: MoviesAdapter
+    private lateinit var similarMoviesItemsAdapter: MoviesAdapter
     private lateinit var videosController: VideosController
     private val movieSlug: String?
         get() = intent.extras?.getString("name")
-
+    private val movieCategory: String?
+        get() = intent.extras?.getString("category")
     @Inject
     lateinit var homeViewModelFactory: HomeViewModel.Factory
 
@@ -75,15 +78,13 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as TrackingApplication).trackingComponent.inject(this)
         super.onCreate(savedInstanceState)
-        setUpPlayVideo()
-
 
         movieSlug?.let { homeViewModel.handle(HomeViewAction.getSlug(name = it)) }
+        movieCategory?.let { homeViewModel.handle(HomeViewAction.getCategoriesMovies(name = it)) }
         setupUI()
         homeViewModel.subscribe(this) {
             when (it.slug) {
                 is Success -> {
-                    Toast.makeText(this, "OK", Toast.LENGTH_SHORT).show()
                     homeViewModel.handleRemoveStateSlug()
                     showLoader(false)
                     updateDetails(it.slug.invoke())
@@ -99,13 +100,28 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
 
                 else -> {}
             }
+            when (it.categoriesMovies) {
+                is Success -> {
+                    homeViewModel.handleRemoveStateCategoriesMovies()
+                    updateSimilarMovies(it.categoriesMovies.invoke())
+                }
+
+                is Fail -> {
+                    Toast.makeText(
+                        this, getString(checkStatusApiRes(it.categoriesMovies)), Toast.LENGTH_SHORT
+                    ).show()
+                    homeViewModel.handleRemoveStateCategoriesMovies()
+                }
+
+                else -> {}
+            }
         }
+        setUpPlayVideo()
     }
+
 
     private fun setUpPlayVideo() {
         handler = Handler(Looper.getMainLooper())
-        // nút chuyển đổi với biểu tượng thay đổi toàn màn hình hoặc thoát toàn màn hình
-        // màn hình có thể xoay dựa trên cảm biến hướng góc của bạn
         bt_fullscreen = findViewById(R.id.bt_fullscreen)
         bt_lockscreen = findViewById(R.id.exo_lock)
         // nút chuyển đổi với biểu tượng thay đổi toàn màn hình hoặc thoát toàn màn hình
@@ -152,9 +168,6 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             lockScreen(isLock)
         }
 
-        //ví dụ trình phát có thời lượng tua lại 5 giây hoặc tua đi 5 giây
-        //5000 mili giây = 5 giây
-        //5000 millisecond = 5 second
         exoPlayer = ExoPlayer.Builder(this)
             .setSeekBackIncrementMs(5000)
             .setSeekForwardIncrementMs(5000)
@@ -193,7 +206,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             views.content.hide()
             views.youtubePlayerView.removeYouTubePlayerListener(youTubePlayerListener)
             //pass the video link and play
-            val videoUrl = Uri.parse("https://vie2.opstream7.com/20230904/966_6adc7641/index.m3u8")
+            val videoUrl = Uri.parse(url)
             val media = MediaItem.fromUri(videoUrl)
             exoPlayer!!.setMediaItem(media)
             exoPlayer!!.prepare()
@@ -255,6 +268,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     private fun setupUI() {
         views.toolbar.setNavigationOnClickListener { finish() }
         views.loader.root.show()
+        views.loader.root.startShimmer()
         views.content.hide()
         views.youtubePlayerView.hide()
         views.thumbnail.container.hide()
@@ -265,18 +279,15 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             views.header.overviewText.maxLines = 10
             views.header.overviewText.isClickable = false
         }
-//        views.header.playLl.setOnClickListener {
-//            playVideo()
-//        }
 
 
-//        similarMoviesItemsAdapter = MoviesAdapter(this::handleMovieClick)
-//        binding.similarMoviesList.adapter = similarMoviesItemsAdapter
-//        binding.similarMoviesList.isNestedScrollingEnabled = false
-//
-//        videosController = VideosController {}
-//        views.videosList.adapter = videosController.adapter
-//        views.videosList.isNestedScrollingEnabled = false
+        similarMoviesItemsAdapter = MoviesAdapter(this::handleMovieClick)
+        views.similarMoviesList.adapter = similarMoviesItemsAdapter
+        views.similarMoviesList.isNestedScrollingEnabled = false
+
+        videosController = VideosController {}
+        views.videosList.adapter = videosController.adapter
+        views.videosList.isNestedScrollingEnabled = false
     }
 
     private fun showLoader(flag: Boolean) {
@@ -286,14 +297,15 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             views.youtubePlayerView.hide()
             views.thumbnail.container.hide()
         } else {
+            views.loader.root.stopShimmer()
             views.loader.root.hide()
             views.content.show()
             views.thumbnail.container.show()
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private fun updateDetails(data: Slug) {
+        url = data.data?.item?.episodes?.get(0)?.serverData?.get(0)?.linkM3u8.toString()
         // Basic details
         Glide.with(this).load(data.data?.seoOnPage?.seoSchema?.image).transform(CenterCrop())
             .into(views.thumbnail.backdropImage)
@@ -302,14 +314,15 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         views.header.yearText.text = data.data?.item?.year.toString()
         views.header.runtimeText.text = data.data?.item?.time
         views.header.ratingText.text = data.data?.item?.lang
-
-//        // Similar movies
-//        similarMoviesItemsAdapter.submitList(details.similar.results)
-//        similarMoviesItemsAdapter.notifyDataSetChanged()
-
         // Videos
         checkAndLoadVideo(data.data?.item!!)
         //videosController.setData(details.videos.results)
+    }
+    @SuppressLint("NotifyDataSetChanged")
+    private fun updateSimilarMovies(categoryMovie: CategoryMovie) {
+        // Similar movies
+        similarMoviesItemsAdapter.submitList(categoryMovie.data?.items)
+        similarMoviesItemsAdapter.notifyDataSetChanged()
     }
 
     private fun checkAndLoadVideo(videos: Item) {
@@ -327,17 +340,6 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             }
         } else {
             views.thumbnail.playContainer.hide()
-        }
-    }
-
-    private fun playVideo() {
-        if (player != null) {
-            player!!.seekTo(0f)
-            lifecycleScope.launch {
-                delay(500)
-                views.youtubePlayerView.show()
-                views.thumbnail.container.hide()
-            }
         }
     }
 
@@ -359,14 +361,12 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
                 lifecycleScope.launch {
                     youTubePlayer.seekTo(0f)
                     youTubePlayer.unMute()
-                    Log.e("HAHAHAHAH","OK")
-                    //views.youtubePlayerView.getPlayerUiController().showUi(false)
+                    Log.e("HAHAHAHAH", "OK")
                     delay(50)
                     views.thumbnail.container.hide()
                     views.thumbnail.videoLoader.hide()
                     views.youtubePlayerView.show()
                     delay(1000)
-                    //views.youtubePlayerView.getPlayerUiController().showUi(true)
                 }
             }
         }

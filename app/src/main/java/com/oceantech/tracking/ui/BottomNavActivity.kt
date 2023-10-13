@@ -59,7 +59,6 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), Home
             add(R.id.container, comingSoonFragment, "coming_soon").hide(comingSoonFragment)
             add(R.id.container, homeFragment, "home")
         }.commit()
-
         views.bottomNavView.setOnNavigationItemSelectedListener {
             when (it.itemId) {
                 R.id.home -> {

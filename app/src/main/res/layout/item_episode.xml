@@ -52,7 +52,7 @@
                 android:textStyle="bold"
                 android:maxLines="2"
                 android:ellipsize="end"
-                tools:text="1. Episode 1" />
+                tools:text="............" />
 
             <LinearLayout
                 android:id="@+id/rating_ll"
@@ -95,6 +95,5 @@
         android:ellipsize="end"
         android:lineHeight="18sp"
         android:maxLines="3"
-        android:textSize="12sp"
-        tools:text="After months of preparation and seclusion, The Professor and his band of eight recruited robbers begin to attack the National Coinage and Stamp Factory of Spain. Everything goes according to plan, until the police shows up and shots are fired. Hostage negotiator inspector Raquel Murillo makes initial contact with The Professor, and it turns out that one of the hostages, Alison Parker, is a crucial part of the thieves' plan." />
+        android:textSize="12sp"/>
 </LinearLayout>

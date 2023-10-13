@@ -8,5 +8,6 @@ sealed class HomeViewAction : NimpeViewModelAction {
     object getPhimLe : HomeViewAction()
     object getPhimHoatHinh : HomeViewAction()
     data class getSlug(val name: String) : HomeViewAction()
+    data class getCategoriesMovies(val name: String) : HomeViewAction()
 
 }
