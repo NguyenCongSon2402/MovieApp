@@ -12,6 +12,7 @@ import com.oceantech.tracking.ui.comingsoon.ComingSoonFragment
 import com.oceantech.tracking.ui.home.HomeViewAction
 import com.oceantech.tracking.ui.home.HomeViewModel
 import com.oceantech.tracking.ui.home.HomeViewState
+import com.oceantech.tracking.utils.applyExitMaterialTransform
 import dev.son.moviestreamhub.screens.DownloadsFragment
 import javax.inject.Inject
 
@@ -35,6 +36,7 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), Home
     lateinit var homeViewModelFactory: HomeViewModel.Factory
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        applyExitMaterialTransform()
         (applicationContext as TrackingApplication).trackingComponent.inject(this)
         setTheme(R.style.Base_Theme_MovieStreamHub)
         super.onCreate(savedInstanceState)

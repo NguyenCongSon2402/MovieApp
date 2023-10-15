@@ -8,16 +8,17 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.netflixclone.constants.BASE_IMG
 import com.oceantech.tracking.data.models.Slug.ServerData
 import com.oceantech.tracking.databinding.ItemEpisodeBinding
 import com.oceantech.tracking.utils.hide
 
-class EpisodeItemsAdapter(private val onItemClick: ((ServerData) -> Unit)) :
+class EpisodeItemsAdapter(private val onItemClick: (ServerData) -> Unit,private  val imgPosterUrl: String) :
     ListAdapter<ServerData, EpisodeItemViewHolder>(EpisodeItemDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EpisodeItemViewHolder {
         val binding = ItemEpisodeBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return EpisodeItemViewHolder(binding, onItemClick)
+        return EpisodeItemViewHolder(binding, onItemClick,imgPosterUrl)
     }
 
     override fun onBindViewHolder(holder: EpisodeItemViewHolder, position: Int) {
@@ -28,15 +29,16 @@ class EpisodeItemsAdapter(private val onItemClick: ((ServerData) -> Unit)) :
 
 class EpisodeItemViewHolder(
     private val binding: ItemEpisodeBinding,
-    private val onItemClick: ((ServerData) -> Unit)
+    private val onItemClick: ((ServerData) -> Unit),
+    private val imgPosterUrl: String
 ) :
     RecyclerView.ViewHolder(binding.root) {
 
     @SuppressLint("SetTextI18n")
     fun bind(episode: ServerData, position: Int) {
-        val title = "${position + 1}. ${episode.name}"
+        val title = "${episode.filename}"
         val stillUrl = episode.slug
-        Glide.with(binding.stillImage).load(stillUrl).transform(CenterCrop())
+        Glide.with(binding.stillImage).load(BASE_IMG+imgPosterUrl).transform(CenterCrop())
             .into(binding.stillImage)
         binding.stillImage.clipToOutline = true
         binding.nameText.text = title

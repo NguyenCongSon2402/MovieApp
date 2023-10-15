@@ -1,5 +1,7 @@
 package com.oceantech.tracking.ui.home
 
+import android.app.ActivityOptions
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +11,7 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Success
@@ -20,6 +23,8 @@ import com.oceantech.tracking.core.TrackingBaseFragment
 import com.oceantech.tracking.data.models.home.Data
 import com.oceantech.tracking.data.models.home.Items
 import com.oceantech.tracking.databinding.FragmentFeedBinding
+import com.oceantech.tracking.ui.MovieDetailsActivity
+import com.oceantech.tracking.ui.TvDetailsActivity
 import com.oceantech.tracking.utils.checkStatusApiRes
 import com.oceantech.tracking.utils.hide
 import com.oceantech.tracking.utils.show
@@ -87,9 +92,35 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
     }
 
     private fun handleMediaClick(items: Items) {
-        MediaDetailsBottomSheet.newInstance(items)
-            .show(requireActivity().supportFragmentManager, items.Id.toString())
+        val categoryList = items.category
+        val shuffledIndices = categoryList.indices.shuffled()
+        val randomIndex = shuffledIndices.first()
+        val randomCategory = categoryList[randomIndex]
+        val randomSlug = randomCategory.slug
+        val posterItem = requireActivity().findViewById<View>(R.id.poster_image)
+
+        // Đặt tên chuyển đổi cho phần tử giao diện này
+        ViewCompat.setTransitionName(posterItem, items.name)
+
+        val intent: Intent
+        if (items.type == "single") {
+            intent = Intent(activity, MovieDetailsActivity::class.java)
+        } else {
+            intent = Intent(activity, TvDetailsActivity::class.java)
+            intent.putExtra("thumbUrl", items.thumbUrl)
+        }
+
+        intent.putExtra("name", items.slug)
+        intent.putExtra("category", randomSlug)
+
+        val options = ActivityOptions.makeSceneTransitionAnimation(
+            activity,
+            posterItem,
+            items.name
+        )
+        startActivity(intent, options.toBundle())
     }
+
 
     private fun calculateAndSetListTopPadding() {
         views.appBarLayout.viewTreeObserver.addOnGlobalLayoutListener(object :

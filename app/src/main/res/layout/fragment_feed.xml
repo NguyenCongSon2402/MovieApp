@@ -15,6 +15,7 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:itemCount="1"
+        android:transitionName="transition_item"
         tools:layout_marginTop="-112dp"
          />
     <include

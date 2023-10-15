@@ -5,4 +5,5 @@
         <item name="colorControlHighlight">@android:color/darker_gray</item>
         <item name="android:background">?selectableItemBackgroundBorderless</item>
     </style>
+
 </resources>

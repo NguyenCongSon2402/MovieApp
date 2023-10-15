@@ -52,6 +52,7 @@ class MediaDetailsBottomSheet(private val items: Items) : BottomSheetDialogFragm
                 val intent = Intent(activity, TvDetailsActivity::class.java)
                 intent.putExtra("name", items.slug)
                 intent.putExtra("category", randomSlug)
+                intent.putExtra("thumbUrl",items.thumbUrl)
                 startActivity(intent)
                 dismiss()
             }

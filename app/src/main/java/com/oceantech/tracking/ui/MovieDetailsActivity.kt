@@ -1,6 +1,7 @@
 package com.oceantech.tracking.ui
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -36,7 +38,7 @@ import com.oceantech.tracking.databinding.ActivityMovieDetailsBinding
 import com.oceantech.tracking.ui.home.HomeViewAction
 import com.oceantech.tracking.ui.home.HomeViewModel
 import com.oceantech.tracking.ui.home.HomeViewState
-import com.oceantech.tracking.ui.home.MediaDetailsBottomSheet
+import com.oceantech.tracking.utils.applyMaterialTransform
 import com.oceantech.tracking.utils.checkStatusApiRes
 import com.oceantech.tracking.utils.extractVideoIdFromUrl
 import com.oceantech.tracking.utils.hide
@@ -57,6 +59,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     var isLock = false
     private lateinit var bt_fullscreen: ImageView
     private lateinit var bt_lockscreen: ImageView
+    private lateinit var progress_bar: ProgressBar
     var handler: Handler? = null
 
     private var url = ""
@@ -68,6 +71,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         get() = intent.extras?.getString("name")
     private val movieCategory: String?
         get() = intent.extras?.getString("category")
+
     @Inject
     lateinit var homeViewModelFactory: HomeViewModel.Factory
 
@@ -77,6 +81,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as TrackingApplication).trackingComponent.inject(this)
+        applyMaterialTransform(movieSlug)
         super.onCreate(savedInstanceState)
 
         movieSlug?.let { homeViewModel.handle(HomeViewAction.getSlug(name = it)) }
@@ -124,6 +129,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         handler = Handler(Looper.getMainLooper())
         bt_fullscreen = findViewById(R.id.bt_fullscreen)
         bt_lockscreen = findViewById(R.id.exo_lock)
+        progress_bar = findViewById(R.id.progress_bar)
         // nút chuyển đổi với biểu tượng thay đổi toàn màn hình hoặc thoát toàn màn hình
         // màn hình có thể xoay dựa trên cảm biến hướng góc của bạn
         bt_fullscreen.setOnClickListener {
@@ -179,10 +185,10 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             override fun onPlaybackStateChanged(playbackState: Int) {
                 //when data video fetch stream from internet
                 if (playbackState == Player.STATE_BUFFERING) {
-                    views.progressBar.setVisibility(View.VISIBLE)
+                    progress_bar.setVisibility(View.VISIBLE)
                 } else if (playbackState == Player.STATE_READY) {
                     //then if streamed is loaded we hide the progress bar
-                    views.progressBar.setVisibility(View.GONE)
+                    progress_bar.setVisibility(View.GONE)
                 }
                 if (!exoPlayer!!.playWhenReady) {
                     handler!!.removeCallbacks(updateProgressAction)
@@ -249,6 +255,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         }
     }
 
+
     override fun onDestroy() {
         super.onDestroy()
         exoPlayer!!.release()
@@ -260,9 +267,26 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         return ActivityMovieDetailsBinding.inflate(layoutInflater)
     }
 
-    private fun handleMovieClick(item: Items) {
-        MediaDetailsBottomSheet.newInstance(item)
-            .show(supportFragmentManager, item.Id.toString())
+    private fun handleMovieClick(items: Items) {
+        val categoryList = items.category
+        val shuffledIndices = categoryList.indices.shuffled()
+        val randomIndex = shuffledIndices.first() // Lấy chỉ mục đầu tiên từ danh sách đã xáo trộn
+        val randomCategory = categoryList[randomIndex]
+        val randomSlug = randomCategory.slug
+
+        if (items.type == "single") {
+            val intent = Intent(this, MovieDetailsActivity::class.java)
+            intent.putExtra("name", items.slug)
+            intent.putExtra("category", randomSlug)
+            startActivity(intent)
+        } else {
+            val intent = Intent(this, TvDetailsActivity::class.java)
+            intent.putExtra("name", items.slug)
+            intent.putExtra("category", randomSlug)
+            intent.putExtra("thumbUrl", items.thumbUrl)
+            startActivity(intent)
+        }
+
     }
 
     private fun setupUI() {
@@ -318,6 +342,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         checkAndLoadVideo(data.data?.item!!)
         //videosController.setData(details.videos.results)
     }
+
     @SuppressLint("NotifyDataSetChanged")
     private fun updateSimilarMovies(categoryMovie: CategoryMovie) {
         // Similar movies

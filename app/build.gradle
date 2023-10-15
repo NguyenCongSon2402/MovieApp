@@ -168,4 +168,5 @@ dependencies {
     implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:11.0.0'
 
     implementation 'com.google.android.exoplayer:exoplayer:2.16.1'
+    implementation "com.github.skydoves:transformationlayout:1.0.9"
 }

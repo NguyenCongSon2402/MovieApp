@@ -1,6 +1,7 @@
 package com.oceantech.tracking.ui
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -21,6 +23,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.Player.*
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
@@ -40,6 +43,7 @@ import com.oceantech.tracking.ui.home.HomeViewAction
 import com.oceantech.tracking.ui.home.HomeViewModel
 import com.oceantech.tracking.ui.home.HomeViewState
 import com.oceantech.tracking.ui.home.MediaDetailsBottomSheet
+import com.oceantech.tracking.utils.applyMaterialTransform
 import com.oceantech.tracking.utils.checkStatusApiRes
 import com.oceantech.tracking.utils.extractVideoIdFromUrl
 import com.oceantech.tracking.utils.hide
@@ -51,8 +55,8 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.You
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.math.E
 
+@Suppress("DEPRECATION")
 class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>(),
     HomeViewModel.Factory {
     private lateinit var episodeItemsAdapter: EpisodeItemsAdapter
@@ -65,6 +69,7 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
     var isLock = false
     private lateinit var bt_fullscreen: ImageView
     private lateinit var bt_lockscreen: ImageView
+    private lateinit var progress_bar: ProgressBar
     var handler: Handler? = null
     private var url = ""
 
@@ -77,6 +82,8 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
         get() = intent.extras?.getString("name")
     private val movieCategory: String?
         get() = intent.extras?.getString("category")
+    private val thumbUrl: String?
+        get() = intent.extras?.getString("thumbUrl")
 
 
     var isVideoRestarted = false
@@ -85,6 +92,7 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as TrackingApplication).trackingComponent.inject(this)
+        applyMaterialTransform(movieSlug)
         super.onCreate(savedInstanceState)
         movieSlug?.let { homeViewModel.handle(HomeViewAction.getSlug(name = it)) }
         movieCategory?.let { homeViewModel.handle(HomeViewAction.getCategoriesMovies(name = it)) }
@@ -130,6 +138,7 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
         handler = Handler(Looper.getMainLooper())
         bt_fullscreen = findViewById(R.id.bt_fullscreen)
         bt_lockscreen = findViewById(R.id.exo_lock)
+        progress_bar = findViewById(R.id.progress_bar)
         bt_fullscreen.setOnClickListener {
             requestedOrientation = if (!isFullScreen) {
                 bt_fullscreen.setImageDrawable(
@@ -178,14 +187,14 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
         views.player.setPlayer(exoPlayer)
         //screen alway active
         views.player.setKeepScreenOn(true)
-        exoPlayer!!.addListener(object : Player.Listener {
+        exoPlayer!!.addListener(object : Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 //when data video fetch stream from internet
-                if (playbackState == Player.STATE_BUFFERING) {
-                    views.progressBar.setVisibility(View.VISIBLE)
-                } else if (playbackState == Player.STATE_READY) {
+                if (playbackState == STATE_BUFFERING) {
+                    progress_bar.setVisibility(View.VISIBLE)
+                } else if (playbackState == STATE_READY) {
                     //then if streamed is loaded we hide the progress bar
-                    views.progressBar.setVisibility(View.GONE)
+                    progress_bar.setVisibility(View.GONE)
                 }
                 if (!exoPlayer!!.playWhenReady) {
                     handler!!.removeCallbacks(updateProgressAction)
@@ -196,6 +205,7 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
         })
         views.header.playLl.setOnClickListener {
             player?.pause()
+            views.youtubePlayerView.release()
             isFullScreen = !isFullScreen
             views.videoPlayerView.show()
             bt_fullscreen.setImageDrawable(
@@ -223,10 +233,10 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
         val player = exoPlayer
         val position = player?.currentPosition ?: 0
         handler!!.removeCallbacks(updateProgressAction)
-        val playbackState = player?.playbackState ?: Player.STATE_IDLE
-        if (playbackState != Player.STATE_IDLE && playbackState != Player.STATE_ENDED) {
+        val playbackState = player?.playbackState ?: STATE_IDLE
+        if (playbackState != STATE_IDLE && playbackState != STATE_ENDED) {
             var delayMs: Long
-            if (player!!.playWhenReady && playbackState == Player.STATE_READY) {
+            if (player!!.playWhenReady && playbackState == STATE_READY) {
                 delayMs = 1000 - position % 1000
                 if (delayMs < 200) {
                     delayMs += 1000
@@ -261,13 +271,30 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
         views.menusTabLayout.removeOnTabSelectedListener(tabSelectedListener)
     }
 
-    private fun handleTvClick(item: Items) {
-        MediaDetailsBottomSheet.newInstance(item)
-            .show(supportFragmentManager, item.Id.toString())
+    private fun handleTvClick(items: Items) {
+        val categoryList = items.category
+        val shuffledIndices = categoryList.indices.shuffled()
+        val randomIndex = shuffledIndices.first() // Lấy chỉ mục đầu tiên từ danh sách đã xáo trộn
+        val randomCategory = categoryList[randomIndex]
+        val randomSlug = randomCategory.slug
+
+        if (items.type == "single") {
+            val intent = Intent(this, MovieDetailsActivity::class.java)
+            intent.putExtra("name", items.slug)
+            intent.putExtra("category", randomSlug)
+            startActivity(intent)
+        }else{
+            val intent = Intent(this, TvDetailsActivity::class.java)
+            intent.putExtra("name", items.slug)
+            intent.putExtra("category", randomSlug)
+            intent.putExtra("thumbUrl",items.thumbUrl)
+            startActivity(intent)
+        }
     }
 
     private fun handleEpisodeClick(Episode: ServerData) {
         player?.pause()
+
         player?.removeListener(youTubePlayerListener)
         isFullScreen = !isFullScreen
         views.videoPlayerView.show()
@@ -306,7 +333,7 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
 
 //        views.seasonPicker.setOnClickListener { handleSeasonPickerSelectClick() }
 
-        episodeItemsAdapter = EpisodeItemsAdapter(this::handleEpisodeClick)
+        episodeItemsAdapter = EpisodeItemsAdapter(this::handleEpisodeClick,thumbUrl!!)
         views.episodesList.adapter = episodeItemsAdapter
         views.episodesList.isNestedScrollingEnabled = false
 
@@ -479,5 +506,15 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
 
     override fun create(initialState: HomeViewState): HomeViewModel {
         return homeViewModelFactory.create(initialState)
+    }
+    override fun onStop() {
+        super.onStop()
+        exoPlayer!!.stop()
+    }
+
+
+    override fun onPause() {
+        super.onPause()
+        exoPlayer!!.pause()
     }
 }
