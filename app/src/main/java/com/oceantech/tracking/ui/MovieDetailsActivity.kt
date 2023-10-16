@@ -46,6 +46,7 @@ import com.oceantech.tracking.utils.applyMaterialTransform
 import com.oceantech.tracking.utils.checkStatusApiRes
 import com.oceantech.tracking.utils.extractVideoIdFromUrl
 import com.oceantech.tracking.utils.hide
+import com.oceantech.tracking.utils.setSingleClickListener
 import com.oceantech.tracking.utils.show
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
@@ -77,7 +78,8 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         get() = intent.extras?.getString("name")
     private val movieCategory: String?
         get() = intent.extras?.getString("category")
-
+    private val movieId: String?
+        get() = intent.extras?.getString("id")
     @Inject
     lateinit var homeViewModelFactory: HomeViewModel.Factory
 
@@ -87,9 +89,8 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as TrackingApplication).trackingComponent.inject(this)
-        applyMaterialTransform(movieSlug)
+        applyMaterialTransform(movieId)
         super.onCreate(savedInstanceState)
-
         movieSlug?.let { homeViewModel.handle(HomeViewAction.getSlug(name = it)) }
         movieCategory?.let { homeViewModel.handle(HomeViewAction.getCategoriesMovies(name = it)) }
         setupUI()
@@ -141,27 +142,12 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         bt_fullscreen.setOnClickListener {
             if (!isFullScreen) {
                 openFullscreenDialog()
-//                bt_fullscreen.setImageDrawable(
-//                    ContextCompat
-//                        .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen_exit)
-//                )
-                views.toolbar.hide()
-                views.content.hide()
-//                ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
             } else {
                 closeFullscreenDialog()
-//                bt_fullscreen.setImageDrawable(
-//                    ContextCompat
-//                        .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen)
-//                )
-                views.toolbar.show()
-                views.content.show()
-//                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             }
             isFullScreen = !isFullScreen
         }
         bt_lockscreen.setOnClickListener {
-            //change icon base on toggle lock screen or unlock screen
             if (!isLock) {
                 bt_lockscreen.setImageDrawable(
                     ContextCompat.getDrawable(
@@ -186,17 +172,17 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             .setSeekBackIncrementMs(5000)
             .setSeekForwardIncrementMs(5000)
             .build()
-        views.player.setPlayer(exoPlayer)
+        views.player.player = exoPlayer
         //screen alway active
-        views.player.setKeepScreenOn(true)
+        views.player.keepScreenOn = true
         exoPlayer!!.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 //when data video fetch stream from internet
                 if (playbackState == Player.STATE_BUFFERING) {
-                    progress_bar.setVisibility(View.VISIBLE)
+                    progress_bar.visibility = View.VISIBLE
                 } else if (playbackState == Player.STATE_READY) {
                     //then if streamed is loaded we hide the progress bar
-                    progress_bar.setVisibility(View.GONE)
+                    progress_bar.visibility = View.GONE
                 }
                 if (!exoPlayer!!.playWhenReady) {
                     handler!!.removeCallbacks(updateProgressAction)
@@ -207,14 +193,17 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         })
         views.header.playLl.setOnClickListener {
             player?.pause()
+            views.youtubePlayerView.release()
             isFullScreen = !isFullScreen
             views.videoPlayerView.show()
-            bt_fullscreen.setImageDrawable(
-                ContextCompat
-                    .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen_exit)
-            )
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE)
-            views.player.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT); // Đặt giá trị RESIZE_MODE_FIT
+            views.toolbar.hide()
+            openFullscreenDialog()
+//            bt_fullscreen.setImageDrawable(
+//                ContextCompat
+//                    .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen_exit)
+//            )
+//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE)
+            views.player.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT // Đặt giá trị RESIZE_MODE_FIT
             views.thumbnail.container.hide()
             views.youtubePlayerView.hide()
             views.content.hide()
@@ -232,16 +221,21 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         mFullScreenDialog =
             object : Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen) {
                 override fun onBackPressed() {
-                    if (!isFullScreen)
+                    if (isFullScreen) {
                         closeFullscreenDialog()
-                    super.onBackPressed()
+                        isFullScreen = !isFullScreen
+                    } else {
+                        super.onBackPressed() // Chỉ gọi super.onBackPressed() khi không trong chế độ toàn màn hình.
+                    }
                 }
             }
     }
 
     private fun openFullscreenDialog() {
+        views.toolbar.hide()
+        views.content.hide()
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        (views.player.getParent() as ViewGroup).removeView(views.player)
+        (views.player.parent as ViewGroup).removeView(views.player)
         mFullScreenDialog.addContentView(
             views.player,
             ViewGroup.LayoutParams(
@@ -257,9 +251,11 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     }
 
     private fun closeFullscreenDialog() {
+        views.toolbar.show()
+        views.content.show()
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        (views.player.getParent() as ViewGroup).removeView(views.player)
-        (findViewById<View>(R.id.video_player_view) as FrameLayout).addView(views.player)
+        (views.player.parent as ViewGroup).removeView(views.player)
+        (views.videoPlayerView).addView(views.player)
         mFullScreenDialog.dismiss()
         bt_fullscreen.setImageDrawable(
             ContextCompat

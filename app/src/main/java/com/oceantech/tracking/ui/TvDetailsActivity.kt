@@ -2,6 +2,7 @@ package com.oceantech.tracking.ui
 
 import android.annotation.SuppressLint
 import android.app.ActivityOptions
+import android.app.Dialog
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.Uri
@@ -10,6 +11,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -62,7 +64,9 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
     HomeViewModel.Factory {
     private lateinit var episodeItemsAdapter: EpisodeItemsAdapter
     private lateinit var similarMoviesItemsAdapter: MoviesAdapter
-//    private lateinit var videosController: VideosController
+
+    //    private lateinit var videosController: VideosController
+    private lateinit var mFullScreenDialog: Dialog
 
     //video
     var exoPlayer: ExoPlayer? = null
@@ -85,6 +89,8 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
         get() = intent.extras?.getString("category")
     private val thumbUrl: String?
         get() = intent.extras?.getString("thumbUrl")
+    private val movieId: String?
+        get() = intent.extras?.getString("id")
 
 
     var isVideoRestarted = false
@@ -93,7 +99,7 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as TrackingApplication).trackingComponent.inject(this)
-        applyMaterialTransform(movieSlug)
+        applyMaterialTransform(movieId)
         super.onCreate(savedInstanceState)
         movieSlug?.let { homeViewModel.handle(HomeViewAction.getSlug(name = it)) }
         movieCategory?.let { homeViewModel.handle(HomeViewAction.getCategoriesMovies(name = it)) }
@@ -141,22 +147,10 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
         bt_lockscreen = findViewById(R.id.exo_lock)
         progress_bar = findViewById(R.id.progress_bar)
         bt_fullscreen.setOnClickListener {
-            requestedOrientation = if (!isFullScreen) {
-                bt_fullscreen.setImageDrawable(
-                    ContextCompat
-                        .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen_exit)
-                )
-                views.toolbar.hide()
-                views.content.hide()
-                ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+            if (!isFullScreen) {
+                openFullscreenDialog()
             } else {
-                bt_fullscreen.setImageDrawable(
-                    ContextCompat
-                        .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen)
-                )
-                views.toolbar.show()
-                views.content.show()
-                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                closeFullscreenDialog()
             }
             isFullScreen = !isFullScreen
         }
@@ -209,11 +203,7 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
             views.youtubePlayerView.release()
             isFullScreen = !isFullScreen
             views.videoPlayerView.show()
-            bt_fullscreen.setImageDrawable(
-                ContextCompat
-                    .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen_exit)
-            )
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE)
+            openFullscreenDialog()
             views.player.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT); // Đặt giá trị RESIZE_MODE_FIT
             views.thumbnail.container.hide()
             views.youtubePlayerView.hide()
@@ -227,6 +217,52 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
             exoPlayer!!.prepare()
             exoPlayer!!.play()
         }
+    }
+
+    private fun initFullscreenDialog() {
+        mFullScreenDialog =
+            object : Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen) {
+                override fun onBackPressed() {
+                    if (isFullScreen) {
+                        closeFullscreenDialog()
+                        isFullScreen = !isFullScreen
+                    } else {
+                        super.onBackPressed() // Chỉ gọi super.onBackPressed() khi không trong chế độ toàn màn hình.
+                    }
+                }
+            }
+    }
+
+    private fun openFullscreenDialog() {
+        views.toolbar.hide()
+        views.content.hide()
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        (views.player.parent as ViewGroup).removeView(views.player)
+        mFullScreenDialog.addContentView(
+            views.player,
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
+        bt_fullscreen.setImageDrawable(
+            ContextCompat
+                .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen_exit)
+        )
+        mFullScreenDialog.show()
+    }
+
+    private fun closeFullscreenDialog() {
+        views.toolbar.show()
+        views.content.show()
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        (views.player.parent as ViewGroup).removeView(views.player)
+        (views.videoPlayerView).addView(views.player)
+        mFullScreenDialog.dismiss()
+        bt_fullscreen.setImageDrawable(
+            ContextCompat
+                .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen)
+        )
     }
 
     private val updateProgressAction = Runnable { onProgress() }
@@ -272,7 +308,7 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
         views.menusTabLayout.removeOnTabSelectedListener(tabSelectedListener)
     }
 
-    private fun handleTvClick(items: Items,posterItems:View) {
+    private fun handleTvClick(items: Items, posterItems: View) {
         val categoryList = items.category
         val shuffledIndices = categoryList.indices.shuffled()
         val randomIndex = shuffledIndices.first()
@@ -309,7 +345,8 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
                 .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen_exit)
         )
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-        views.player.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT; // Đặt giá trị RESIZE_MODE_FIT
+        views.player.resizeMode =
+            AspectRatioFrameLayout.RESIZE_MODE_FIT; // Đặt giá trị RESIZE_MODE_FIT
         views.thumbnail.container.hide()
         views.youtubePlayerView.hide()
         views.content.hide()
@@ -324,6 +361,7 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
     }
 
     private fun setupUI() {
+        initFullscreenDialog()
         views.toolbar.setNavigationOnClickListener { onBackPressed() }
         views.loader.root.show()
         views.loader.root.startShimmer()
@@ -339,7 +377,7 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
 
 //        views.seasonPicker.setOnClickListener { handleSeasonPickerSelectClick() }
 
-        episodeItemsAdapter = EpisodeItemsAdapter(this::handleEpisodeClick,thumbUrl!!)
+        episodeItemsAdapter = EpisodeItemsAdapter(this::handleEpisodeClick, thumbUrl!!)
         views.episodesList.adapter = episodeItemsAdapter
         views.episodesList.isNestedScrollingEnabled = false
 
@@ -513,6 +551,7 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
     override fun create(initialState: HomeViewState): HomeViewModel {
         return homeViewModelFactory.create(initialState)
     }
+
     override fun onStop() {
         super.onStop()
         exoPlayer?.stop()

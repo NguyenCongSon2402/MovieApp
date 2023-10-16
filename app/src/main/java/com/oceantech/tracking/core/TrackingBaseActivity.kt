@@ -46,6 +46,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 import kotlin.system.measureTimeMillis
 
+@Suppress("DEPRECATION")
 abstract class TrackingBaseActivity<VB : ViewBinding> : AppCompatActivity(){
 
     protected lateinit var views: VB

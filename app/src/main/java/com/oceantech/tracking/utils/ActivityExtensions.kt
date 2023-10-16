@@ -34,7 +34,7 @@ internal fun getContentTransform(context: Context): MaterialContainerTransform {
     addTarget(android.R.id.content)
 
     // Đặt thời gian của hiệu ứng (450 ms).
-    duration = 450
+    duration = 300
 
     // Sử dụng MaterialArcMotion để xác định đường di chuyển của hiệu ứng.
     pathMotion = MaterialArcMotion()

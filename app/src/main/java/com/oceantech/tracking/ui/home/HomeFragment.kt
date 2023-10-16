@@ -108,13 +108,14 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         }
 
         intent.putExtra("name", items.slug)
+        intent.putExtra("id", items.Id)
         intent.putExtra("category", randomSlug)
         //intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
 
         val options = ActivityOptions.makeSceneTransitionAnimation(
             activity,
             posterItems,
-            items.slug
+            items.Id
         )
         startActivity(intent, options.toBundle())
     }
@@ -153,7 +154,13 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 val data = it.homes.invoke().data.apply {
                     this?.titlePage = "Phim Mới"
                 }
-                data?.let { it1 -> listData.add(it1) }
+                val index = 0
+                if (index < listData.size) {
+                    data?.let { it1 -> listData.add(index, it1) }
+                } else {
+                    // Thêm vào cuối danh sách
+                    data?.let { it1 -> listData.add(it1) }
+                }
                 mainEpoxyController.categories = listData
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
@@ -174,7 +181,14 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             is Success -> {
                 Log.e("TAG", "phimBo")
                 Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
-                listData.add(it.phimBo.invoke().data!!)
+                val data = it.phimBo.invoke().data
+                val index = 1
+                if (index < listData.size) {
+                    data?.let { it1 -> listData.add(index, it1) }
+                } else {
+                    // Thêm vào cuối danh sách
+                    data?.let { it1 -> listData.add(it1) }
+                }
                 mainEpoxyController.categories = listData
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
@@ -195,7 +209,14 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             is Success -> {
                 Log.e("TAG", "phimLe")
                 Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
-                listData.add(it.phimLe.invoke().data!!)
+                val data = it.phimLe.invoke().data
+                val index = 2
+                if (index < listData.size) {
+                    data?.let { it1 -> listData.add(index, it1) }
+                } else {
+                    // Thêm vào cuối danh sách
+                    data?.let { it1 -> listData.add(it1) }
+                }
                 mainEpoxyController.categories = listData
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
@@ -216,7 +237,14 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             is Success -> {
                 Log.e("TAG", "phimHoatHinh")
                 Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
-                listData.add(it.phimHoatHinh.invoke().data!!)
+                val data = it.phimHoatHinh.invoke().data
+                val index = 3
+                if (index < listData.size) {
+                    data?.let { it1 -> listData.add(index, it1) }
+                } else {
+                    // Thêm vào cuối danh sách
+                    data?.let { it1 -> listData.add(it1) }
+                }
                 mainEpoxyController.categories = listData
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
@@ -239,7 +267,14 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             is Success -> {
                 Log.e("TAG", "tvSHow")
                 Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
-                listData.add(it.tvShows.invoke().data!!)
+                val data = it.tvShows.invoke().data
+                val index = 4
+                if (index < listData.size) {
+                    data?.let { it1 -> listData.add(index, it1) }
+                } else {
+                    // Thêm vào cuối danh sách
+                    data?.let { it1 -> listData.add(it1) }
+                }
                 mainEpoxyController.categories = listData
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
@@ -262,7 +297,14 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             is Success -> {
                 Log.e("TAG", "vietsub")
                 Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
-                listData.add(it.vietsub.invoke().data!!)
+                val data = it.vietsub.invoke().data
+                val index = 5
+                if (index < listData.size) {
+                    data?.let { it1 -> listData.add(index, it1) }
+                } else {
+                    // Thêm vào cuối danh sách
+                    data?.let { it1 -> listData.add(it1) }
+                }
                 mainEpoxyController.categories = listData
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
@@ -285,7 +327,14 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             is Success -> {
                 Log.e("TAG", "thuyetminh")
                 Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
-                listData.add(it.thuyetMinh.invoke().data!!)
+                val data = it.thuyetMinh.invoke().data
+                val index = 6
+                if (index < listData.size) {
+                    data?.let { it1 -> listData.add(index, it1) }
+                } else {
+                    // Thêm vào cuối danh sách
+                    data?.let { it1 -> listData.add(it1) }
+                }
                 mainEpoxyController.categories = listData
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
@@ -308,7 +357,14 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             is Success -> {
                 Log.e("TAG", "longtieng")
                 Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
-                listData.add(it.longTieng.invoke().data!!)
+                val data = it.longTieng.invoke().data
+                val index = 7
+                if (index < listData.size) {
+                    data?.let { it1 -> listData.add(index, it1) }
+                } else {
+                    // Thêm vào cuối danh sách
+                    data?.let { it1 -> listData.add(it1) }
+                }
                 mainEpoxyController.categories = listData
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
@@ -331,7 +387,14 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             is Success -> {
                 Log.e("TAG", "phimdangChieu")
                 Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
-                listData.add(it.phimBoDangChieu.invoke().data!!)
+                val data = it.phimBoDangChieu.invoke().data
+                val index = 8
+                if (index < listData.size) {
+                    data?.let { it1 -> listData.add(index, it1) }
+                } else {
+                    // Thêm vào cuối danh sách
+                    data?.let { it1 -> listData.add(it1) }
+                }
                 mainEpoxyController.categories = listData
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
@@ -354,7 +417,14 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             is Success -> {
                 Log.e("TAG", "phimDaHoanThanh")
                 Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
-                listData.add(it.phimBoHoanThanh.invoke().data!!)
+                val data = it.phimBoHoanThanh.invoke().data
+                val index = 9
+                if (index < listData.size) {
+                    data?.let { it1 -> listData.add(index, it1) }
+                } else {
+                    // Thêm vào cuối danh sách
+                    data?.let { it1 -> listData.add(it1) }
+                }
                 mainEpoxyController.categories = listData
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
