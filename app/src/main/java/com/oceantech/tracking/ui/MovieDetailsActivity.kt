@@ -207,13 +207,10 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         })
         views.header.playLl.setOnClickListener {
             player?.pause()
+            views.youtubePlayerView.release()
             isFullScreen = !isFullScreen
             views.videoPlayerView.show()
-            bt_fullscreen.setImageDrawable(
-                ContextCompat
-                    .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen_exit)
-            )
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE)
+            openFullscreenDialog()
             views.player.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT); // Đặt giá trị RESIZE_MODE_FIT
             views.thumbnail.container.hide()
             views.youtubePlayerView.hide()

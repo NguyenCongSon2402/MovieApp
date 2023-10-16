@@ -35,14 +35,14 @@
     <FrameLayout
         android:id="@+id/video_player_view"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:background="@color/transparent"
         android:visibility="gone">
 
         <com.google.android.exoplayer2.ui.PlayerView
             android:id="@+id/player"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="200dp"
             app:controller_layout_id="@layout/custom_controller"
             app:player_layout_id="@layout/exo_player_view"
             app:use_controller="true" />
