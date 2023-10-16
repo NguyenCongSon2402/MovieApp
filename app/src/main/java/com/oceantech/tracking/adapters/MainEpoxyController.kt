@@ -5,6 +5,7 @@ import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.AsyncEpoxyController
 import com.airbnb.epoxy.EpoxyAttribute
@@ -17,8 +18,10 @@ import com.netflixclone.constants.BASE_IMG
 import com.oceantech.tracking.R
 import com.oceantech.tracking.data.models.home.Data
 import com.oceantech.tracking.data.models.home.Items
+import com.oceantech.tracking.utils.setSingleClickListener
 
-class MainEpoxyController(private val onMediaClick: (Items) -> Unit) : AsyncEpoxyController() {
+class MainEpoxyController(private val onMediaClick: (Items, View) -> Unit) :
+    AsyncEpoxyController() {
     var categories: MutableList<Data> = mutableListOf()
         set(value) {
             field = value
@@ -30,7 +33,7 @@ class MainEpoxyController(private val onMediaClick: (Items) -> Unit) : AsyncEpox
         HeaderModel_()
             .id("header")
             .data(categories[0])
-            .onInfoClick { onMediaClick(categories[0]?.items!![0]) }
+            .onInfoClick(onMediaClick)
             .addTo(this)
 
         categories.mapIndexed { index, category ->
@@ -49,7 +52,7 @@ abstract class HeaderModel : EpoxyModelWithHolder<HeaderModel.HeaderHolder>() {
     lateinit var data: Data
 
     @EpoxyAttribute
-    lateinit var onInfoClick: () -> Unit
+    lateinit var onInfoClick: (Items, View) -> Unit
 
     inner class HeaderHolder : EpoxyHolder() {
         lateinit var backgroundImage: ImageView
@@ -67,12 +70,20 @@ abstract class HeaderModel : EpoxyModelWithHolder<HeaderModel.HeaderHolder>() {
         var posterUrl: String? = null
         posterUrl = BASE_IMG + data.items[0].thumbUrl
         Glide.with(holder.backgroundImage).load(posterUrl).into(holder.backgroundImage)
-
+        ViewCompat.setTransitionName(holder.backgroundImage, data.items[0].slug)
         holder.genreText.text = data.items[0].category[0].name
         val animZoomOut =
             AnimationUtils.loadAnimation(holder.backgroundImage.context, R.anim.zoom_out)
         holder.backgroundImage.startAnimation(animZoomOut)
-        holder.infoButton.setOnClickListener { onInfoClick() }
+        holder.infoButton.setSingleClickListener {
+            onInfoClick(data.items[0], holder.backgroundImage)
+            //holder.infoButton.isEnabled = false
+        }
+        holder.backgroundImage.setSingleClickListener {
+            onInfoClick(data.items[0], holder.backgroundImage)
+            //holder.backgroundImage.isEnabled = false
+        }
+
 
     }
 
@@ -85,7 +96,7 @@ abstract class CategoryModel : EpoxyModelWithHolder<CategoryModel.FeedItemHorizo
     lateinit var data: Data
 
     @EpoxyAttribute
-    lateinit var onItemClick: (Items) -> Unit
+    lateinit var onItemClick: (Items, View) -> Unit
 
     inner class FeedItemHorizontalListHolder : EpoxyHolder() {
         lateinit var titleText: TextView
@@ -108,14 +119,14 @@ abstract class CategoryModel : EpoxyModelWithHolder<CategoryModel.FeedItemHorizo
     override fun getDefaultLayout(): Int = R.layout.item_feed_horizontal_list
 }
 
-class MediaItemsController(val onMediaClick: (Items) -> Unit) :
+class MediaItemsController(val onMediaClick: (Items, View) -> Unit) :
     TypedEpoxyController<List<Items>>() {
     override fun buildModels(it: List<Items>) {
         it.mapIndexed { index, item ->
             MediaModel_()
                 .id(index)
                 .items(item)
-                .onClick { onMediaClick(item) }
+                .onClick(onMediaClick)
                 .addTo(this)
         }
     }
@@ -128,7 +139,7 @@ abstract class MediaModel :
     lateinit var items: Items
 
     @EpoxyAttribute
-    lateinit var onClick: () -> Unit
+    lateinit var onClick: (Items, View) -> Unit
 
     inner class MediaHolder : EpoxyHolder() {
         lateinit var posterImage: ImageView
@@ -139,9 +150,10 @@ abstract class MediaModel :
     }
 
     override fun bind(holder: MediaHolder) {
+        ViewCompat.setTransitionName(holder.posterImage, items.slug)
         var posterUrl: String? = null
         posterUrl = BASE_IMG + items.thumbUrl
-        holder.posterImage.setOnClickListener { onClick() }
+        holder.posterImage.setSingleClickListener { onClick(items, holder.posterImage) }
         Glide.with(holder.posterImage).load(posterUrl).into(holder.posterImage)
         holder.posterImage.clipToOutline = true
     }

@@ -91,16 +91,13 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         }
     }
 
-    private fun handleMediaClick(items: Items) {
+    private fun handleMediaClick(items: Items, posterItems: View) {
         val categoryList = items.category
         val shuffledIndices = categoryList.indices.shuffled()
         val randomIndex = shuffledIndices.first()
         val randomCategory = categoryList[randomIndex]
         val randomSlug = randomCategory.slug
-        val posterItem = requireActivity().findViewById<View>(R.id.poster_image)
 
-        // Đặt tên chuyển đổi cho phần tử giao diện này
-        ViewCompat.setTransitionName(posterItem, items.name)
 
         val intent: Intent
         if (items.type == "single") {
@@ -112,11 +109,12 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
         intent.putExtra("name", items.slug)
         intent.putExtra("category", randomSlug)
+        //intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
 
         val options = ActivityOptions.makeSceneTransitionAnimation(
             activity,
-            posterItem,
-            items.name
+            posterItems,
+            items.slug
         )
         startActivity(intent, options.toBundle())
     }
@@ -233,6 +231,144 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                     Toast.LENGTH_SHORT
                 ).show()
                 homeViewModel.handleRemoveStatePhimHoatHinh()
+            }
+
+            else -> {}
+        }
+        when (it.tvShows) {
+            is Success -> {
+                Log.e("TAG", "tvSHow")
+                Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
+                listData.add(it.tvShows.invoke().data!!)
+                mainEpoxyController.categories = listData
+                views.loader.root.stopShimmer()
+                views.loader.root.hide()
+                homeViewModel.handleRemoveStateTvShows()
+            }
+
+            is Fail -> {
+                Timber.e("HomeFragment invalidate Fail:")
+                Toast.makeText(
+                    requireContext(),
+                    getString(checkStatusApiRes(it.tvShows)),
+                    Toast.LENGTH_SHORT
+                ).show()
+                homeViewModel.handleRemoveStateTvShows()
+            }
+
+            else -> {}
+        }
+        when (it.vietsub) {
+            is Success -> {
+                Log.e("TAG", "vietsub")
+                Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
+                listData.add(it.vietsub.invoke().data!!)
+                mainEpoxyController.categories = listData
+                views.loader.root.stopShimmer()
+                views.loader.root.hide()
+                homeViewModel.handleRemoveStateVietsub()
+            }
+
+            is Fail -> {
+                Timber.e("HomeFragment invalidate Fail:")
+                Toast.makeText(
+                    requireContext(),
+                    getString(checkStatusApiRes(it.vietsub)),
+                    Toast.LENGTH_SHORT
+                ).show()
+                homeViewModel.handleRemoveStateVietsub()
+            }
+
+            else -> {}
+        }
+        when (it.thuyetMinh) {
+            is Success -> {
+                Log.e("TAG", "thuyetminh")
+                Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
+                listData.add(it.thuyetMinh.invoke().data!!)
+                mainEpoxyController.categories = listData
+                views.loader.root.stopShimmer()
+                views.loader.root.hide()
+                homeViewModel.handleRemoveStateThuyetMinh()
+            }
+
+            is Fail -> {
+                Timber.e("HomeFragment invalidate Fail:")
+                Toast.makeText(
+                    requireContext(),
+                    getString(checkStatusApiRes(it.thuyetMinh)),
+                    Toast.LENGTH_SHORT
+                ).show()
+                homeViewModel.handleRemoveStateThuyetMinh()
+            }
+
+            else -> {}
+        }
+        when (it.longTieng) {
+            is Success -> {
+                Log.e("TAG", "longtieng")
+                Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
+                listData.add(it.longTieng.invoke().data!!)
+                mainEpoxyController.categories = listData
+                views.loader.root.stopShimmer()
+                views.loader.root.hide()
+                homeViewModel.handleRemoveStateLongTieng()
+            }
+
+            is Fail -> {
+                Timber.e("HomeFragment invalidate Fail:")
+                Toast.makeText(
+                    requireContext(),
+                    getString(checkStatusApiRes(it.longTieng)),
+                    Toast.LENGTH_SHORT
+                ).show()
+                homeViewModel.handleRemoveStateLongTieng()
+            }
+
+            else -> {}
+        }
+        when (it.phimBoDangChieu) {
+            is Success -> {
+                Log.e("TAG", "phimdangChieu")
+                Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
+                listData.add(it.phimBoDangChieu.invoke().data!!)
+                mainEpoxyController.categories = listData
+                views.loader.root.stopShimmer()
+                views.loader.root.hide()
+                homeViewModel.handleRemoveStatePhimBoDangChieu()
+            }
+
+            is Fail -> {
+                Timber.e("HomeFragment invalidate Fail:")
+                Toast.makeText(
+                    requireContext(),
+                    getString(checkStatusApiRes(it.phimBoDangChieu)),
+                    Toast.LENGTH_SHORT
+                ).show()
+                homeViewModel.handleRemoveStatePhimBoDangChieu()
+            }
+
+            else -> {}
+        }
+        when (it.phimBoHoanThanh) {
+            is Success -> {
+                Log.e("TAG", "phimDaHoanThanh")
+                Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
+                listData.add(it.phimBoHoanThanh.invoke().data!!)
+                mainEpoxyController.categories = listData
+                views.loader.root.stopShimmer()
+                views.loader.root.hide()
+                homeViewModel.handleRemoveStatePhimBoHoanThanh()
+            }
+
+            is Fail -> {
+                Timber.e("HomeFragment invalidate Fail:")
+                Toast.makeText(
+                    requireContext(),
+                    getString(checkStatusApiRes(it.phimBoHoanThanh)),
+                    Toast.LENGTH_SHORT
+                ).show()
+                homeViewModel.handleRemoveStatePhimBoHoanThanh()
             }
 
             else -> {}

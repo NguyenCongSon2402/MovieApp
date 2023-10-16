@@ -47,7 +47,7 @@ internal fun getContentTransform(context: Context): MaterialContainerTransform {
     endElevation = 9f
 
     // Đặt màu nền ban đầu cho thành phần chuyển đổi dựa trên tài nguyên colorPrimary.
-    startContainerColor = ContextCompat.getColor(context, R.color.blue)
+    startContainerColor = ContextCompat.getColor(context, R.color.transparent)
   }
 }
 

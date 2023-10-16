@@ -1,6 +1,8 @@
 package com.oceantech.tracking.ui
 
 import android.annotation.SuppressLint
+import android.app.ActivityOptions
+import android.app.Dialog
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.Uri
@@ -9,6 +11,8 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -51,6 +55,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@Suppress("DEPRECATION")
 class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>(),
     HomeViewModel.Factory {
 
@@ -61,6 +66,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     private lateinit var bt_lockscreen: ImageView
     private lateinit var progress_bar: ProgressBar
     var handler: Handler? = null
+    private lateinit var mFullScreenDialog: Dialog
 
     private var url = ""
     private val homeViewModel: HomeViewModel by viewModel()
@@ -133,22 +139,24 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         // nút chuyển đổi với biểu tượng thay đổi toàn màn hình hoặc thoát toàn màn hình
         // màn hình có thể xoay dựa trên cảm biến hướng góc của bạn
         bt_fullscreen.setOnClickListener {
-            requestedOrientation = if (!isFullScreen) {
-                bt_fullscreen.setImageDrawable(
-                    ContextCompat
-                        .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen_exit)
-                )
+            if (!isFullScreen) {
+                openFullscreenDialog()
+//                bt_fullscreen.setImageDrawable(
+//                    ContextCompat
+//                        .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen_exit)
+//                )
                 views.toolbar.hide()
                 views.content.hide()
-                ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+//                ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
             } else {
-                bt_fullscreen.setImageDrawable(
-                    ContextCompat
-                        .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen)
-                )
+                closeFullscreenDialog()
+//                bt_fullscreen.setImageDrawable(
+//                    ContextCompat
+//                        .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen)
+//                )
                 views.toolbar.show()
                 views.content.show()
-                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+//                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             }
             isFullScreen = !isFullScreen
         }
@@ -220,6 +228,45 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         }
     }
 
+    private fun initFullscreenDialog() {
+        mFullScreenDialog =
+            object : Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen) {
+                override fun onBackPressed() {
+                    if (!isFullScreen)
+                        closeFullscreenDialog()
+                    super.onBackPressed()
+                }
+            }
+    }
+
+    private fun openFullscreenDialog() {
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        (views.player.getParent() as ViewGroup).removeView(views.player)
+        mFullScreenDialog.addContentView(
+            views.player,
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
+        bt_fullscreen.setImageDrawable(
+            ContextCompat
+                .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen_exit)
+        )
+        mFullScreenDialog.show()
+    }
+
+    private fun closeFullscreenDialog() {
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        (views.player.getParent() as ViewGroup).removeView(views.player)
+        (findViewById<View>(R.id.video_player_view) as FrameLayout).addView(views.player)
+        mFullScreenDialog.dismiss()
+        bt_fullscreen.setImageDrawable(
+            ContextCompat
+                .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen)
+        )
+    }
+
     private val updateProgressAction = Runnable { onProgress() }
     private fun onProgress() {
         val player = exoPlayer
@@ -267,30 +314,37 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         return ActivityMovieDetailsBinding.inflate(layoutInflater)
     }
 
-    private fun handleMovieClick(items: Items) {
+    private fun handleMovieClick(items: Items, posterItems: View) {
         val categoryList = items.category
         val shuffledIndices = categoryList.indices.shuffled()
-        val randomIndex = shuffledIndices.first() // Lấy chỉ mục đầu tiên từ danh sách đã xáo trộn
+        val randomIndex = shuffledIndices.first()
         val randomCategory = categoryList[randomIndex]
         val randomSlug = randomCategory.slug
 
+
+        val intent: Intent
         if (items.type == "single") {
-            val intent = Intent(this, MovieDetailsActivity::class.java)
-            intent.putExtra("name", items.slug)
-            intent.putExtra("category", randomSlug)
-            startActivity(intent)
+            intent = Intent(this, MovieDetailsActivity::class.java)
         } else {
-            val intent = Intent(this, TvDetailsActivity::class.java)
-            intent.putExtra("name", items.slug)
-            intent.putExtra("category", randomSlug)
+            intent = Intent(this, TvDetailsActivity::class.java)
             intent.putExtra("thumbUrl", items.thumbUrl)
-            startActivity(intent)
         }
+
+        intent.putExtra("name", items.slug)
+        intent.putExtra("category", randomSlug)
+
+        val options = ActivityOptions.makeSceneTransitionAnimation(
+            this,
+            posterItems,
+            items.slug
+        )
+        startActivity(intent, options.toBundle())
 
     }
 
     private fun setupUI() {
-        views.toolbar.setNavigationOnClickListener { finish() }
+        initFullscreenDialog()
+        views.toolbar.setNavigationOnClickListener { onBackPressed() }
         views.loader.root.show()
         views.loader.root.startShimmer()
         views.content.hide()

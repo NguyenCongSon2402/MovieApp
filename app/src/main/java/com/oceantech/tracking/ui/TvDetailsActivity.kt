@@ -1,6 +1,7 @@
 package com.oceantech.tracking.ui
 
 import android.annotation.SuppressLint
+import android.app.ActivityOptions
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.Uri
@@ -271,30 +272,35 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
         views.menusTabLayout.removeOnTabSelectedListener(tabSelectedListener)
     }
 
-    private fun handleTvClick(items: Items) {
+    private fun handleTvClick(items: Items,posterItems:View) {
         val categoryList = items.category
         val shuffledIndices = categoryList.indices.shuffled()
-        val randomIndex = shuffledIndices.first() // Lấy chỉ mục đầu tiên từ danh sách đã xáo trộn
+        val randomIndex = shuffledIndices.first()
         val randomCategory = categoryList[randomIndex]
         val randomSlug = randomCategory.slug
 
+
+        val intent: Intent
         if (items.type == "single") {
-            val intent = Intent(this, MovieDetailsActivity::class.java)
-            intent.putExtra("name", items.slug)
-            intent.putExtra("category", randomSlug)
-            startActivity(intent)
-        }else{
-            val intent = Intent(this, TvDetailsActivity::class.java)
-            intent.putExtra("name", items.slug)
-            intent.putExtra("category", randomSlug)
-            intent.putExtra("thumbUrl",items.thumbUrl)
-            startActivity(intent)
+            intent = Intent(this, MovieDetailsActivity::class.java)
+        } else {
+            intent = Intent(this, TvDetailsActivity::class.java)
+            intent.putExtra("thumbUrl", items.thumbUrl)
         }
+
+        intent.putExtra("name", items.slug)
+        intent.putExtra("category", randomSlug)
+
+        val options = ActivityOptions.makeSceneTransitionAnimation(
+            this,
+            posterItems,
+            items.slug
+        )
+        startActivity(intent, options.toBundle())
     }
 
     private fun handleEpisodeClick(Episode: ServerData) {
         player?.pause()
-
         player?.removeListener(youTubePlayerListener)
         isFullScreen = !isFullScreen
         views.videoPlayerView.show()
@@ -318,7 +324,7 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
     }
 
     private fun setupUI() {
-        views.toolbar.setNavigationOnClickListener { finish() }
+        views.toolbar.setNavigationOnClickListener { onBackPressed() }
         views.loader.root.show()
         views.loader.root.startShimmer()
         views.content.hide()
@@ -509,12 +515,14 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
     }
     override fun onStop() {
         super.onStop()
-        exoPlayer!!.stop()
+        exoPlayer?.stop()
+        views.youtubePlayerView.release()
     }
 
 
     override fun onPause() {
         super.onPause()
         exoPlayer!!.pause()
+        views.youtubePlayerView.release()
     }
 }

@@ -49,6 +49,12 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), Home
         homeViewModel.handle(HomeViewAction.getPhimBo)
         homeViewModel.handle(HomeViewAction.getPhimLe)
         homeViewModel.handle(HomeViewAction.getPhimHoatHinh)
+        homeViewModel.handle(HomeViewAction.getTvShows)
+        homeViewModel.handle(HomeViewAction.getVietSub)
+        homeViewModel.handle(HomeViewAction.getThuyetMinh)
+        homeViewModel.handle(HomeViewAction.getPhimLongTieng)
+        homeViewModel.handle(HomeViewAction.getPhimBoDangChieu)
+        homeViewModel.handle(HomeViewAction.getPhimBoDaHoanThanh)
     }
 
     override fun getBinding(): ActivityBottomNavBinding {
