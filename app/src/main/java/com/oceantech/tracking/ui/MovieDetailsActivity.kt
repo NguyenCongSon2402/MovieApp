@@ -78,7 +78,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         get() = intent.extras?.getString("name")
     private val movieCategory: String?
         get() = intent.extras?.getString("category")
-    private val movieId: String?
+    private val movieID: String?
         get() = intent.extras?.getString("id")
     @Inject
     lateinit var homeViewModelFactory: HomeViewModel.Factory
@@ -89,7 +89,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as TrackingApplication).trackingComponent.inject(this)
-        applyMaterialTransform(movieId)
+        applyMaterialTransform(movieID)
         super.onCreate(savedInstanceState)
         movieSlug?.let { homeViewModel.handle(HomeViewAction.getSlug(name = it)) }
         movieCategory?.let { homeViewModel.handle(HomeViewAction.getCategoriesMovies(name = it)) }
