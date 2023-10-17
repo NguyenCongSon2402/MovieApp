@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -81,7 +82,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
         mainEpoxyController = MainEpoxyController(this::handleMediaClick)
         views.feedItemsList.adapter = mainEpoxyController.adapter
-
+        views.feedItemsList.setItemViewCacheSize(50 )
 
 
         views.tvShowsTv.setOnClickListener {
@@ -110,15 +111,17 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             intent = Intent(activity, TvDetailsActivity::class.java)
             intent.putExtra("thumbUrl", items.thumbUrl)
         }
+        val posterImage =requireView().findViewById<ImageView>(R.id.poster_image)
 
         intent.putExtra("name", items.slug)
         intent.putExtra("id", items.Id)
         intent.putExtra("category", randomSlug)
-        //intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+
+
 
         val options = ActivityOptions.makeSceneTransitionAnimation(
             activity,
-            posterItems,
+            posterImage,
             items.Id
         )
         startActivity(intent, options.toBundle())
@@ -160,7 +163,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 Log.e("TAG0homes", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 0
                 if (index < listData.size) {
-                    data?.let { it1 -> listData[index]=it1 }
+                    data?.let { it1 -> listData[index] = it1 }
                 } else {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
@@ -191,7 +194,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 Log.e("TAG1phimBo", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 1
                 if (index < listData.size) {
-                    data?.let { it1 -> listData[index]=it1 }
+                    data?.let { it1 -> listData[index] = it1 }
                 } else {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
@@ -222,7 +225,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 Log.e("TAG2phimLe", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 2
                 if (index < listData.size) {
-                    data?.let { it1 -> listData[index]=it1 }
+                    data?.let { it1 -> listData[index] = it1 }
                 } else {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
@@ -253,7 +256,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 Log.e("TAG3phimHoatHinh", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 3
                 if (index < listData.size) {
-                    data?.let { it1 -> listData[index]=it1 }
+                    data?.let { it1 -> listData[index] = it1 }
                 } else {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
@@ -286,7 +289,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 Log.e("TAG4tvSHow", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 4
                 if (index < listData.size) {
-                    data?.let { it1 -> listData[index]=it1 }
+                    data?.let { it1 -> listData[index] = it1 }
                 } else {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
@@ -319,7 +322,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 Log.e("TAG5vietsub", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 5
                 if (index < listData.size) {
-                    data?.let { it1 -> listData[index]=it1 }
+                    data?.let { it1 -> listData[index] = it1 }
                 } else {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
@@ -352,7 +355,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 Log.e("TAG6thuyetminh", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 6
                 if (index < listData.size) {
-                    data?.let { it1 -> listData[index]=it1 }
+                    data?.let { it1 -> listData[index] = it1 }
                 } else {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
@@ -385,7 +388,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 Log.e("TAG7longtieng", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 7
                 if (index < listData.size) {
-                    data?.let { it1 -> listData[index]=it1 }
+                    data?.let { it1 -> listData[index] = it1 }
                 } else {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
@@ -421,7 +424,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 )
                 val index = 8
                 if (index < listData.size) {
-                    data?.let { it1 -> listData[index]=it1 }
+                    data?.let { it1 -> listData[index] = it1 }
                 } else {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
@@ -457,7 +460,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 )
                 val index = 9
                 if (index < listData.size) {
-                    data?.let { it1 -> listData[index]=it1 }
+                    data?.let { it1 -> listData[index] = it1 }
                 } else {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
