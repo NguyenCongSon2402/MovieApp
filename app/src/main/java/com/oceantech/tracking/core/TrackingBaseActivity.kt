@@ -21,6 +21,7 @@ import android.content.res.Configuration
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -92,7 +93,7 @@ abstract class TrackingBaseActivity<VB : ViewBinding> : AppCompatActivity(){
 
     @CallSuper
     override fun onCreate(savedInstanceState: Bundle?) {
-        Timber.i("onCreate Activity ${javaClass.simpleName}")
+        Log.e("STATE","onCreate Activity ${javaClass.simpleName}")
         WindowCompat.setDecorFitsSystemWindows(window, true)
         nimpeComponent = DaggerTrackingComponent.factory().create(this)
         val timeForInjection = measureTimeMillis {
@@ -125,14 +126,14 @@ abstract class TrackingBaseActivity<VB : ViewBinding> : AppCompatActivity(){
 
     override fun onDestroy() {
         super.onDestroy()
-        Timber.i("onDestroy Activity ${javaClass.simpleName}")
+        Log.e("STATE","onDestroy Activity ${javaClass.simpleName}")
 
     }
 
 
     override fun onResume() {
         super.onResume()
-        Timber.i("onResume Activity ${javaClass.simpleName}")
+        Log.e("STATE","onResume Activity ${javaClass.simpleName}")
 
     }
 
@@ -151,7 +152,7 @@ abstract class TrackingBaseActivity<VB : ViewBinding> : AppCompatActivity(){
 
     override fun onPause() {
         super.onPause()
-        Timber.i("onPause Activity ${javaClass.simpleName}")
+        Log.e("STATE","onPause Activity ${javaClass.simpleName}")
 
     }
 

@@ -14,6 +14,7 @@ import com.oceantech.tracking.ui.home.HomeViewModel
 import com.oceantech.tracking.ui.home.HomeViewState
 import com.oceantech.tracking.utils.applyExitMaterialTransform
 import dev.son.moviestreamhub.screens.DownloadsFragment
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 
