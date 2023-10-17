@@ -12,12 +12,12 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.lifecycleScope
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Success
@@ -46,7 +46,6 @@ import com.oceantech.tracking.utils.applyMaterialTransform
 import com.oceantech.tracking.utils.checkStatusApiRes
 import com.oceantech.tracking.utils.extractVideoIdFromUrl
 import com.oceantech.tracking.utils.hide
-import com.oceantech.tracking.utils.setSingleClickListener
 import com.oceantech.tracking.utils.show
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
@@ -80,6 +79,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         get() = intent.extras?.getString("category")
     private val movieID: String?
         get() = intent.extras?.getString("id")
+
     @Inject
     lateinit var homeViewModelFactory: HomeViewModel.Factory
 
@@ -88,12 +88,17 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     var bannerVideoLoaded = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        (applicationContext as TrackingApplication).trackingComponent.inject(this)
         applyMaterialTransform(movieID)
+        (applicationContext as TrackingApplication).trackingComponent.inject(this)
         super.onCreate(savedInstanceState)
         movieSlug?.let { homeViewModel.handle(HomeViewAction.getSlug(name = it)) }
         movieCategory?.let { homeViewModel.handle(HomeViewAction.getCategoriesMovies(name = it)) }
         setupUI()
+
+//        ViewCompat.setTransitionName(
+//            views.container,
+//            movieID
+//        )
         homeViewModel.subscribe(this) {
             when (it.slug) {
                 is Success -> {
@@ -203,7 +208,8 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
 //                    .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen_exit)
 //            )
 //            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE)
-            views.player.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT // Đặt giá trị RESIZE_MODE_FIT
+            views.player.resizeMode =
+                AspectRatioFrameLayout.RESIZE_MODE_FIT // Đặt giá trị RESIZE_MODE_FIT
             views.thumbnail.container.hide()
             views.youtubePlayerView.hide()
             views.content.hide()

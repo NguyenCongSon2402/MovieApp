@@ -82,6 +82,8 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         mainEpoxyController = MainEpoxyController(this::handleMediaClick)
         views.feedItemsList.adapter = mainEpoxyController.adapter
 
+
+
         views.tvShowsTv.setOnClickListener {
 //            val intent = Intent(requireActivity(), PopularTvActivity::class.java)
 //            startActivity(intent)

@@ -13,6 +13,7 @@ import com.oceantech.tracking.ui.home.HomeViewAction
 import com.oceantech.tracking.ui.home.HomeViewModel
 import com.oceantech.tracking.ui.home.HomeViewState
 import com.oceantech.tracking.utils.applyExitMaterialTransform
+import com.oceantech.tracking.utils.applyMaterialTransform
 import dev.son.moviestreamhub.screens.DownloadsFragment
 import kotlinx.coroutines.delay
 import javax.inject.Inject
@@ -37,7 +38,7 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), Home
     lateinit var homeViewModelFactory: HomeViewModel.Factory
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        applyExitMaterialTransform()
+        applyMaterialTransform("")
         (applicationContext as TrackingApplication).trackingComponent.inject(this)
         setTheme(R.style.Base_Theme_MovieStreamHub)
         super.onCreate(savedInstanceState)
