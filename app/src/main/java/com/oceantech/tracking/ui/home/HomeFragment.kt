@@ -28,6 +28,7 @@ import com.oceantech.tracking.ui.TvDetailsActivity
 import com.oceantech.tracking.utils.checkStatusApiRes
 import com.oceantech.tracking.utils.hide
 import com.oceantech.tracking.utils.show
+import kotlinx.coroutines.delay
 import timber.log.Timber
 import kotlin.math.min
 
@@ -37,7 +38,8 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
     private lateinit var mainEpoxyController: MainEpoxyController
     private val homeViewModel: HomeViewModel by activityViewModel()
 
-    private val listData: MutableList<Data> = mutableListOf()
+    private val listData: MutableList<Data?> = MutableList(10) { null }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -149,26 +151,29 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
     override fun invalidate(): Unit = withState(homeViewModel) {
         when (it.homes) {
             is Success -> {
-                Log.e("TAG", "homes")
-                Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
+                Timber.e("homes")
                 val data = it.homes.invoke().data.apply {
                     this?.titlePage = "Phim Mới"
                 }
+                Log.e("TAG0homes", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 0
                 if (index < listData.size) {
-                    data?.let { it1 -> listData.add(index, it1) }
+                    data?.let { it1 -> listData[index]=it1 }
                 } else {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
                 }
-                mainEpoxyController.categories = listData
+                listData.forEachIndexed { index, data ->
+                    Log.e("DATA0", "Index: $index, Title: ${data?.titlePage}")
+                }
+
+                mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
                 homeViewModel.handleRemoveStateHome()
             }
 
             is Fail -> {
-                Timber.e("HomeFragment invalidate Fail:")
                 Toast.makeText(
                     requireContext(), getString(checkStatusApiRes(it.homes)), Toast.LENGTH_SHORT
                 ).show()
@@ -179,24 +184,27 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         }
         when (it.phimBo) {
             is Success -> {
-                Log.e("TAG", "phimBo")
-                Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
+                Timber.e("phimBo")
                 val data = it.phimBo.invoke().data
+                Log.e("TAG1phimBo", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 1
                 if (index < listData.size) {
-                    data?.let { it1 -> listData.add(index, it1) }
+                    data?.let { it1 -> listData[index]=it1 }
                 } else {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
                 }
-                mainEpoxyController.categories = listData
+                listData.forEachIndexed { index, data ->
+                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
+                }
+
+                mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
                 homeViewModel.handleRemoveStatePhimBo()
             }
 
             is Fail -> {
-                Timber.e("HomeFragment invalidate Fail:")
                 Toast.makeText(
                     requireContext(), getString(checkStatusApiRes(it.phimBo)), Toast.LENGTH_SHORT
                 ).show()
@@ -207,24 +215,27 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         }
         when (it.phimLe) {
             is Success -> {
-                Log.e("TAG", "phimLe")
-                Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
+                Timber.e("phimLe")
                 val data = it.phimLe.invoke().data
+                Log.e("TAG2phimLe", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 2
                 if (index < listData.size) {
-                    data?.let { it1 -> listData.add(index, it1) }
+                    data?.let { it1 -> listData[index]=it1 }
                 } else {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
                 }
-                mainEpoxyController.categories = listData
+                listData.forEachIndexed { index, data ->
+                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
+                }
+
+                mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
                 homeViewModel.handleRemoveStatePhimle()
             }
 
             is Fail -> {
-                Timber.e("HomeFragment invalidate Fail:")
                 Toast.makeText(
                     requireContext(), getString(checkStatusApiRes(it.phimLe)), Toast.LENGTH_SHORT
                 ).show()
@@ -235,24 +246,27 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         }
         when (it.phimHoatHinh) {
             is Success -> {
-                Log.e("TAG", "phimHoatHinh")
-                Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
+                Timber.e("phimHoatHinh")
                 val data = it.phimHoatHinh.invoke().data
+                Log.e("TAG3phimHoatHinh", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 3
                 if (index < listData.size) {
-                    data?.let { it1 -> listData.add(index, it1) }
+                    data?.let { it1 -> listData[index]=it1 }
                 } else {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
                 }
-                mainEpoxyController.categories = listData
+                listData.forEachIndexed { index, data ->
+                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
+                }
+
+                mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
                 homeViewModel.handleRemoveStatePhimHoatHinh()
             }
 
             is Fail -> {
-                Timber.e("HomeFragment invalidate Fail:")
                 Toast.makeText(
                     requireContext(),
                     getString(checkStatusApiRes(it.phimHoatHinh)),
@@ -265,24 +279,27 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         }
         when (it.tvShows) {
             is Success -> {
-                Log.e("TAG", "tvSHow")
-                Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
+                Timber.e("tvSHow")
                 val data = it.tvShows.invoke().data
+                Log.e("TAG4tvSHow", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 4
                 if (index < listData.size) {
-                    data?.let { it1 -> listData.add(index, it1) }
+                    data?.let { it1 -> listData[index]=it1 }
                 } else {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
                 }
-                mainEpoxyController.categories = listData
+                listData.forEachIndexed { index, data ->
+                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
+                }
+
+                mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
                 homeViewModel.handleRemoveStateTvShows()
             }
 
             is Fail -> {
-                Timber.e("HomeFragment invalidate Fail:")
                 Toast.makeText(
                     requireContext(),
                     getString(checkStatusApiRes(it.tvShows)),
@@ -295,24 +312,27 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         }
         when (it.vietsub) {
             is Success -> {
-                Log.e("TAG", "vietsub")
-                Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
+                Timber.e("vietsub")
                 val data = it.vietsub.invoke().data
+                Log.e("TAG5vietsub", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 5
                 if (index < listData.size) {
-                    data?.let { it1 -> listData.add(index, it1) }
+                    data?.let { it1 -> listData[index]=it1 }
                 } else {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
                 }
-                mainEpoxyController.categories = listData
+                listData.forEachIndexed { index, data ->
+                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
+                }
+
+                mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
                 homeViewModel.handleRemoveStateVietsub()
             }
 
             is Fail -> {
-                Timber.e("HomeFragment invalidate Fail:")
                 Toast.makeText(
                     requireContext(),
                     getString(checkStatusApiRes(it.vietsub)),
@@ -325,24 +345,27 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         }
         when (it.thuyetMinh) {
             is Success -> {
-                Log.e("TAG", "thuyetminh")
-                Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
+                Timber.e("thuyetminh")
                 val data = it.thuyetMinh.invoke().data
+                Log.e("TAG6thuyetminh", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 6
                 if (index < listData.size) {
-                    data?.let { it1 -> listData.add(index, it1) }
+                    data?.let { it1 -> listData[index]=it1 }
                 } else {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
                 }
-                mainEpoxyController.categories = listData
+                listData.forEachIndexed { index, data ->
+                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
+                }
+
+                mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
                 homeViewModel.handleRemoveStateThuyetMinh()
             }
 
             is Fail -> {
-                Timber.e("HomeFragment invalidate Fail:")
                 Toast.makeText(
                     requireContext(),
                     getString(checkStatusApiRes(it.thuyetMinh)),
@@ -355,24 +378,27 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         }
         when (it.longTieng) {
             is Success -> {
-                Log.e("TAG", "longtieng")
-                Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
+                Timber.e("longtieng")
                 val data = it.longTieng.invoke().data
+                Log.e("TAG7longtieng", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 7
                 if (index < listData.size) {
-                    data?.let { it1 -> listData.add(index, it1) }
+                    data?.let { it1 -> listData[index]=it1 }
                 } else {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
                 }
-                mainEpoxyController.categories = listData
+                listData.forEachIndexed { index, data ->
+                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
+                }
+
+                mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
                 homeViewModel.handleRemoveStateLongTieng()
             }
 
             is Fail -> {
-                Timber.e("HomeFragment invalidate Fail:")
                 Toast.makeText(
                     requireContext(),
                     getString(checkStatusApiRes(it.longTieng)),
@@ -385,24 +411,30 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         }
         when (it.phimBoDangChieu) {
             is Success -> {
-                Log.e("TAG", "phimdangChieu")
-                Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
+                Timber.e("phimdangChieu")
                 val data = it.phimBoDangChieu.invoke().data
+                Log.e(
+                    "TAG8phimdangChieu",
+                    "Size${listData.size} data ${data?.titlePage.toString()}"
+                )
                 val index = 8
                 if (index < listData.size) {
-                    data?.let { it1 -> listData.add(index, it1) }
+                    data?.let { it1 -> listData[index]=it1 }
                 } else {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
                 }
-                mainEpoxyController.categories = listData
+                listData.forEachIndexed { index, data ->
+                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
+                }
+
+                mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
                 homeViewModel.handleRemoveStatePhimBoDangChieu()
             }
 
             is Fail -> {
-                Timber.e("HomeFragment invalidate Fail:")
                 Toast.makeText(
                     requireContext(),
                     getString(checkStatusApiRes(it.phimBoDangChieu)),
@@ -415,24 +447,30 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         }
         when (it.phimBoHoanThanh) {
             is Success -> {
-                Log.e("TAG", "phimDaHoanThanh")
-                Toast.makeText(requireActivity(), R.string.success, Toast.LENGTH_SHORT).show()
+                Timber.e("phimDaHoanThanh")
                 val data = it.phimBoHoanThanh.invoke().data
+                Log.e(
+                    "TAG9phimDaHoanThanh",
+                    "Size${listData.size} data ${data?.titlePage.toString()}"
+                )
                 val index = 9
                 if (index < listData.size) {
-                    data?.let { it1 -> listData.add(index, it1) }
+                    data?.let { it1 -> listData[index]=it1 }
                 } else {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
                 }
-                mainEpoxyController.categories = listData
+                listData.forEachIndexed { index, data ->
+                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
+                }
+
+                mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
                 homeViewModel.handleRemoveStatePhimBoHoanThanh()
             }
 
             is Fail -> {
-                Timber.e("HomeFragment invalidate Fail:")
                 Toast.makeText(
                     requireContext(),
                     getString(checkStatusApiRes(it.phimBoHoanThanh)),

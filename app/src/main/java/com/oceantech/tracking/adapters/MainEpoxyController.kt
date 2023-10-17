@@ -1,5 +1,6 @@
 package com.oceantech.tracking.adapters
 
+import android.util.Log
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
@@ -19,37 +20,38 @@ import com.oceantech.tracking.R
 import com.oceantech.tracking.data.models.home.Data
 import com.oceantech.tracking.data.models.home.Items
 import com.oceantech.tracking.utils.setSingleClickListener
+import timber.log.Timber
 
 class MainEpoxyController(private val onMediaClick: (Items, View) -> Unit) :
-    AsyncEpoxyController() {
-    var categories: MutableList<Data> = mutableListOf()
-        set(value) {
-            field = value
-            requestModelBuild()
-        }
+    TypedEpoxyController<MutableList<Data?>>() {
 
-    override fun buildModels() {
-
-        HeaderModel_()
-            .id("header")
-            .data(categories[(0 until categories.size).random()])
-            .onInfoClick(onMediaClick)
-            .addTo(this)
-
-        categories.mapIndexed { index, category ->
-            CategoryModel_()
-                .id("category_$index")
-                .data(category)
-                .onItemClick(onMediaClick)
+    override fun buildModels(data: MutableList<Data?>) {
+        data.let { categories ->
+            HeaderModel_()
+                .id("header")
+                .data(categories.random())
+                .onInfoClick(onMediaClick)
                 .addTo(this)
+
+            categories.forEachIndexed { index, category ->
+                category?.let { safeCategory ->
+                    CategoryModel_()
+                        .id("category_$index")
+                        .data(safeCategory)
+                        .onItemClick(onMediaClick)
+                        .addTo(this)
+                }
+            }
         }
     }
+
 }
+
 
 @EpoxyModelClass
 abstract class HeaderModel : EpoxyModelWithHolder<HeaderModel.HeaderHolder>() {
     @EpoxyAttribute
-    lateinit var data: Data
+    var data: Data? = null
 
     @EpoxyAttribute
     lateinit var onInfoClick: (Items, View) -> Unit
@@ -68,23 +70,25 @@ abstract class HeaderModel : EpoxyModelWithHolder<HeaderModel.HeaderHolder>() {
 
     override fun bind(holder: HeaderHolder) {
         var posterUrl: String? = null
-        posterUrl = BASE_IMG + data.items[0].thumbUrl
-        Glide.with(holder.backgroundImage).load(posterUrl).into(holder.backgroundImage)
-        ViewCompat.setTransitionName(holder.backgroundImage, data.items[0].Id)
-        holder.genreText.text = data.items[0].category[0].name
-        val animZoomOut =
-            AnimationUtils.loadAnimation(holder.backgroundImage.context, R.anim.zoom_out)
-        holder.backgroundImage.startAnimation(animZoomOut)
-        holder.infoButton.setSingleClickListener {
-            onInfoClick(data.items[0], holder.backgroundImage)
-            //holder.infoButton.isEnabled = false
-        }
-        holder.backgroundImage.setSingleClickListener {
-            onInfoClick(data.items[0], holder.backgroundImage)
-            //holder.backgroundImage.isEnabled = false
-        }
+        if (data != null) {
+            posterUrl = BASE_IMG + data!!.items[0].thumbUrl
+            Glide.with(holder.backgroundImage).load(posterUrl).into(holder.backgroundImage)
+            ViewCompat.setTransitionName(holder.backgroundImage, data!!.items[0].Id)
+            holder.genreText.text = data!!.items[0].category[0].name
+            val animZoomOut =
+                AnimationUtils.loadAnimation(holder.backgroundImage.context, R.anim.zoom_out)
+            holder.backgroundImage.startAnimation(animZoomOut)
+            holder.infoButton.setSingleClickListener {
+                onInfoClick(data!!.items[0], holder.backgroundImage)
+                //holder.infoButton.isEnabled = false
+            }
+            holder.backgroundImage.setSingleClickListener {
+                onInfoClick(data!!.items[0], holder.backgroundImage)
+                //holder.backgroundImage.isEnabled = false
+            }
 
 
+        }
     }
 
     override fun getDefaultLayout(): Int = R.layout.item_feed_header
@@ -93,7 +97,7 @@ abstract class HeaderModel : EpoxyModelWithHolder<HeaderModel.HeaderHolder>() {
 @EpoxyModelClass
 abstract class CategoryModel : EpoxyModelWithHolder<CategoryModel.FeedItemHorizontalListHolder>() {
     @EpoxyAttribute
-    lateinit var data: Data
+    var data: Data? = null
 
     @EpoxyAttribute
     lateinit var onItemClick: (Items, View) -> Unit
@@ -109,11 +113,13 @@ abstract class CategoryModel : EpoxyModelWithHolder<CategoryModel.FeedItemHorizo
     }
 
     override fun bind(holder: FeedItemHorizontalListHolder) {
-        holder.titleText.text = data.titlePage
-        val controller = MediaItemsController(onItemClick)
-        controller.setData(data.items)
-        holder.postersList.isNestedScrollingEnabled = true
-        holder.postersList.adapter = controller.adapter
+        if (data!=null) {
+            holder.titleText.text = data!!.titlePage
+            val controller = MediaItemsController(onItemClick)
+            controller.setData(data!!.items)
+            holder.postersList.isNestedScrollingEnabled = true
+            holder.postersList.adapter = controller.adapter
+        }
     }
 
     override fun getDefaultLayout(): Int = R.layout.item_feed_horizontal_list
@@ -150,7 +156,7 @@ abstract class MediaModel :
     }
 
     override fun bind(holder: MediaHolder) {
-          ViewCompat.setTransitionName(holder.posterImage, items.Id)
+        ViewCompat.setTransitionName(holder.posterImage, items.Id)
         var posterUrl: String? = null
         posterUrl = BASE_IMG + items.thumbUrl
         holder.posterImage.setSingleClickListener { onClick(items, holder.posterImage) }

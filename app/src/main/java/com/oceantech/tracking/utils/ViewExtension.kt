@@ -10,7 +10,7 @@ fun View.hide(){
     this.visibility = View.GONE
 }
 fun View.setSingleClickListener(onClick: (View) -> Unit) {
-    val debounceTime = 1000L // Thời gian chờ trước khi cho phép nhấn lại
+    val debounceTime = 300L // Thời gian chờ trước khi cho phép nhấn lại
     var lastClickTime = 0L
 
     this.setOnClickListener { view ->
