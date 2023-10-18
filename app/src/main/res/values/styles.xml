@@ -5,5 +5,9 @@
         <item name="colorControlHighlight">@android:color/darker_gray</item>
         <item name="android:background">?selectableItemBackgroundBorderless</item>
     </style>
+    <style name="MyTransition">
+        <item name="android:windowSharedElementEnterTransition">@transition/shared_element_enter_transition</item>
+        <item name="android:windowSharedElementExitTransition">@transition/shared_element_exit_transition</item>
+    </style>
 
 </resources>

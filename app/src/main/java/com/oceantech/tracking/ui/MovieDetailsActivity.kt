@@ -1,6 +1,7 @@
 package com.oceantech.tracking.ui
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.ActivityOptions
 import android.app.Dialog
 import android.content.Intent
@@ -88,17 +89,11 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     var bannerVideoLoaded = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        applyMaterialTransform(movieID)
         (applicationContext as TrackingApplication).trackingComponent.inject(this)
         super.onCreate(savedInstanceState)
         movieSlug?.let { homeViewModel.handle(HomeViewAction.getSlug(name = it)) }
         movieCategory?.let { homeViewModel.handle(HomeViewAction.getCategoriesMovies(name = it)) }
         setupUI()
-
-//        ViewCompat.setTransitionName(
-//            views.container,
-//            movieID
-//        )
         homeViewModel.subscribe(this) {
             when (it.slug) {
                 is Success -> {
@@ -203,11 +198,6 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             views.videoPlayerView.show()
             views.toolbar.hide()
             openFullscreenDialog()
-//            bt_fullscreen.setImageDrawable(
-//                ContextCompat
-//                    .getDrawable(applicationContext, R.drawable.ic_baseline_fullscreen_exit)
-//            )
-//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE)
             views.player.resizeMode =
                 AspectRatioFrameLayout.RESIZE_MODE_FIT // Đặt giá trị RESIZE_MODE_FIT
             views.thumbnail.container.hide()
@@ -231,7 +221,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
                         closeFullscreenDialog()
                         isFullScreen = !isFullScreen
                     } else {
-                        super.onBackPressed() // Chỉ gọi super.onBackPressed() khi không trong chế độ toàn màn hình.
+                        finishAfterTransition() // Chỉ gọi super.onBackPressed() khi không trong chế độ toàn màn hình.
                     }
                 }
             }
@@ -259,7 +249,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     private fun closeFullscreenDialog() {
         views.toolbar.show()
         views.content.show()
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         (views.player.parent as ViewGroup).removeView(views.player)
         (views.videoPlayerView).addView(views.player)
         mFullScreenDialog.dismiss()
@@ -338,7 +328,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         val options = ActivityOptions.makeSceneTransitionAnimation(
             this,
             posterItems,
-            items.slug
+            "my_shared_element"
         )
         startActivity(intent, options.toBundle())
 
@@ -346,7 +336,10 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
 
     private fun setupUI() {
         initFullscreenDialog()
-        views.toolbar.setNavigationOnClickListener { onBackPressed() }
+        views.toolbar.setNavigationOnClickListener {
+            views.youtubePlayerView.release()
+            finishAfterTransition()
+        }
         views.loader.root.show()
         views.loader.root.startShimmer()
         views.content.hide()

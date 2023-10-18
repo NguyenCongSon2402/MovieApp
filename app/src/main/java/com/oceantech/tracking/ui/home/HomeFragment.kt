@@ -9,10 +9,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Success
@@ -29,7 +27,6 @@ import com.oceantech.tracking.ui.TvDetailsActivity
 import com.oceantech.tracking.utils.checkStatusApiRes
 import com.oceantech.tracking.utils.hide
 import com.oceantech.tracking.utils.show
-import kotlinx.coroutines.delay
 import timber.log.Timber
 import kotlin.math.min
 
@@ -82,7 +79,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
         mainEpoxyController = MainEpoxyController(this::handleMediaClick)
         views.feedItemsList.adapter = mainEpoxyController.adapter
-        views.feedItemsList.setItemViewCacheSize(50 )
+        views.feedItemsList.setItemViewCacheSize(50)
 
 
         views.tvShowsTv.setOnClickListener {
@@ -111,18 +108,14 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             intent = Intent(activity, TvDetailsActivity::class.java)
             intent.putExtra("thumbUrl", items.thumbUrl)
         }
-        val posterImage =requireView().findViewById<ImageView>(R.id.poster_image)
-
         intent.putExtra("name", items.slug)
-        intent.putExtra("id", items.Id)
         intent.putExtra("category", randomSlug)
-
 
 
         val options = ActivityOptions.makeSceneTransitionAnimation(
             activity,
-            posterImage,
-            items.Id
+            posterItems,
+            "my_shared_element"
         )
         startActivity(intent, options.toBundle())
     }

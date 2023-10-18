@@ -99,7 +99,6 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as TrackingApplication).trackingComponent.inject(this)
-        applyMaterialTransform(movieId)
         super.onCreate(savedInstanceState)
         movieSlug?.let { homeViewModel.handle(HomeViewAction.getSlug(name = it)) }
         movieCategory?.let { homeViewModel.handle(HomeViewAction.getCategoriesMovies(name = it)) }
@@ -227,7 +226,7 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
                         closeFullscreenDialog()
                         isFullScreen = !isFullScreen
                     } else {
-                        super.onBackPressed() // Chỉ gọi super.onBackPressed() khi không trong chế độ toàn màn hình.
+                        finishAfterTransition() // Chỉ gọi super.onBackPressed() khi không trong chế độ toàn màn hình.
                     }
                 }
             }
@@ -304,6 +303,7 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
     override fun onDestroy() {
         super.onDestroy()
         exoPlayer!!.release()
+        views.youtubePlayerView.release()
         views.youtubePlayerView.removeYouTubePlayerListener(youTubePlayerListener)
         views.menusTabLayout.removeOnTabSelectedListener(tabSelectedListener)
     }
@@ -330,7 +330,7 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
         val options = ActivityOptions.makeSceneTransitionAnimation(
             this,
             posterItems,
-            items.slug
+            "my_shared_element"
         )
         startActivity(intent, options.toBundle())
     }
@@ -362,7 +362,10 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
 
     private fun setupUI() {
         initFullscreenDialog()
-        views.toolbar.setNavigationOnClickListener { onBackPressed() }
+        views.toolbar.setNavigationOnClickListener {
+            views.youtubePlayerView.release()
+            finishAfterTransition()
+        }
         views.loader.root.show()
         views.loader.root.startShimmer()
         views.content.hide()

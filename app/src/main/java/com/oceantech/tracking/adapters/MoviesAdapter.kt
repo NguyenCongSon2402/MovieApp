@@ -40,7 +40,6 @@ class MovieViewHolder(
         if (movie == null) {
             return
         }
-        ViewCompat.setTransitionName(binding.posterImage, movie.slug)
         var posterUrl: String? = null
         posterUrl = BASE_IMG + movie.thumbUrl
         Glide.with(binding.posterImage).load(posterUrl).transform(CenterCrop())

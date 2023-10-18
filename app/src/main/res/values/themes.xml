@@ -18,8 +18,11 @@
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
         <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
 
+        <!-- Enable window content transition -->
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowActivityTransitions">true</item>
+
+
     </style>
 
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
