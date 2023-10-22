@@ -23,6 +23,7 @@ import com.oceantech.tracking.data.models.home.Data
 import com.oceantech.tracking.data.models.home.Items
 import com.oceantech.tracking.databinding.FragmentFeedBinding
 import com.oceantech.tracking.ui.MovieDetailsActivity
+import com.oceantech.tracking.ui.SearchActivity
 import com.oceantech.tracking.ui.TvDetailsActivity
 import com.oceantech.tracking.utils.checkStatusApiRes
 import com.oceantech.tracking.utils.hide
@@ -54,8 +55,8 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
     }
 
     private fun handleSearchClick() {
-//        val intent = Intent(requireActivity(), SearchActivity::class.java)
-//        startActivity(intent)
+        val intent = Intent(requireActivity(), SearchActivity::class.java)
+        startActivity(intent)
     }
 
 
