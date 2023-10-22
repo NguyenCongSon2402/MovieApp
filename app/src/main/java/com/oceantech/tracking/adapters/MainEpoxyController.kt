@@ -73,7 +73,6 @@ abstract class HeaderModel : EpoxyModelWithHolder<HeaderModel.HeaderHolder>() {
         if (data != null) {
             posterUrl = BASE_IMG + data!!.items[0].thumbUrl
             Glide.with(holder.backgroundImage).load(posterUrl).into(holder.backgroundImage)
-            ViewCompat.setTransitionName(holder.backgroundImage, data!!.items[0].Id)
             holder.genreText.text = data!!.items[0].category[0].name
             val animZoomOut =
                 AnimationUtils.loadAnimation(holder.backgroundImage.context, R.anim.zoom_out)
@@ -156,7 +155,6 @@ abstract class MediaModel :
     }
 
     override fun bind(holder: MediaHolder) {
-        ViewCompat.setTransitionName(holder.posterImage, items.Id)
         var posterUrl: String? = null
         posterUrl = BASE_IMG + items.thumbUrl
         holder.posterImage.setSingleClickListener { onClick(items, holder.posterImage) }
