@@ -37,6 +37,8 @@ class RemoteDataSource() {
         private const val BASE_IMG ="https://img.ophim9.cc/uploads/movies/"
         private const val DEFAULT_USER_AGENT = "Nimpe-Android"
         private const val DEFAULT_CONTENT_TYPE = "application/json"
+        private const val FIREBASE_BASE_URL =
+            "https://moviedata-70216-default-rtdb.asia-southeast1.firebasedatabase.app/"
     }
     fun <Api> buildApi(
         api: Class<Api>,

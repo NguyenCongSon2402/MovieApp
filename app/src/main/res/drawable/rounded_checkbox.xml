@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Định nghĩa một hình dạng bo góc cho CheckBox -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="20dp" /> <!-- Độ cong của góc -->
+            <solid android:color="@color/transparent" /> <!-- Màu nền của CheckBox -->
+        </shape>
+    </item>
+    <!-- Định nghĩa hình tick cho CheckBox -->
+    <item
+        android:drawable="@drawable/baseline_check_box_outline_blank_24"
+        android:right="8dp"
+        android:top="8dp"
+        android:bottom="8dp"
+        android:left="8dp" />
+</layer-list>
