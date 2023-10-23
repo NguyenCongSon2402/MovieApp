@@ -17,7 +17,7 @@
         tools:ignore="CoarseFineLocation" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <application
-        android:name="com.oceantech.tracking.TrackingApplication"
+        android:name="dev.son.movie.TrackingApplication"
         android:allowBackup="false"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -27,7 +27,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name="com.oceantech.tracking.ui.BottomNavActivity"
+            android:name="dev.son.movie.ui.BottomNavActivity"
             android:exported="true"
             android:theme="@style/SplashTheme"
             android:configChanges="uiMode|orientation"
@@ -39,15 +39,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.MovieDetailsActivity"
+            android:name="dev.son.movie.ui.MovieDetailsActivity"
 
             android:configChanges="uiMode|orientation|screenSize|screenLayout" />
         <activity
-            android:name=".ui.TvDetailsActivity"
+            android:name="dev.son.movie.ui.TvDetailsActivity"
 
             android:configChanges="uiMode|orientation|screenSize|screenLayout" />
         <activity
-            android:name=".ui.SearchActivity"
+            android:name="dev.son.movie.ui.SearchActivity"
 
             android:configChanges="uiMode|orientation|screenSize|screenLayout" />
 
