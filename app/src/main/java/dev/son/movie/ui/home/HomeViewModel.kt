@@ -10,7 +10,7 @@ import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.ViewModelContext
 import dev.son.movie.core.TrackingViewModel
 
-import dev.son.movie.data.repository.HomeRepository
+import dev.son.movie.network.repository.HomeRepository
 
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

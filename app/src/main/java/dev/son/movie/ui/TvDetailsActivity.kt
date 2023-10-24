@@ -35,11 +35,11 @@ import dev.son.movie.adapters.EpisodeItemsAdapter
 import dev.son.movie.adapters.MoviesAdapter
 
 import dev.son.movie.core.TrackingBaseActivity
-import dev.son.movie.data.models.Slug.Item
-import dev.son.movie.data.models.Slug.ServerData
-import dev.son.movie.data.models.Slug.Slug
-import dev.son.movie.data.models.categorymovie.CategoryMovie
-import dev.son.movie.data.models.home.Items
+import dev.son.movie.network.models.Slug.Item
+import dev.son.movie.network.models.Slug.ServerData
+import dev.son.movie.network.models.Slug.Slug
+import dev.son.movie.network.models.categorymovie.CategoryMovie
+import dev.son.movie.network.models.home.Items
 import dev.son.movie.databinding.ActivityTvDetailsScreenBinding
 import dev.son.movie.ui.home.HomeViewAction
 import dev.son.movie.ui.home.HomeViewModel

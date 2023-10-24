@@ -10,7 +10,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.netflixclone.constants.BASE_IMG
-import dev.son.movie.data.models.home.Items
+import dev.son.movie.network.models.home.Items
 import dev.son.movie.databinding.BottomSheetMediaDetailsBinding
 import dev.son.movie.ui.MovieDetailsActivity
 import dev.son.movie.ui.TvDetailsActivity

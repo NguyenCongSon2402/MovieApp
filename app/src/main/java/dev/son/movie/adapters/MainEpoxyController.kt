@@ -14,8 +14,8 @@ import com.airbnb.epoxy.TypedEpoxyController
 import com.bumptech.glide.Glide
 import com.netflixclone.constants.BASE_IMG
 import dev.son.movie.R
-import dev.son.movie.data.models.home.Data
-import dev.son.movie.data.models.home.Items
+import dev.son.movie.network.models.home.Data
+import dev.son.movie.network.models.home.Items
 import dev.son.movie.utils.setSingleClickListener
 
 class MainEpoxyController(private val onMediaClick: (Items, View) -> Unit) :

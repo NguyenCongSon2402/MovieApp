@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.netflixclone.constants.BASE_IMG
-import dev.son.movie.data.models.Slug.ServerData
+import dev.son.movie.network.models.Slug.ServerData
 import dev.son.movie.databinding.ItemEpisodeBinding
 import dev.son.movie.utils.hide
 

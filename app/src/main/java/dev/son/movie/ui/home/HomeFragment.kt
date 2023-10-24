@@ -19,11 +19,11 @@ import com.airbnb.mvrx.withState
 import dev.son.movie.R
 import dev.son.movie.adapters.MainEpoxyController
 import dev.son.movie.core.TrackingBaseFragment
-import dev.son.movie.data.models.home.Data
-import dev.son.movie.data.models.home.Items
+import dev.son.movie.network.models.home.Data
+import dev.son.movie.network.models.home.Items
 import dev.son.movie.databinding.FragmentFeedBinding
 import dev.son.movie.ui.MovieDetailsActivity
-import dev.son.movie.ui.SearchActivity
+import dev.son.movie.ui.search.SearchActivity
 import dev.son.movie.ui.TvDetailsActivity
 import dev.son.movie.utils.checkStatusApiRes
 import dev.son.movie.utils.hide

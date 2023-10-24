@@ -33,5 +33,6 @@
     <string name="i_agree_with">I Agree with </string>
     <string name="username_not_empty">Email not empty</string>
     <string name="password_not_empty">Password not empty</string>
+    <string name="registration_failed_please_try_again">failed</string>
 
 </resources>

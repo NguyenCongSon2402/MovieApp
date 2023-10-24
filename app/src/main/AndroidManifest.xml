@@ -34,7 +34,7 @@
             android:name=".ui.SignUpActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.LoginActivity"
+            android:name=".ui.login.LoginActivity"
             android:configChanges="uiMode|orientation"
             android:exported="true">
             <intent-filter>
@@ -50,7 +50,7 @@
             android:name=".ui.TvDetailsActivity"
             android:configChanges="uiMode|orientation|screenSize|screenLayout" />
         <activity
-            android:name=".ui.SearchActivity"
+            android:name=".ui.search.SearchActivity"
             android:configChanges="uiMode|orientation|screenSize|screenLayout" />
     </application>
 
