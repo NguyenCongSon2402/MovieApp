@@ -1,9 +1,13 @@
 package com.netflixclone.constants
 
-const val BASE_IMG ="https://img.ophim9.cc/uploads/movies/"
-const val BASE_IMG_HEADER ="https://img.ophim9.cc"
+import dev.son.movie.network.models.countries.Countries
 
-enum class ImageSize(val value: String){
+const val BASE_IMG = "https://img.ophim9.cc/uploads/movies/"
+const val BASE_IMG_HEADER = "https://img.ophim9.cc"
+const val COUNTRIES = "Countries"
+const val CATEGORIES = "Categories"
+
+enum class ImageSize(val value: String) {
     NORMAL("w500"),
     ORIGINAL("original"),
 }

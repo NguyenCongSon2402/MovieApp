@@ -1,25 +1,28 @@
 package dev.son.movie.ui.home
 
+import android.content.Intent
+import android.icu.text.CaseMap.Title
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import dev.son.movie.R
 import dev.son.movie.adapters.CountriesMovieAdapter
 import dev.son.movie.databinding.FragmentItemPickerBinding
 import dev.son.movie.network.models.countries.Data
 import dev.son.movie.network.models.countries.Items
+import dev.son.movie.ui.CategoryMoviesActivity
+import dev.son.movie.ui.MovieDetailsActivity
 
-class ItemPickerFragment(private val data: Data) : DialogFragment() {
+class ItemPickerFragment(private val data: Data, private val title: String) : DialogFragment() {
     private lateinit var binding: FragmentItemPickerBinding
     private lateinit var pickerItemsAdapter: CountriesMovieAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentItemPickerBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
@@ -30,7 +33,11 @@ class ItemPickerFragment(private val data: Data) : DialogFragment() {
 
 
     private fun handleItemClick(item: Items) {
-        Toast.makeText(activity, "${item.slug}", Toast.LENGTH_SHORT).show()
+        val intent = Intent(activity, CategoryMoviesActivity::class.java)
+        intent.putExtra("slug", item.slug)
+        intent.putExtra("name", item.name)
+        intent.putExtra("title", title)
+        startActivity(intent)
         dismiss()
     }
 
@@ -39,6 +46,7 @@ class ItemPickerFragment(private val data: Data) : DialogFragment() {
         binding.optionsList.adapter = pickerItemsAdapter
         pickerItemsAdapter.submitList(data.items)
         pickerItemsAdapter.notifyDataSetChanged()
+        binding.title.text = title
         binding.content.setOnClickListener { dismiss() }
         binding.closeIcon.setOnClickListener { dismiss() }
     }
@@ -48,8 +56,8 @@ class ItemPickerFragment(private val data: Data) : DialogFragment() {
     }
 
     companion object {
-        fun newInstance(data: Data): ItemPickerFragment {
-            return ItemPickerFragment(data)
+        fun newInstance(data: Data, s: String): ItemPickerFragment {
+            return ItemPickerFragment(data, s)
         }
     }
 }

@@ -35,6 +35,7 @@ class HomeViewModel @AssistedInject constructor(
             is HomeViewAction.getPhimBoDaHoanThanh -> handleGetPhimBoDaHoanThanh()
             is HomeViewAction.getSlug -> handleGetSlug(action.name)
             is HomeViewAction.getCategoriesMovies -> handleGetCategories(action.name)
+            is HomeViewAction.getCountriesMovies -> handleCountriesMovies(action.name)
             is HomeViewAction.getPhimSapChieu -> handleGetComingSoon()
             is HomeViewAction.getCountries -> handleGetCountriesMovie()
             is HomeViewAction.getCategory -> handleGetCategories()
@@ -107,6 +108,13 @@ class HomeViewModel @AssistedInject constructor(
         setState { copy(categoriesMovies = Loading()) }
         homeRepo.categoriesMovies(name).execute {
             copy(categoriesMovies = it)
+        }
+    }
+
+    private fun handleCountriesMovies(name: String) {
+        setState { copy(countriesMovies = Loading()) }
+        homeRepo.countriesMovies(name).execute {
+            copy(countriesMovies = it)
         }
     }
 

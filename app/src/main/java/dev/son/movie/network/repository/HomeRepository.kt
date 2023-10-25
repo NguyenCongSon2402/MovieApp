@@ -5,6 +5,7 @@ import dev.son.movie.network.models.Slug.Slug
 import dev.son.movie.network.models.categories.Categories
 import dev.son.movie.network.models.categorymovie.CategoryMovie
 import dev.son.movie.network.models.countries.Countries
+import dev.son.movie.network.models.countries.CountriesMovie
 import dev.son.movie.network.models.home.Home
 import dev.son.movie.network.models.home.LongTieng
 import dev.son.movie.network.models.home.PhimBo
@@ -58,4 +59,6 @@ class HomeRepository(val api: HomeApi) {
     fun slug(name: String): Observable<Slug> = api.Slug(name).subscribeOn(Schedulers.io())
     fun categoriesMovies(name: String): Observable<CategoryMovie> =
         api.CategoriesMovies(name).subscribeOn(Schedulers.io())
+    fun countriesMovies(name: String): Observable<CountriesMovie> =
+        api.CountriesMovies(name).subscribeOn(Schedulers.io())
 }

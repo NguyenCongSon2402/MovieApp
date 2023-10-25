@@ -31,6 +31,10 @@
             android:configChanges="uiMode|orientation"
             android:exported="false" />
         <activity
+            android:name=".ui.CategoryMoviesActivity"
+            android:configChanges="uiMode|orientation"
+            android:exported="false" />
+        <activity
             android:name=".ui.SignUpActivity"
             android:exported="false" />
         <activity

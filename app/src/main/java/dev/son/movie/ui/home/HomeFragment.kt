@@ -4,7 +4,6 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +15,8 @@ import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.withState
+import com.netflixclone.constants.CATEGORIES
+import com.netflixclone.constants.COUNTRIES
 import dev.son.movie.R
 import dev.son.movie.adapters.MainEpoxyController
 import dev.son.movie.core.TrackingBaseFragment
@@ -86,10 +87,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
         views.countriesTv.setOnClickListener {
             dataCountries?.let { it1 ->
-                val fragment = ItemPickerFragment.newInstance(it1)
+                val fragment = ItemPickerFragment.newInstance(it1, COUNTRIES)
                 fragment.show(childFragmentManager, "ItemPickerFragmentTag")
             } ?: run {
-                // Xử lý khi data là null, ví dụ, hiển thị thông báo cho người dùng
                 Toast.makeText(requireContext(), "Dữ liệu không có sẵn", Toast.LENGTH_SHORT).show()
             }
         }
@@ -97,10 +97,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
         views.categoriesTv.setOnClickListener {
             dataCategory?.let { it1 ->
-                val fragment = ItemPickerFragment.newInstance(it1)
+                val fragment = ItemPickerFragment.newInstance(it1, CATEGORIES)
                 fragment.show(childFragmentManager, "ItemPickerFragmentTag1")
             } ?: run {
-                // Xử lý khi data là null, ví dụ, hiển thị thông báo cho người dùng
                 Toast.makeText(requireContext(), "Dữ liệu không có sẵn", Toast.LENGTH_SHORT).show()
             }
         }
@@ -112,8 +111,6 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         val randomIndex = shuffledIndices.first()
         val randomCategory = categoryList[randomIndex]
         val randomSlug = randomCategory.slug
-
-
         val intent: Intent
         if (items.type == "single") {
             intent = Intent(activity, MovieDetailsActivity::class.java)

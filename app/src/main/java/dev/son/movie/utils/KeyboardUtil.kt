@@ -1,4 +1,4 @@
-package dev.son.movie.ui
+package dev.son.movie.utils
 
 import android.app.Activity
 import android.content.Context

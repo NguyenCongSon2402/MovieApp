@@ -19,9 +19,8 @@ import dev.son.movie.databinding.ActivitySearchBinding
 import dev.son.movie.network.models.home.Items
 import dev.son.movie.ui.MovieDetailsActivity
 import dev.son.movie.ui.TvDetailsActivity
-import dev.son.movie.ui.hideKeyboard
-import dev.son.movie.ui.home.MediaDetailsBottomSheet
 import dev.son.movie.utils.hide
+import dev.son.movie.utils.hideKeyboard
 import dev.son.movie.utils.show
 import javax.inject.Inject
 

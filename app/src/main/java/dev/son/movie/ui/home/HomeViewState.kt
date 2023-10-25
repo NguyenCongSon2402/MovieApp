@@ -8,6 +8,7 @@ import dev.son.movie.network.models.Slug.Slug
 import dev.son.movie.network.models.categories.Categories
 import dev.son.movie.network.models.categorymovie.CategoryMovie
 import dev.son.movie.network.models.countries.Countries
+import dev.son.movie.network.models.countries.CountriesMovie
 import dev.son.movie.network.models.home.Home
 import dev.son.movie.network.models.home.LongTieng
 import dev.son.movie.network.models.home.PhimBo
@@ -34,6 +35,7 @@ data class HomeViewState(
     val phimSapChieu: Async<PhimSapChieu> = Uninitialized,
     val slug: Async<Slug> = Uninitialized,
     val categoriesMovies: Async<CategoryMovie> = Uninitialized,
+    val countriesMovies: Async<CountriesMovie> = Uninitialized,
     val countries: Async<Countries> = Uninitialized,
     val category: Async<Categories> = Uninitialized,
 ) : MvRxState {
