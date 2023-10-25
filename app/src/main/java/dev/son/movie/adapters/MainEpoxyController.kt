@@ -69,7 +69,12 @@ abstract class HeaderModel : EpoxyModelWithHolder<HeaderModel.HeaderHolder>() {
         if (data != null) {
             posterUrl = BASE_IMG + data!!.items[0].thumbUrl
             Glide.with(holder.backgroundImage).load(posterUrl).into(holder.backgroundImage)
-            holder.genreText.text = data!!.items[0].category[0].name
+            val categories = data?.items?.get(0)?.category
+
+            val categoryNames = categories?.joinToString("-") { it.name.toString() }
+
+            holder.genreText.text = categoryNames ?: "No categories available"
+
             val animZoomOut =
                 AnimationUtils.loadAnimation(holder.backgroundImage.context, R.anim.zoom_out)
             holder.backgroundImage.startAnimation(animZoomOut)

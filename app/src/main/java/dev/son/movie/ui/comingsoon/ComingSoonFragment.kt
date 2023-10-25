@@ -5,23 +5,36 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AbsListView
+import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.mvrx.Fail
+import com.airbnb.mvrx.Success
+import com.airbnb.mvrx.activityViewModel
+import com.airbnb.mvrx.withState
 
 import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper
+import dev.son.movie.adapters.CommingSoonMovieAdapter
 import dev.son.movie.core.TrackingBaseFragment
 import dev.son.movie.databinding.FragmentComingSoonBinding
+import dev.son.movie.network.models.home.Items
+import dev.son.movie.ui.hideKeyboard
+import dev.son.movie.ui.home.HomeViewAction
+import dev.son.movie.ui.home.HomeViewModel
+import dev.son.movie.utils.checkStatusApiRes
 
 
 class ComingSoonFragment : TrackingBaseFragment<FragmentComingSoonBinding>() {
 
-//    private lateinit var viewModel: MediaViewModel
-//    private lateinit var upcomingMoviesAdapter: UpcomingMoviesAdapter
+    private val homeViewModel: HomeViewModel by activityViewModel()
+    private lateinit var commingSoonMoviesAdapter: CommingSoonMovieAdapter
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupUI()
-        //setupViewModel()
+        setupViewModel()
     }
 
 
@@ -33,8 +46,8 @@ class ComingSoonFragment : TrackingBaseFragment<FragmentComingSoonBinding>() {
     }
 
     private fun setupUI() {
-        //upcomingMoviesAdapter = UpcomingMoviesAdapter()
-        //views.upcomingMoviesList.adapter = upcomingMoviesAdapter
+        commingSoonMoviesAdapter = CommingSoonMovieAdapter(this::handleMediaClick)
+        views.upcomingMoviesList.adapter = commingSoonMoviesAdapter
 
 
         val snapHelper = GravitySnapHelper(Gravity.CENTER)
@@ -44,9 +57,12 @@ class ComingSoonFragment : TrackingBaseFragment<FragmentComingSoonBinding>() {
 
         //addListScrollListener()
     }
+    private fun handleMediaClick(media: Items) {
+        Toast.makeText(activity, "${media.name}", Toast.LENGTH_SHORT).show()
+    }
 
 //    private fun addListScrollListener() {
-//        views.upcomingMoviesList.addOnScrollListener(object : OnScrollListener() {
+//        views.upcomingMoviesList.addOnScrollListener(object : AbsListView.OnScrollListener() {
 //            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
 //                super.onScrollStateChanged(recyclerView, newState)
 //                synchronized(this) {
@@ -56,7 +72,7 @@ class ComingSoonFragment : TrackingBaseFragment<FragmentComingSoonBinding>() {
 //                        if (newPosition == -1) {
 //                            return
 //                        }
-//                        val oldPosition = upcomingMoviesAdapter.firstVisibleItemPosition
+//                        val oldPosition = commingSoonMoviesAdapter.firstVisibleItemPosition
 //                        Log.v(
 //                            "__SCROLL_STATE_IDLE",
 //                            "oldPosition: $oldPosition, newPosition: $newPosition"
@@ -82,21 +98,24 @@ class ComingSoonFragment : TrackingBaseFragment<FragmentComingSoonBinding>() {
 //        }
 //    }
 
-//    private fun setupViewModel() {
-//        viewModel = ViewModelProvider(
-//            this,
-//            Injection.provideMediaViewModelFactory()
-//        ).get(MediaViewModel::class.java)
-//    }
+    private fun setupViewModel() {
+        homeViewModel.handle(HomeViewAction.getPhimSapChieu)
+    }
+    override fun invalidate(): Unit = withState(homeViewModel) {
+        when (it.phimSapChieu) {
+            is Success -> {
+                commingSoonMoviesAdapter.submitList(it.phimSapChieu.invoke().data?.items)
+            }
 
-//    private fun fetchData() {
-//        lifecycleScope.launchWhenCreated {
-//            try {
-//                viewModel.getUpcomingMovies().collectLatest {
-//                    upcomingMoviesAdapter.submitData(it)
-//                }
-//            } catch (e: Exception) {
-//            }
-//        }
-//    }
+            is Fail -> {
+                Toast.makeText(
+                    activity,
+                    checkStatusApiRes(it.phimSapChieu),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            else -> {}
+        }
+    }
 }

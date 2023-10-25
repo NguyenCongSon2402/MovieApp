@@ -154,7 +154,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 val data = it.homes.invoke().data.apply {
                     this?.titlePage = "Phim Mới"
                 }
-                Log.e("TAG0homes", "Size${listData.size} data ${data?.titlePage.toString()}")
+                //Log.e("TAG0homes", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 0
                 if (index < listData.size) {
                     data?.let { it1 -> listData[index] = it1 }
@@ -185,7 +185,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             is Success -> {
                 Timber.e("phimBo")
                 val data = it.phimBo.invoke().data
-                Log.e("TAG1phimBo", "Size${listData.size} data ${data?.titlePage.toString()}")
+                //Log.e("TAG1phimBo", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 1
                 if (index < listData.size) {
                     data?.let { it1 -> listData[index] = it1 }
@@ -216,7 +216,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             is Success -> {
                 Timber.e("phimLe")
                 val data = it.phimLe.invoke().data
-                Log.e("TAG2phimLe", "Size${listData.size} data ${data?.titlePage.toString()}")
+                //Log.e("TAG2phimLe", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 2
                 if (index < listData.size) {
                     data?.let { it1 -> listData[index] = it1 }
@@ -247,7 +247,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             is Success -> {
                 Timber.e("phimHoatHinh")
                 val data = it.phimHoatHinh.invoke().data
-                Log.e("TAG3phimHoatHinh", "Size${listData.size} data ${data?.titlePage.toString()}")
+                //Log.e("TAG3phimHoatHinh", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 3
                 if (index < listData.size) {
                     data?.let { it1 -> listData[index] = it1 }
@@ -280,7 +280,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             is Success -> {
                 Timber.e("tvSHow")
                 val data = it.tvShows.invoke().data
-                Log.e("TAG4tvSHow", "Size${listData.size} data ${data?.titlePage.toString()}")
+                //Log.e("TAG4tvSHow", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 4
                 if (index < listData.size) {
                     data?.let { it1 -> listData[index] = it1 }
@@ -313,7 +313,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             is Success -> {
                 Timber.e("vietsub")
                 val data = it.vietsub.invoke().data
-                Log.e("TAG5vietsub", "Size${listData.size} data ${data?.titlePage.toString()}")
+                //Log.e("TAG5vietsub", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 5
                 if (index < listData.size) {
                     data?.let { it1 -> listData[index] = it1 }
@@ -346,7 +346,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             is Success -> {
                 Timber.e("thuyetminh")
                 val data = it.thuyetMinh.invoke().data
-                Log.e("TAG6thuyetminh", "Size${listData.size} data ${data?.titlePage.toString()}")
+                //Log.e("TAG6thuyetminh", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 6
                 if (index < listData.size) {
                     data?.let { it1 -> listData[index] = it1 }
@@ -379,7 +379,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             is Success -> {
                 Timber.e("longtieng")
                 val data = it.longTieng.invoke().data
-                Log.e("TAG7longtieng", "Size${listData.size} data ${data?.titlePage.toString()}")
+                //Log.e("TAG7longtieng", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 7
                 if (index < listData.size) {
                     data?.let { it1 -> listData[index] = it1 }
@@ -412,10 +412,10 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             is Success -> {
                 Timber.e("phimdangChieu")
                 val data = it.phimBoDangChieu.invoke().data
-                Log.e(
-                    "TAG8phimdangChieu",
-                    "Size${listData.size} data ${data?.titlePage.toString()}"
-                )
+//                Log.e(
+//                    "TAG8phimdangChieu",
+//                    "Size${listData.size} data ${data?.titlePage.toString()}"
+//                )
                 val index = 8
                 if (index < listData.size) {
                     data?.let { it1 -> listData[index] = it1 }
@@ -448,10 +448,10 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             is Success -> {
                 Timber.e("phimDaHoanThanh")
                 val data = it.phimBoHoanThanh.invoke().data
-                Log.e(
-                    "TAG9phimDaHoanThanh",
-                    "Size${listData.size} data ${data?.titlePage.toString()}"
-                )
+//                Log.e(
+//                    "TAG9phimDaHoanThanh",
+//                    "Size${listData.size} data ${data?.titlePage.toString()}"
+//                )
                 val index = 9
                 if (index < listData.size) {
                     data?.let { it1 -> listData[index] = it1 }

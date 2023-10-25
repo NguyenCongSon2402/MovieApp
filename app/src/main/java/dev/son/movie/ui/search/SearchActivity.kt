@@ -2,23 +2,36 @@ package dev.son.movie.ui.search
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.widget.addTextChangedListener
+import com.airbnb.mvrx.Fail
+import com.airbnb.mvrx.Loading
+import com.airbnb.mvrx.Success
+import com.airbnb.mvrx.viewModel
+import dev.son.movie.TrackingApplication
 import dev.son.movie.adapters.SearchMovieAdapter
 import dev.son.movie.core.TrackingBaseActivity
 import dev.son.movie.databinding.ActivitySearchBinding
+import dev.son.movie.network.models.home.Items
 import dev.son.movie.ui.hideKeyboard
+import dev.son.movie.ui.home.MediaDetailsBottomSheet
 import dev.son.movie.utils.hide
 import dev.son.movie.utils.show
+import javax.inject.Inject
 
 
-class SearchActivity : TrackingBaseActivity<ActivitySearchBinding>() {
-    private val searchViewModel: SearchViewModel by viewModels()
+class SearchActivity : TrackingBaseActivity<ActivitySearchBinding>(), SearchViewModel.Factory {
+    private val searchViewModel: SearchViewModel by viewModel()
+
+    @Inject
+    lateinit var searchViewModelFactory: SearchViewModel.Factory
 
     //    private lateinit var topSearchesController: TopMoviesController
     private lateinit var searchResultsAdapter: SearchMovieAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        (applicationContext as TrackingApplication).trackingComponent.inject(this)
         super.onCreate(savedInstanceState)
         setupUI()
         setupViewModel()
@@ -56,8 +69,8 @@ class SearchActivity : TrackingBaseActivity<ActivitySearchBinding>() {
             false
         }
 
-        //searchResultsAdapter = MediaItemsAdapter(this::handleMediaClick)
-        //views.resultsList.adapter = searchResultsAdapter
+        searchResultsAdapter = SearchMovieAdapter(this::handleMediaClick)
+        views.resultsList.adapter = searchResultsAdapter
     }
 
 //    private fun handleMovieClick(movie: Movie) {
@@ -67,36 +80,35 @@ class SearchActivity : TrackingBaseActivity<ActivitySearchBinding>() {
 //            .show(supportFragmentManager, movie.id.toString())
 //    }
 
-//    private fun handleMediaClick(media: Media) {
-//        hideKeyboard()
-//        binding.searchTextInput.clearFocus()
-//        if (media is Media.Movie) {
-//            MediaDetailsBottomSheet.newInstance(media.toMediaBsData())
-//                .show(supportFragmentManager, media.id.toString())
-//        } else if (media is Media.Tv) {
-//            MediaDetailsBottomSheet.newInstance(media.toMediaBsData())
-//                .show(supportFragmentManager, media.id.toString())
-//        }
-//    }
+    private fun handleMediaClick(media: Items) {
+        hideKeyboard()
+        views.searchTextInput.clearFocus()
+        Toast.makeText(this, "${media.name}", Toast.LENGTH_SHORT).show()
+    }
 
     private fun setupViewModel() {
-//        searchResultsViewModel.popularMoviesLoading.observe(this) { }
-//        searchResultsViewModel.popularMovies.observe(this) {
-//            if (it != null) {
-//                topSearchesController.setData(it)
-//            }
-//        }
-//        searchResultsViewModel.searchResultsLoading.observe(this) { loading ->
-//            val searchResults = searchResultsViewModel.searchResults.value
-//            if (loading && searchResults == null) {
-//                binding.searchResultsLoader.show()
-//            } else {
-//                binding.searchResultsLoader.hide()
-//            }
-//        }
-//        searchResultsViewModel.searchResults.observe(this) {
-//            searchResultsAdapter.submitList(it)
-//        }
+        searchViewModel.subscribe(this) {
+            when (it.search) {
+                is Success -> {
+                    searchResultsAdapter.submitList(it.search.invoke().data?.items)
+                    views.searchResultsLoader.hide()
+                    searchViewModel.handleRemoveState()
+                }
+
+                is Loading -> {
+                    views.emptySearchContent.hide()
+                    views.searchResultsContent.show()
+                    views.searchResultsLoader.show()
+                }
+
+                is Fail -> {
+                    views.searchResultsLoader.hide()
+                    searchViewModel.handleRemoveState()
+                }
+
+                else -> {}
+            }
+        }
     }
 
     private fun updateUI() {
@@ -104,17 +116,10 @@ class SearchActivity : TrackingBaseActivity<ActivitySearchBinding>() {
         if (query.isEmpty()) {
             views.emptySearchContent.show()
             views.searchResultsContent.hide()
-        } else {
-//            val searchResultsLoading = searchResultsViewModel.searchResultsLoading.value!!
-//            val searchResults = searchResultsViewModel.searchResults.value
-            views.emptySearchContent.hide()
-            views.searchResultsContent.show()
-
-//            if (searchResultsLoading && searchResults == null) {
-//                binding.searchResultsLoader.show()
-//            } else {
-//                binding.searchResultsLoader.hide()
-//            }
         }
+    }
+
+    override fun create(initialState: SearchViewState): SearchViewModel {
+        return searchViewModelFactory.create(initialState)
     }
 }

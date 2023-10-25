@@ -11,6 +11,7 @@ import dagger.BindsInstance
 import dagger.Component
 import dev.son.movie.ui.SignUpActivity
 import dev.son.movie.ui.login.LoginActivity
+import dev.son.movie.ui.search.SearchActivity
 import javax.inject.Singleton
 
 @Component(
@@ -24,6 +25,7 @@ interface TrackingComponent {
     fun inject(bottomNavActivity: BottomNavActivity)
     fun inject(loginActivity: LoginActivity)
     fun inject(signUpActivity: SignUpActivity)
+    fun inject(searchActivity: SearchActivity)
     fun inject(homeFragment: HomeFragment)
 
     fun inject(movieDetailsActivity: MovieDetailsActivity)
