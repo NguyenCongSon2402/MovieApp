@@ -36,7 +36,8 @@ class HomeViewModel @AssistedInject constructor(
             is HomeViewAction.getSlug -> handleGetSlug(action.name)
             is HomeViewAction.getCategoriesMovies -> handleGetCategories(action.name)
             is HomeViewAction.getPhimSapChieu -> handleGetComingSoon()
-            else -> {}
+            is HomeViewAction.getCountries -> handleGetCountriesMovie()
+            is HomeViewAction.getCategory -> handleGetCategories()
         }
     }
 
@@ -58,6 +59,7 @@ class HomeViewModel @AssistedInject constructor(
 
     fun handleRemoveStateCategoriesMovies() =
         setState { copy(categoriesMovies = Uninitialized) }
+
     fun handleRemoveStateTvShows() =
         setState { copy(tvShows = Uninitialized) }
 
@@ -75,9 +77,15 @@ class HomeViewModel @AssistedInject constructor(
 
     fun handleRemoveStatePhimBoHoanThanh() =
         setState { copy(phimBoHoanThanh = Uninitialized) }
+
     fun handleRemoveState() =
         setState { copy(phimBoHoanThanh = Uninitialized) }
 
+    fun handleRemoveStateCountries() =
+        setState { copy(countries = Uninitialized) }
+
+    fun handleRemoveStateCategories() =
+        setState { copy(category = Uninitialized) }
 
 
     private fun handleGetHome() {
@@ -165,10 +173,25 @@ class HomeViewModel @AssistedInject constructor(
             copy(phimBoHoanThanh = it)
         }
     }
+
     private fun handleGetComingSoon() {
         setState { copy(phimSapChieu = Loading()) }
         homeRepo.getPhimSapChieu().execute {
             copy(phimSapChieu = it)
+        }
+    }
+
+    private fun handleGetCountriesMovie() {
+        setState { copy(countries = Loading()) }
+        homeRepo.getCountriesMovie().execute {
+            copy(countries = it)
+        }
+    }
+
+    private fun handleGetCategories() {
+        setState { copy(category = Loading()) }
+        homeRepo.getCategory().execute {
+            copy(category = it)
         }
     }
 

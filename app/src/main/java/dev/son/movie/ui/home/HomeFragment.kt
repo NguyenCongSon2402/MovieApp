@@ -38,7 +38,8 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
     private val homeViewModel: HomeViewModel by activityViewModel()
 
     private val listData: MutableList<Data?> = MutableList(10) { null }
-
+    private var dataCountries: dev.son.movie.network.models.countries.Data? = null
+    private var dataCategory: dev.son.movie.network.models.countries.Data? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -83,14 +84,25 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         views.feedItemsList.setItemViewCacheSize(50)
 
 
-        views.tvShowsTv.setOnClickListener {
-//            val intent = Intent(requireActivity(), PopularTvActivity::class.java)
-//            startActivity(intent)
+        views.countriesTv.setOnClickListener {
+            dataCountries?.let { it1 ->
+                val fragment = ItemPickerFragment.newInstance(it1)
+                fragment.show(childFragmentManager, "ItemPickerFragmentTag")
+            } ?: run {
+                // Xử lý khi data là null, ví dụ, hiển thị thông báo cho người dùng
+                Toast.makeText(requireContext(), "Dữ liệu không có sẵn", Toast.LENGTH_SHORT).show()
+            }
         }
 
-        views.moviesTv.setOnClickListener {
-//            val intent = Intent(requireActivity(), PopularMoviesActivity::class.java)
-//            startActivity(intent)
+
+        views.categoriesTv.setOnClickListener {
+            dataCategory?.let { it1 ->
+                val fragment = ItemPickerFragment.newInstance(it1)
+                fragment.show(childFragmentManager, "ItemPickerFragmentTag1")
+            } ?: run {
+                // Xử lý khi data là null, ví dụ, hiển thị thông báo cho người dùng
+                Toast.makeText(requireContext(), "Dữ liệu không có sẵn", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -114,7 +126,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
 
         val options = ActivityOptions.makeSceneTransitionAnimation(
-            activity,
+            requireActivity(),
             posterItems,
             "my_shared_element"
         )
@@ -129,8 +141,6 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 val availableHeight: Int = views.appBarLayout.measuredHeight
                 if (availableHeight > 0) {
                     views.appBarLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                    //save height here and do whatever you want with it
-
                     val params = views.feedItemsList.layoutParams as ViewGroup.MarginLayoutParams
                     params.setMargins(0, -availableHeight, 0, 0)
                     views.feedItemsList.layoutParams = params
@@ -162,9 +172,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
                 }
-                listData.forEachIndexed { index, data ->
-                    Log.e("DATA0", "Index: $index, Title: ${data?.titlePage}")
-                }
+//                listData.forEachIndexed { index, data ->
+//                    Log.e("DATA0", "Index: $index, Title: ${data?.titlePage}")
+//                }
 
                 mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
@@ -184,7 +194,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         when (it.phimBo) {
             is Success -> {
                 Timber.e("phimBo")
-                val data = it.phimBo.invoke().data
+                val data = it.phimBo.invoke().data.apply {
+                    this?.titlePage = "Phim Bộ"
+                }
                 //Log.e("TAG1phimBo", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 1
                 if (index < listData.size) {
@@ -193,9 +205,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
                 }
-                listData.forEachIndexed { index, data ->
-                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
-                }
+//                listData.forEachIndexed { index, data ->
+//                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
+//                }
 
                 mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
@@ -215,7 +227,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         when (it.phimLe) {
             is Success -> {
                 Timber.e("phimLe")
-                val data = it.phimLe.invoke().data
+                val data = it.phimLe.invoke().data.apply {
+                    this?.titlePage = "Phim Lẻ"
+                }
                 //Log.e("TAG2phimLe", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 2
                 if (index < listData.size) {
@@ -224,9 +238,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
                 }
-                listData.forEachIndexed { index, data ->
-                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
-                }
+//                listData.forEachIndexed { index, data ->
+//                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
+//                }
 
                 mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
@@ -246,7 +260,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         when (it.phimHoatHinh) {
             is Success -> {
                 Timber.e("phimHoatHinh")
-                val data = it.phimHoatHinh.invoke().data
+                val data = it.phimHoatHinh.invoke().data.apply {
+                    this?.titlePage = "Phim Hoạt hình"
+                }
                 //Log.e("TAG3phimHoatHinh", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 3
                 if (index < listData.size) {
@@ -255,9 +271,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
                 }
-                listData.forEachIndexed { index, data ->
-                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
-                }
+//                listData.forEachIndexed { index, data ->
+//                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
+//                }
 
                 mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
@@ -279,7 +295,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         when (it.tvShows) {
             is Success -> {
                 Timber.e("tvSHow")
-                val data = it.tvShows.invoke().data
+                val data = it.tvShows.invoke().data.apply {
+                    this?.titlePage = "TV Shows"
+                }
                 //Log.e("TAG4tvSHow", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 4
                 if (index < listData.size) {
@@ -288,9 +306,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
                 }
-                listData.forEachIndexed { index, data ->
-                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
-                }
+//                listData.forEachIndexed { index, data ->
+//                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
+//                }
 
                 mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
@@ -312,7 +330,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         when (it.vietsub) {
             is Success -> {
                 Timber.e("vietsub")
-                val data = it.vietsub.invoke().data
+                val data = it.vietsub.invoke().data.apply {
+                    this?.titlePage = "VietSub"
+                }
                 //Log.e("TAG5vietsub", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 5
                 if (index < listData.size) {
@@ -321,9 +341,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
                 }
-                listData.forEachIndexed { index, data ->
-                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
-                }
+//                listData.forEachIndexed { index, data ->
+//                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
+//                }
 
                 mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
@@ -345,7 +365,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         when (it.thuyetMinh) {
             is Success -> {
                 Timber.e("thuyetminh")
-                val data = it.thuyetMinh.invoke().data
+                val data = it.thuyetMinh.invoke().data.apply {
+                    this?.titlePage = "Phim Thuyết Minh"
+                }
                 //Log.e("TAG6thuyetminh", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 6
                 if (index < listData.size) {
@@ -354,9 +376,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
                 }
-                listData.forEachIndexed { index, data ->
-                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
-                }
+//                listData.forEachIndexed { index, data ->
+//                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
+//                }
 
                 mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
@@ -378,7 +400,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         when (it.longTieng) {
             is Success -> {
                 Timber.e("longtieng")
-                val data = it.longTieng.invoke().data
+                val data = it.longTieng.invoke().data.apply {
+                    this?.titlePage = "Phim Lồng Tiếng"
+                }
                 //Log.e("TAG7longtieng", "Size${listData.size} data ${data?.titlePage.toString()}")
                 val index = 7
                 if (index < listData.size) {
@@ -387,9 +411,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
                 }
-                listData.forEachIndexed { index, data ->
-                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
-                }
+//                listData.forEachIndexed { index, data ->
+//                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
+//                }
 
                 mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
@@ -411,7 +435,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         when (it.phimBoDangChieu) {
             is Success -> {
                 Timber.e("phimdangChieu")
-                val data = it.phimBoDangChieu.invoke().data
+                val data = it.phimBoDangChieu.invoke().data.apply {
+                    this?.titlePage = "Phim Đang Chiếu"
+                }
 //                Log.e(
 //                    "TAG8phimdangChieu",
 //                    "Size${listData.size} data ${data?.titlePage.toString()}"
@@ -423,9 +449,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
                 }
-                listData.forEachIndexed { index, data ->
-                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
-                }
+//                listData.forEachIndexed { index, data ->
+//                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
+//                }
 
                 mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
@@ -447,7 +473,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         when (it.phimBoHoanThanh) {
             is Success -> {
                 Timber.e("phimDaHoanThanh")
-                val data = it.phimBoHoanThanh.invoke().data
+                val data = it.phimBoHoanThanh.invoke().data.apply {
+                    this?.titlePage = "Phim Bộ Đã Hoàn Thành"
+                }
 //                Log.e(
 //                    "TAG9phimDaHoanThanh",
 //                    "Size${listData.size} data ${data?.titlePage.toString()}"
@@ -459,9 +487,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                     // Thêm vào cuối danh sách
                     data?.let { it1 -> listData.add(it1) }
                 }
-                listData.forEachIndexed { index, data ->
-                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
-                }
+//                listData.forEachIndexed { index, data ->
+//                    Log.e("DATA", "Index: $index, Title: ${data?.titlePage}")
+//                }
 
                 mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
@@ -476,6 +504,42 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                     Toast.LENGTH_SHORT
                 ).show()
                 homeViewModel.handleRemoveStatePhimBoHoanThanh()
+            }
+
+            else -> {}
+        }
+        when (it.countries) {
+            is Success -> {
+                Timber.e("countries")
+                dataCountries = it.countries.invoke().data
+                homeViewModel.handleRemoveStateCountries()
+            }
+
+            is Fail -> {
+                Toast.makeText(
+                    requireContext(),
+                    getString(checkStatusApiRes(it.countries)),
+                    Toast.LENGTH_SHORT
+                ).show()
+                homeViewModel.handleRemoveStateCountries()
+            }
+
+            else -> {}
+        }
+        when (it.category) {
+            is Success -> {
+                Timber.e("category")
+                dataCategory = it.category.invoke().data
+                homeViewModel.handleRemoveStateCategories()
+            }
+
+            is Fail -> {
+                Toast.makeText(
+                    requireContext(),
+                    getString(checkStatusApiRes(it.category)),
+                    Toast.LENGTH_SHORT
+                ).show()
+                homeViewModel.handleRemoveStateCategories()
             }
 
             else -> {}

@@ -1,7 +1,9 @@
 package dev.son.movie.network.service
 
 import dev.son.movie.network.models.Slug.Slug
+import dev.son.movie.network.models.categories.Categories
 import dev.son.movie.network.models.categorymovie.CategoryMovie
+import dev.son.movie.network.models.countries.Countries
 import dev.son.movie.network.models.home.Home
 import dev.son.movie.network.models.home.LongTieng
 import dev.son.movie.network.models.home.PhimBo
@@ -49,7 +51,10 @@ interface HomeApi {
     fun getPhimBoDaHoanThanh(): Observable<PhimBoDaHoanThanh>
     @GET("/v1/api/danh-sach/phim-sap-chieu")
     fun getPhimSapChieu(): Observable<PhimSapChieu>
-
+    @GET("/v1/api/quoc-gia")
+    fun getCountriesMovies(): Observable<Countries>
+    @GET("/v1/api/the-loai")
+    fun getCategories(): Observable<Categories>
     @GET("/v1/api/phim/{Slug}")
     fun Slug(@Path("Slug") name: String): Observable<Slug>
 

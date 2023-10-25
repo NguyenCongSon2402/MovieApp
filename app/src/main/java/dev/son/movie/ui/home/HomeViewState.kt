@@ -5,7 +5,9 @@ import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.MvRxState
 import com.airbnb.mvrx.Uninitialized
 import dev.son.movie.network.models.Slug.Slug
+import dev.son.movie.network.models.categories.Categories
 import dev.son.movie.network.models.categorymovie.CategoryMovie
+import dev.son.movie.network.models.countries.Countries
 import dev.son.movie.network.models.home.Home
 import dev.son.movie.network.models.home.LongTieng
 import dev.son.movie.network.models.home.PhimBo
@@ -32,6 +34,8 @@ data class HomeViewState(
     val phimSapChieu: Async<PhimSapChieu> = Uninitialized,
     val slug: Async<Slug> = Uninitialized,
     val categoriesMovies: Async<CategoryMovie> = Uninitialized,
+    val countries: Async<Countries> = Uninitialized,
+    val category: Async<Categories> = Uninitialized,
 ) : MvRxState {
     fun isLoadding() = homes is Loading || phimBo is Loading || phimLe is Loading || slug is Loading
             || categoriesMovies is Loading

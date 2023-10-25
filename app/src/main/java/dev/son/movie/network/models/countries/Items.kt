@@ -1,12 +1,12 @@
-package dev.son.movie.network.models.hoanthanh
+package dev.son.movie.network.models.countries
 
 import com.google.gson.annotations.SerializedName
 
 
-data class Category (
+data class Items (
 
-  @SerializedName("id"   ) var id   : String? = null,
+  @SerializedName("_id"  ) var Id   : String? = null,
   @SerializedName("name" ) var name : String? = null,
   @SerializedName("slug" ) var slug : String? = null
 
-)
+  )

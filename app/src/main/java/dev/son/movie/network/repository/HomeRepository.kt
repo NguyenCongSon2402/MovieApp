@@ -2,7 +2,9 @@ package dev.son.movie.network.repository
 
 
 import dev.son.movie.network.models.Slug.Slug
+import dev.son.movie.network.models.categories.Categories
 import dev.son.movie.network.models.categorymovie.CategoryMovie
+import dev.son.movie.network.models.countries.Countries
 import dev.son.movie.network.models.home.Home
 import dev.son.movie.network.models.home.LongTieng
 import dev.son.movie.network.models.home.PhimBo
@@ -48,6 +50,10 @@ class HomeRepository(val api: HomeApi) {
         api.getPhimBoDaHoanThanh().subscribeOn(Schedulers.io())
     fun getPhimSapChieu(): Observable<PhimSapChieu> =
         api.getPhimSapChieu().subscribeOn(Schedulers.io())
+    fun getCountriesMovie(): Observable<Countries> =
+        api.getCountriesMovies().subscribeOn(Schedulers.io())
+    fun getCategory(): Observable<Categories> =
+        api.getCategories().subscribeOn(Schedulers.io())
 
     fun slug(name: String): Observable<Slug> = api.Slug(name).subscribeOn(Schedulers.io())
     fun categoriesMovies(name: String): Observable<CategoryMovie> =

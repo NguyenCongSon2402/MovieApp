@@ -73,20 +73,7 @@
             app:layout_scrollFlags="noScroll">
 
             <TextView
-                android:id="@+id/tv_shows_tv"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:text="TV Shows"
-                android:textAlignment="center"
-                android:textColor="@color/white"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/movies_tv"
+                android:id="@+id/countries_tv"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -94,7 +81,7 @@
                 android:background="?selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
-                android:text="Movies"
+                android:text="Countries"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="16sp" />

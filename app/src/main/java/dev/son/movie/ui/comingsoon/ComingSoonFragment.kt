@@ -1,14 +1,13 @@
 package dev.son.movie.ui.comingsoon
 
+import android.app.ActivityOptions
+import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsListView
 import android.widget.Toast
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.activityViewModel
@@ -19,7 +18,8 @@ import dev.son.movie.adapters.CommingSoonMovieAdapter
 import dev.son.movie.core.TrackingBaseFragment
 import dev.son.movie.databinding.FragmentComingSoonBinding
 import dev.son.movie.network.models.home.Items
-import dev.son.movie.ui.hideKeyboard
+import dev.son.movie.ui.MovieDetailsActivity
+import dev.son.movie.ui.TvDetailsActivity
 import dev.son.movie.ui.home.HomeViewAction
 import dev.son.movie.ui.home.HomeViewModel
 import dev.son.movie.utils.checkStatusApiRes
@@ -57,8 +57,31 @@ class ComingSoonFragment : TrackingBaseFragment<FragmentComingSoonBinding>() {
 
         //addListScrollListener()
     }
-    private fun handleMediaClick(media: Items) {
-        Toast.makeText(activity, "${media.name}", Toast.LENGTH_SHORT).show()
+    private fun handleMediaClick(items: Items,itemView:View) {
+        val categoryList = items.category
+        val shuffledIndices = categoryList.indices.shuffled()
+        val randomIndex = shuffledIndices.first()
+        val randomCategory = categoryList[randomIndex]
+        val randomSlug = randomCategory.slug
+
+
+        val intent: Intent
+        if (items.type == "single") {
+            intent = Intent(activity, MovieDetailsActivity::class.java)
+        } else {
+            intent = Intent(activity, TvDetailsActivity::class.java)
+            intent.putExtra("thumbUrl", items.thumbUrl)
+        }
+        intent.putExtra("name", items.slug)
+        intent.putExtra("category", randomSlug)
+
+
+        val options = ActivityOptions.makeSceneTransitionAnimation(
+            activity,
+            itemView,
+            "my_shared_element"
+        )
+        startActivity(intent, options.toBundle())
     }
 
 //    private fun addListScrollListener() {

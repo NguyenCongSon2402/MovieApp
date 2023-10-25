@@ -1,6 +1,7 @@
 package dev.son.movie.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -11,7 +12,7 @@ import com.netflixclone.constants.BASE_IMG
 import dev.son.movie.databinding.ItemMediaBinding
 import dev.son.movie.network.models.home.Items
 
-class SearchMovieAdapter(private val onItemClick: (Items) -> Unit) :
+class SearchMovieAdapter(private val onItemClick: (Items, View) -> Unit) :
     ListAdapter<Items, MovieItemViewHolder>(MediaItemDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieItemViewHolder {
@@ -27,7 +28,7 @@ class SearchMovieAdapter(private val onItemClick: (Items) -> Unit) :
 
 class MovieItemViewHolder(
     var binding: ItemMediaBinding,
-    private val onItemClick: ((Items) -> Unit)
+    private val onItemClick: ((Items, View) -> Unit)
 ) :
     RecyclerView.ViewHolder(binding.root) {
 
@@ -42,7 +43,7 @@ class MovieItemViewHolder(
             .into(binding.posterImage)
         binding.posterImage.clipToOutline = true
 
-        itemView.setOnClickListener { onItemClick(items) }
+        itemView.setOnClickListener { onItemClick(items, itemView) }
     }
 }
 

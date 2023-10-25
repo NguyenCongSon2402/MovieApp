@@ -1,6 +1,7 @@
 package dev.son.movie.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -12,7 +13,7 @@ import dev.son.movie.databinding.ItemMediaBinding
 import dev.son.movie.databinding.ItemUpcomingMovieBinding
 import dev.son.movie.network.models.home.Items
 
-class CommingSoonMovieAdapter(private val onItemClick: (Items) -> Unit) :
+class CommingSoonMovieAdapter(private val onItemClick: (Items, View) -> Unit) :
     ListAdapter<Items, MovieItemsViewHolder>(MovieItemDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieItemsViewHolder {
@@ -29,7 +30,7 @@ class CommingSoonMovieAdapter(private val onItemClick: (Items) -> Unit) :
 
 class MovieItemsViewHolder(
     var binding: ItemUpcomingMovieBinding,
-    private val onItemClick: ((Items) -> Unit)
+    private val onItemClick: ((Items,View) -> Unit)
 ) :
     RecyclerView.ViewHolder(binding.root) {
 
@@ -55,7 +56,7 @@ class MovieItemsViewHolder(
 
         binding.genresText.text = categoryNames ?: "No categories available"
 
-        itemView.setOnClickListener { onItemClick(items) }
+        itemView.setOnClickListener { onItemClick(items,itemView) }
     }
 }
 

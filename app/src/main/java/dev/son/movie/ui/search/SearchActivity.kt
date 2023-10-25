@@ -1,7 +1,10 @@
 package dev.son.movie.ui.search
 
 import android.annotation.SuppressLint
+import android.app.ActivityOptions
+import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.widget.addTextChangedListener
@@ -14,6 +17,8 @@ import dev.son.movie.adapters.SearchMovieAdapter
 import dev.son.movie.core.TrackingBaseActivity
 import dev.son.movie.databinding.ActivitySearchBinding
 import dev.son.movie.network.models.home.Items
+import dev.son.movie.ui.MovieDetailsActivity
+import dev.son.movie.ui.TvDetailsActivity
 import dev.son.movie.ui.hideKeyboard
 import dev.son.movie.ui.home.MediaDetailsBottomSheet
 import dev.son.movie.utils.hide
@@ -80,10 +85,33 @@ class SearchActivity : TrackingBaseActivity<ActivitySearchBinding>(), SearchView
 //            .show(supportFragmentManager, movie.id.toString())
 //    }
 
-    private fun handleMediaClick(media: Items) {
+    private fun handleMediaClick(items: Items,itemView:View) {
         hideKeyboard()
         views.searchTextInput.clearFocus()
-        Toast.makeText(this, "${media.name}", Toast.LENGTH_SHORT).show()
+        val categoryList = items.category
+        val shuffledIndices = categoryList.indices.shuffled()
+        val randomIndex = shuffledIndices.first()
+        val randomCategory = categoryList[randomIndex]
+        val randomSlug = randomCategory.slug
+
+
+        val intent: Intent
+        if (items.type == "single") {
+            intent = Intent(this, MovieDetailsActivity::class.java)
+        } else {
+            intent = Intent(this, TvDetailsActivity::class.java)
+            intent.putExtra("thumbUrl", items.thumbUrl)
+        }
+        intent.putExtra("name", items.slug)
+        intent.putExtra("category", randomSlug)
+
+
+        val options = ActivityOptions.makeSceneTransitionAnimation(
+            this,
+            itemView,
+            "my_shared_element"
+        )
+        startActivity(intent, options.toBundle())
     }
 
     private fun setupViewModel() {

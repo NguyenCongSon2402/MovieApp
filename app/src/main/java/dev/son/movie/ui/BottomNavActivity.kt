@@ -56,6 +56,7 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), Home
         homeViewModel.handle(HomeViewAction.getPhimLongTieng)
         homeViewModel.handle(HomeViewAction.getPhimBoDangChieu)
         homeViewModel.handle(HomeViewAction.getPhimBoDaHoanThanh)
+        homeViewModel.handle(HomeViewAction.getCountries)
     }
 
     override fun getBinding(): ActivityBottomNavBinding {
