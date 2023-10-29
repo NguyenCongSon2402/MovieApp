@@ -1,6 +1,7 @@
 package dev.son.movie.ui.login
 
 import android.annotation.SuppressLint
+import androidx.lifecycle.viewModelScope
 import com.airbnb.mvrx.ActivityViewModelContext
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.FragmentViewModelContext
@@ -20,6 +21,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dev.son.movie.network.models.user.UserId
 import dev.son.movie.network.repository.FirebaseRepository
+import kotlinx.coroutines.async
 
 
 class LoginViewModel @AssistedInject constructor(
@@ -29,8 +31,14 @@ class LoginViewModel @AssistedInject constructor(
     override fun handle(action: LoginViewAction) {
         when (action) {
 
-            is LoginViewAction.createUser -> handleCreateUser(action.userId)
-            else -> {}
+            is LoginViewAction.createUser -> handleCreateUser(action.user)
+            is LoginViewAction.getUser -> handleGetUser(action.userId)
+            is LoginViewAction.SaveDataUser ->handleSaveDataUser(action.userId)
+        }
+    }
+    private fun handleSaveDataUser(data: UserId) {
+        this.viewModelScope.async {
+            firebaseRepository.saveDataUser(data)
         }
     }
 
@@ -48,6 +56,18 @@ class LoginViewModel @AssistedInject constructor(
             }, { error ->
                 // Xử lý trường hợp lỗi ở đây
                 setState { copy(user = Fail(error)) }
+            })
+    }
+    @SuppressLint("CheckResult")
+    private fun handleGetUser(userId: String) {
+        setState { copy(dataUser = Loading()) }
+        firebaseRepository.getUser(userId)
+            .subscribe({ get ->
+                // lấy dữ liệu thành công
+                setState { copy(dataUser = Success(get)) }
+            }, { error ->
+                // Xử lý trường hợp lỗi ở đây
+                setState { copy(dataUser = Fail(error)) }
             })
     }
 

@@ -8,6 +8,7 @@ import dev.son.movie.network.repository.HomeRepository
 import dev.son.movie.utils.LocalHelper
 import dagger.Module
 import dagger.Provides
+import dev.son.movie.data.local.UserPreferences
 import dev.son.movie.network.repository.FirebaseRepository
 import dev.son.movie.network.repository.SearchRepository
 import javax.inject.Singleton
@@ -21,14 +22,16 @@ object NetWorkModule {
     fun providerRemoteDateSource(): RemoteDataSource = RemoteDataSource()
 
     @Provides
+    fun providerUserPreferences(context: Context): UserPreferences = UserPreferences(context)
+    @Provides
     fun providerHomeApi(
-        remoteDataSource: RemoteDataSource, context: Context
-    ) = remoteDataSource.buildApi(HomeApi::class.java, context)
+        remoteDataSource: RemoteDataSource
+    ) = remoteDataSource.buildApi(HomeApi::class.java)
 
     @Provides
     fun providerSearchApi(
-        remoteDataSource: RemoteDataSource, context: Context
-    ) = remoteDataSource.buildApi(SearchApi::class.java, context)
+        remoteDataSource: RemoteDataSource
+    ) = remoteDataSource.buildApi(SearchApi::class.java)
 
     @Provides
     @Singleton
@@ -39,8 +42,8 @@ object NetWorkModule {
     @Provides
     @Singleton
     fun provideFirebaseRepository(
-        database: FirebaseDatabase
-    ): FirebaseRepository = FirebaseRepository(database)
+        database: FirebaseDatabase,userPreferences: UserPreferences
+    ): FirebaseRepository = FirebaseRepository(database,userPreferences)
 
 
     @Provides

@@ -13,6 +13,7 @@ import dev.son.movie.R
 import dev.son.movie.TrackingApplication
 import dev.son.movie.core.TrackingBaseActivity
 import dev.son.movie.databinding.ActivityLogoutScreenBinding
+import dev.son.movie.network.models.user.MovieTrackinglist
 import dev.son.movie.network.models.user.UserId
 import dev.son.movie.ui.login.LoginActivity
 import dev.son.movie.ui.login.LoginViewAction
@@ -38,7 +39,7 @@ class SignUpActivity : TrackingBaseActivity<ActivityLogoutScreenBinding>(), Logi
         loginViewModel.subscribe(this) {
             when (it.user) {
                 is Success -> {
-                    finish()
+                    Toast.makeText(this, R.string.sign_up_success, Toast.LENGTH_SHORT).show()
                 }
 
                 is Fail -> {
@@ -81,9 +82,13 @@ class SignUpActivity : TrackingBaseActivity<ActivityLogoutScreenBinding>(), Logi
                         userId.apply {
                             this.email = user!!.email
                             this.userId = user.uid
-                            this.favoriteMovies = arrayListOf()
-                            this.watchedMovies = arrayListOf()
-                            this.movieRatings = arrayListOf()
+                            this.avatar = ""
+                            this.name = ""
+                            this.dateOfBirth = ""
+                            this.movieTrackinglist = MovieTrackinglist(
+                                arrayListOf(),
+                                arrayListOf(), arrayListOf()
+                            )
                         }
                         loginViewModel.handle(LoginViewAction.createUser(userId))
                     } else {

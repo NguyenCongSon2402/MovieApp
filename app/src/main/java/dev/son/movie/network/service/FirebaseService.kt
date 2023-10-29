@@ -8,4 +8,5 @@ import retrofit2.http.Path
 
 interface FirebaseService {
     fun register(userId: UserId): Observable<UserId>
+    fun getUser(userId: String): Observable<UserId>
 }

@@ -21,6 +21,7 @@ import dev.son.movie.network.models.user.UserId
 
 data class LoginViewState(
     val user: Async<UserId> = Uninitialized,
+    val dataUser: Async<UserId> = Uninitialized,
 ) : MvRxState {
     fun isLoadding() = user is Loading
 }

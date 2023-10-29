@@ -1,6 +1,6 @@
 package dev.son.movie.adapters
 
-import android.view.LayoutInflater
+import  android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.netflixclone.constants.BASE_IMG
-import dev.son.movie.databinding.ItemMediaBinding
 import dev.son.movie.databinding.ItemUpcomingMovieBinding
 import dev.son.movie.network.models.home.Items
 

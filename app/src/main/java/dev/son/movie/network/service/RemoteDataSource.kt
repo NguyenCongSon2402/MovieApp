@@ -41,8 +41,7 @@ class RemoteDataSource() {
             "https://moviedata-70216-default-rtdb.asia-southeast1.firebasedatabase.app/"
     }
     fun <Api> buildApi(
-        api: Class<Api>,
-        context: Context
+        api: Class<Api>
     ): Api {
         val gson = GsonBuilder()
             .registerTypeAdapter(Date::class.java, UnitEpochDateTypeAdapter())
@@ -58,24 +57,6 @@ class RemoteDataSource() {
             .build()
             .create(api)
     }
-    fun <Api> buildFirebase(
-        api: Class<Api>,
-        context: Context
-    ): Api {
-        val gson = GsonBuilder()
-            .registerTypeAdapter(Date::class.java, UnitEpochDateTypeAdapter())
-            .setLenient()
-            .create()
-
-
-        return Retrofit.Builder()
-            .baseUrl(FIREBASE_BASE_URL)
-            .client(getRetrofitClient())
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
-            .create(api)
-    }
     private fun getRetrofitClient(
     ): OkHttpClient {
 
@@ -84,7 +65,7 @@ class RemoteDataSource() {
             .readTimeout(31, TimeUnit.SECONDS)
             .connectTimeout(31, TimeUnit.SECONDS)
             .cookieJar(cookieJar())
-            .addNetworkInterceptor(customInterceptor())
+            .addNetworkInterceptor(loggingInterceptor())
             .also { client ->
                 if (BuildConfig.DEBUG) {
                     client.addInterceptor(loggingInterceptor())

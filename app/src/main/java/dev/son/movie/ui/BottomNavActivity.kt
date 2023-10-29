@@ -12,10 +12,8 @@ import dev.son.movie.ui.comingsoon.ComingSoonFragment
 import dev.son.movie.ui.home.HomeViewAction
 import dev.son.movie.ui.home.HomeViewModel
 import dev.son.movie.ui.home.HomeViewState
-import dev.son.movie.utils.applyExitMaterialTransform
-import dev.son.movie.utils.applyMaterialTransform
 import dev.son.moviestreamhub.screens.DownloadsFragment
-import kotlinx.coroutines.delay
+import dev.son.moviestreamhub.screens.MoreFragment
 import javax.inject.Inject
 
 
@@ -29,6 +27,7 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), Home
     private val homeFragment = HomeFragment()
     private val comingSoonFragment = ComingSoonFragment()
     private val downloadsFragment = DownloadsFragment()
+    private val moreFragment = MoreFragment()
     private val fragmentManager = supportFragmentManager
     private var activeFragment: Fragment = homeFragment
 
@@ -68,6 +67,7 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), Home
         fragmentManager.beginTransaction().apply {
             add(R.id.container, downloadsFragment, "downloads").hide(downloadsFragment)
             add(R.id.container, comingSoonFragment, "coming_soon").hide(comingSoonFragment)
+            add(R.id.container, moreFragment, "more").hide(moreFragment)
             add(R.id.container, homeFragment, "home")
         }.commit()
         views.bottomNavView.setOnNavigationItemSelectedListener {
@@ -102,6 +102,17 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), Home
 
                     true
                 }
+                R.id.more -> {
+                    if (!fragmentFirstDisplay[2]) {
+                        fragmentFirstDisplay[2] = true
+                        moreFragment.onFirstDisplay()
+                    }
+                    fragmentManager.beginTransaction().hide(activeFragment)
+                        .show(moreFragment).commit()
+                    activeFragment = moreFragment
+
+                    true
+                }
 
                 else -> false
             }
@@ -110,15 +121,8 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), Home
 
     override fun onAttachFragment(fragment: Fragment) {
         if (fragment is HomeFragment) {
-//            fragmentFirstDisplay[0] = true
-//            fragment.onFirstDisplay()
-        }
-    }
-
-    fun onFeedFragmentViewCreated() {
-        if (!fragmentFirstDisplay[0]) {
             fragmentFirstDisplay[0] = true
-            homeFragment.onFirstDisplay()
+            fragment.onFirstDisplay()
         }
     }
 
