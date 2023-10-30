@@ -141,7 +141,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         }
 
         loginViewModel.subscribe(this) {
-            when (it.dataUser) {
+            when (it.addTolist) {
                 is Success -> {
                     Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show()
                 }
@@ -390,20 +390,25 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         lifecycleScope.launch {
             val movieExists=userPreferences.checkWatchedMovie(movieID.toString())
             if (movieExists){
-                Toast.makeText(this@MovieDetailsActivity, "True", Toast.LENGTH_SHORT).show()
+               // Toast.makeText(this@MovieDetailsActivity, "True", Toast.LENGTH_SHORT).show()
                 views.header.igmAdd.setImageResource(R.drawable.ic_check)
                 mtList = !mtList!!
             }else {
-                Toast.makeText(this@MovieDetailsActivity, "False", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(this@MovieDetailsActivity, "False", Toast.LENGTH_SHORT).show()
                 views.header.igmAdd.setImageResource(R.drawable.ic_add)
+            }
+        }
+        lifecycleScope.launch {
+            userPreferences.userId.collect { it ->
+                idUser=it
+                Toast.makeText(this@MovieDetailsActivity, "${idUser}", Toast.LENGTH_SHORT).show()
             }
         }
 
         views.header.igmAdd.setOnClickListener {
-
             val imageResource = if (mtList == true) R.drawable.ic_check else R.drawable.ic_add
             views.header.igmAdd.setImageResource(imageResource)
-            loginViewModel.handle(LoginViewAction.addToList(movieID!!, idUser!!))
+            loginViewModel.handle(LoginViewAction.addToList(movieID!!,idUser!!))
             mtList = !mtList!!
         }
     }

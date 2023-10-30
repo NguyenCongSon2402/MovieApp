@@ -7,5 +7,5 @@ sealed class LoginViewAction : NimpeViewModelAction {
     data class createUser(val user: UserId) : LoginViewAction()
     data class getUser(val userId: String) : LoginViewAction()
     data class SaveDataUser(val userId: UserId) : LoginViewAction()
-    data class addToList(val IdMovie: String, val idUser: String) : LoginViewAction()
+    data class addToList(val IdMovie: String, val IdUser: String) : LoginViewAction()
 }

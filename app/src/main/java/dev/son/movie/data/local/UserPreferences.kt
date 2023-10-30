@@ -9,6 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import dev.son.movie.network.models.user.MovieTrackinglist
 import dev.son.movie.network.models.user.UserId
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -25,14 +26,15 @@ class UserPreferences @Inject constructor(context: Context) {
             preferences[USERNAME]
         }
 
-    val userFullname: Flow<String?>
+    val userId: Flow<String?>
         get() = mContext.dataStore.data.map { preferences ->
-            preferences[USER_FULLNAME]
+            preferences[USER_ID]
         }
+
 
     suspend fun saveUserFullname(fullname: String) {
         mContext.dataStore.edit { preferences ->
-            preferences[USER_FULLNAME] = fullname
+            preferences[USER_ID] = fullname
         }
     }
 
@@ -99,6 +101,7 @@ class UserPreferences @Inject constructor(context: Context) {
 
         }
     }
+
     suspend fun checkWatchedMovie(movieId: String): Boolean {
         var movieExists = false // Khởi tạo biến để kiểm tra xem movieId đã tồn tại hay chưa
         mContext.dataStore.edit { preferences ->
@@ -111,8 +114,6 @@ class UserPreferences @Inject constructor(context: Context) {
         }
         return movieExists // Trả về kết quả kiểm tra
     }
-
-
 
 
     suspend fun clear() {
@@ -134,5 +135,4 @@ class UserPreferences @Inject constructor(context: Context) {
         private val USER_EMAIL = stringPreferencesKey("key_user_email")
         const val APP_PREFERENCES = "nimpe_data_store"
     }
-
 }

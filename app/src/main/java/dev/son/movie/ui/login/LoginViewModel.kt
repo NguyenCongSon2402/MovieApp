@@ -32,7 +32,7 @@ class LoginViewModel @AssistedInject constructor(
             is LoginViewAction.createUser -> handleCreateUser(action.user)
             is LoginViewAction.getUser -> handleGetUser(action.userId)
             is LoginViewAction.SaveDataUser -> handleSaveDataUser(action.userId)
-            is LoginViewAction.addToList -> handleAddToList(action.IdMovie, action.idUser)
+            is LoginViewAction.addToList -> handleAddToList(action.IdMovie, action.IdUser)
         }
     }
 
@@ -45,7 +45,7 @@ class LoginViewModel @AssistedInject constructor(
     @SuppressLint("CheckResult")
     private fun handleAddToList(idMovie: String, idUser: String) {
         setState { copy(addTolist = Loading()) }
-        firebaseRepository.addToList(idMovie, idUser)
+        firebaseRepository.addToList(idMovie,idUser)
             .subscribe({ add ->
                 // Đăng ký thành công, bạn có thể cập nhật trạng thái ở đây
                 setState { copy(addTolist = Success(add)) }

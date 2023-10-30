@@ -15,7 +15,7 @@ import io.reactivex.schedulers.Schedulers
 class FirebaseRepository(val api: FirebaseDatabase, private val userPreferences: UserPreferences) :
     FirebaseService {
     private val usersRef = api.getReference("users")
-
+    val userId = userPreferences.userId
     override fun register(user: UserId): Observable<UserId> {
         val userId = user.userId.toString()
         return Observable.create { emitter ->
@@ -56,24 +56,28 @@ class FirebaseRepository(val api: FirebaseDatabase, private val userPreferences:
 
     override fun addToList(idMovie: String, idUser: String): Observable<String> {
         return Observable.create { emitter ->
-            val watchedMoviesRef = usersRef.child(idUser).child("movie_trackinglist").child("watched_movies")
+            //Log.e("ID", "${userId.toString()}")
+            val watchedMoviesRef = usersRef.child(idUser).child("movie_trackinglist")
+                .child("watched_movies")
 
             // Kiểm tra xem ID đã tồn tại trong danh sách chưa
             watchedMoviesRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    val currentMovies = dataSnapshot.value as? MutableList<String>
+                    val watchedMovies = dataSnapshot.value as? MutableList<String>
 
-                    if (currentMovies != null) {
-                        if (currentMovies.contains(idMovie)) {
+                    if (watchedMovies != null) {
+                        if (idMovie in watchedMovies) {
                             // Nếu ID đã tồn tại, xoá nó khỏi danh sách
-                            currentMovies.remove(idMovie)
+                            watchedMoviesRef.child(idMovie).removeValue()
+
                         } else {
                             // Nếu ID chưa tồn tại, thêm nó vào danh sách
-                            currentMovies.add(idMovie)
+                            watchedMoviesRef.child(idMovie).setValue(true)
                         }
-
-                        // Cập nhật toàn bộ danh sách watched_movies
-                        watchedMoviesRef.setValue(currentMovies)
+                    }
+                    else {
+                        watchedMoviesRef.push()
+                        watchedMoviesRef.child(idMovie).setValue(true)
                     }
 
                     emitter.onNext(idMovie)
@@ -87,8 +91,6 @@ class FirebaseRepository(val api: FirebaseDatabase, private val userPreferences:
             })
         }.subscribeOn(Schedulers.io())
     }
-
-
 
 
     suspend fun saveDataUser(data: UserId) {
