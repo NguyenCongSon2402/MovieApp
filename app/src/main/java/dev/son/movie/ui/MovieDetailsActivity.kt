@@ -49,13 +49,17 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstan
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
+import dev.son.movie.data.local.UserPreferences
+import dev.son.movie.ui.login.LoginViewAction
+import dev.son.movie.ui.login.LoginViewModel
+import dev.son.movie.ui.login.LoginViewState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @Suppress("DEPRECATION")
 class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>(),
-    HomeViewModel.Factory {
+    HomeViewModel.Factory, LoginViewModel.Factory {
 
     var exoPlayer: ExoPlayer? = null
     var isFullScreen = false
@@ -68,6 +72,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
 
     private var url = ""
     private val homeViewModel: HomeViewModel by viewModel()
+    private val loginViewModel: LoginViewModel by viewModel()
 
     private lateinit var similarMoviesItemsAdapter: MoviesAdapter
     private lateinit var videosController: VideosController
@@ -78,8 +83,17 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     private val movieID: String?
         get() = intent.extras?.getString("id")
 
+    var mtList: Boolean? = false
+    private var idUser: String? = null
+
     @Inject
     lateinit var homeViewModelFactory: HomeViewModel.Factory
+
+    @Inject
+    lateinit var loginviewmodelFactory: LoginViewModel.Factory
+
+    @Inject
+    lateinit var userPreferences: UserPreferences
 
     var isVideoRestarted = false
     var player: YouTubePlayer? = null
@@ -120,6 +134,20 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
                         this, getString(checkStatusApiRes(it.categoriesMovies)), Toast.LENGTH_SHORT
                     ).show()
                     homeViewModel.handleRemoveStateCategoriesMovies()
+                }
+
+                else -> {}
+            }
+        }
+
+        loginViewModel.subscribe(this) {
+            when (it.dataUser) {
+                is Success -> {
+                    Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show()
+                }
+
+                is Fail -> {
+                    Toast.makeText(this, "Fail", Toast.LENGTH_SHORT).show()
                 }
 
                 else -> {}
@@ -358,8 +386,27 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         videosController = VideosController {}
         views.videosList.adapter = videosController.adapter
         views.videosList.isNestedScrollingEnabled = false
-    }
 
+        lifecycleScope.launch {
+            val movieExists=userPreferences.checkWatchedMovie(movieID.toString())
+            if (movieExists){
+                Toast.makeText(this@MovieDetailsActivity, "True", Toast.LENGTH_SHORT).show()
+                views.header.igmAdd.setImageResource(R.drawable.ic_check)
+                mtList = !mtList!!
+            }else {
+                Toast.makeText(this@MovieDetailsActivity, "False", Toast.LENGTH_SHORT).show()
+                views.header.igmAdd.setImageResource(R.drawable.ic_add)
+            }
+        }
+
+        views.header.igmAdd.setOnClickListener {
+
+            val imageResource = if (mtList == true) R.drawable.ic_check else R.drawable.ic_add
+            views.header.igmAdd.setImageResource(imageResource)
+            loginViewModel.handle(LoginViewAction.addToList(movieID!!, idUser!!))
+            mtList = !mtList!!
+        }
+    }
     private fun showLoader(flag: Boolean) {
         if (flag) {
             views.loader.root.show()
@@ -489,6 +536,10 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     override fun onPause() {
         super.onPause()
         exoPlayer!!.pause()
+    }
+
+    override fun create(initialState: LoginViewState): LoginViewModel {
+        return loginviewmodelFactory.create(initialState)
     }
 
 }

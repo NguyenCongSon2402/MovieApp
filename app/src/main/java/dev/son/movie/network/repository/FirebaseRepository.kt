@@ -1,8 +1,10 @@
 package dev.son.movie.network.repository
 
 import android.util.Log
-import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import dev.son.movie.data.local.UserPreferences
 import dev.son.movie.network.models.user.UserId
 import dev.son.movie.network.service.FirebaseService
@@ -10,7 +12,7 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 
 
-class FirebaseRepository(val api: FirebaseDatabase,private val userPreferences: UserPreferences) :
+class FirebaseRepository(val api: FirebaseDatabase, private val userPreferences: UserPreferences) :
     FirebaseService {
     private val usersRef = api.getReference("users")
 
@@ -51,6 +53,43 @@ class FirebaseRepository(val api: FirebaseDatabase,private val userPreferences: 
                 }
         }.subscribeOn(Schedulers.io())
     }
+
+    override fun addToList(idMovie: String, idUser: String): Observable<String> {
+        return Observable.create { emitter ->
+            val watchedMoviesRef = usersRef.child(idUser).child("movie_trackinglist").child("watched_movies")
+
+            // Kiểm tra xem ID đã tồn tại trong danh sách chưa
+            watchedMoviesRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val currentMovies = dataSnapshot.value as? MutableList<String>
+
+                    if (currentMovies != null) {
+                        if (currentMovies.contains(idMovie)) {
+                            // Nếu ID đã tồn tại, xoá nó khỏi danh sách
+                            currentMovies.remove(idMovie)
+                        } else {
+                            // Nếu ID chưa tồn tại, thêm nó vào danh sách
+                            currentMovies.add(idMovie)
+                        }
+
+                        // Cập nhật toàn bộ danh sách watched_movies
+                        watchedMoviesRef.setValue(currentMovies)
+                    }
+
+                    emitter.onNext(idMovie)
+                    emitter.onComplete()
+                }
+
+                override fun onCancelled(databaseError: DatabaseError) {
+                    // Xử lý lỗi nếu cần
+                    emitter.onError(databaseError.toException())
+                }
+            })
+        }.subscribeOn(Schedulers.io())
+    }
+
+
+
 
     suspend fun saveDataUser(data: UserId) {
         userPreferences.saveUserData(data)

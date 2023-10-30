@@ -120,6 +120,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         }
         intent.putExtra("name", items.slug)
         intent.putExtra("category", randomSlug)
+        intent.putExtra("id", items.Id)
 
 
         val options = ActivityOptions.makeSceneTransitionAnimation(

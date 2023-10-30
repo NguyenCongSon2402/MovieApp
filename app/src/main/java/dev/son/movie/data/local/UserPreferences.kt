@@ -14,6 +14,7 @@ import javax.inject.Inject
 
 private val Context.dataStore by preferencesDataStore(UserPreferences.APP_PREFERENCES)
 
+@Suppress("UNCHECKED_CAST")
 class UserPreferences @Inject constructor(context: Context) {
 
     private val mContext = context
@@ -40,16 +41,18 @@ class UserPreferences @Inject constructor(context: Context) {
         get() = mContext.dataStore.data.map { preferences ->
             preferences[USER_EMAIL]
         }
-    val userRole: Flow<String?>
+    val getUserId: Flow<UserId?>
         get() = mContext.dataStore.data.map { preferences ->
-            preferences[USER_ROLE]
+            UserId(
+                userId = preferences[USER_ID],
+                movieTrackinglist = MovieTrackinglist(
+                    watchedMovies = ArrayList(preferences[WATCHED_MOVIES] ?: emptySet()),
+                    favoriteMovies = ArrayList(
+                        preferences[FAVORITE_MOVIES] ?: emptySet()
+                    )
+                )
+            )
         }
-
-    suspend fun saveUserRole(authority: String) {
-        mContext.dataStore.edit { preferences ->
-            preferences[USER_ROLE] = authority
-        }
-    }
 
 
     fun getUserDataFlow(): Flow<UserId> {
@@ -71,13 +74,45 @@ class UserPreferences @Inject constructor(context: Context) {
     suspend fun saveUserData(user: UserId) {
         mContext.dataStore.edit { preferences ->
             preferences[USER_ID] = user.userId ?: ""
-            preferences[USER_ID] = user.email ?: ""
             preferences[USER_EMAIL] = user.email ?: "email@gmail.com"
             // Lưu danh sách watched_movies và favorite_movies dưới dạng Set
-            preferences[WATCHED_MOVIES] = user.movieTrackinglist?.watchedMovies?.toSet() ?: emptySet()
-            preferences[FAVORITE_MOVIES] = user.movieTrackinglist?.favoriteMovies?.toSet()?: emptySet()
+            preferences[WATCHED_MOVIES] =
+                user.movieTrackinglist?.watchedMovies?.toSet() ?: emptySet()
+            preferences[FAVORITE_MOVIES] =
+                user.movieTrackinglist?.favoriteMovies?.toSet() ?: emptySet()
         }
     }
+
+    suspend fun toggleWatchedMovie(movieId: String) {
+        mContext.dataStore.edit { preferences ->
+            // Nếu userId trùng khớp, lấy danh sách watchedMovies hiện tại
+            val currentWatchedMovies = preferences[WATCHED_MOVIES] ?: emptySet()
+
+            // Kiểm tra xem movieId đã tồn tại trong danh sách chưa
+            if (movieId in currentWatchedMovies) {
+                // Nếu đã tồn tại, xoá nó đi
+                preferences[WATCHED_MOVIES] = currentWatchedMovies - movieId
+            } else {
+                // Nếu chưa tồn tại, thêm nó vào
+                preferences[WATCHED_MOVIES] = currentWatchedMovies + movieId
+            }
+
+        }
+    }
+    suspend fun checkWatchedMovie(movieId: String): Boolean {
+        var movieExists = false // Khởi tạo biến để kiểm tra xem movieId đã tồn tại hay chưa
+        mContext.dataStore.edit { preferences ->
+            // Nếu userId trùng khớp, lấy danh sách watchedMovies hiện tại
+            val currentWatchedMovies = preferences[WATCHED_MOVIES] ?: emptySet()
+            // Kiểm tra xem movieId đã tồn tại trong danh sách chưa
+            if (movieId in currentWatchedMovies) {
+                movieExists = true // Đánh dấu rằng movieId đã tồn tại
+            }
+        }
+        return movieExists // Trả về kết quả kiểm tra
+    }
+
+
 
 
     suspend fun clear() {

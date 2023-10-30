@@ -5,6 +5,7 @@ import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyHolder
@@ -56,11 +57,13 @@ abstract class HeaderModel : EpoxyModelWithHolder<HeaderModel.HeaderHolder>() {
         lateinit var backgroundImage: ImageView
         lateinit var genreText: TextView
         lateinit var infoButton: LinearLayout
+        lateinit var addToList: LinearLayout
 
         override fun bindView(itemView: View) {
             backgroundImage = itemView.findViewById(R.id.background_image)
             genreText = itemView.findViewById(R.id.genres_text)
             infoButton = itemView.findViewById(R.id.info_button)
+            addToList = itemView.findViewById(R.id.add_to_list_button)
         }
     }
 
@@ -86,7 +89,9 @@ abstract class HeaderModel : EpoxyModelWithHolder<HeaderModel.HeaderHolder>() {
                 onInfoClick(data!!.items[0], holder.backgroundImage)
                 //holder.backgroundImage.isEnabled = false
             }
-
+//            holder.addToList.setSingleClickListener {
+//                onInfoClick(data!!.items[0], holder.addToList[R.id.img_add])
+//            }
 
         }
     }
@@ -113,7 +118,7 @@ abstract class CategoryModel : EpoxyModelWithHolder<CategoryModel.FeedItemHorizo
     }
 
     override fun bind(holder: FeedItemHorizontalListHolder) {
-        if (data!=null) {
+        if (data != null) {
             holder.titleText.text = data!!.titlePage
             val controller = MediaItemsController(onItemClick)
             controller.setData(data!!.items)

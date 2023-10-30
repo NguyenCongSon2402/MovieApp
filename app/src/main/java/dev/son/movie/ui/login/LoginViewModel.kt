@@ -14,8 +14,6 @@ import com.airbnb.mvrx.Uninitialized
 import com.airbnb.mvrx.ViewModelContext
 import dev.son.movie.core.TrackingViewModel
 
-import dev.son.movie.network.repository.HomeRepository
-
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -33,13 +31,28 @@ class LoginViewModel @AssistedInject constructor(
 
             is LoginViewAction.createUser -> handleCreateUser(action.user)
             is LoginViewAction.getUser -> handleGetUser(action.userId)
-            is LoginViewAction.SaveDataUser ->handleSaveDataUser(action.userId)
+            is LoginViewAction.SaveDataUser -> handleSaveDataUser(action.userId)
+            is LoginViewAction.addToList -> handleAddToList(action.IdMovie, action.idUser)
         }
     }
+
     private fun handleSaveDataUser(data: UserId) {
         this.viewModelScope.async {
             firebaseRepository.saveDataUser(data)
         }
+    }
+
+    @SuppressLint("CheckResult")
+    private fun handleAddToList(idMovie: String, idUser: String) {
+        setState { copy(addTolist = Loading()) }
+        firebaseRepository.addToList(idMovie, idUser)
+            .subscribe({ add ->
+                // Đăng ký thành công, bạn có thể cập nhật trạng thái ở đây
+                setState { copy(addTolist = Success(add)) }
+            }, { error ->
+                // Xử lý trường hợp lỗi ở đây
+                setState { copy(addTolist = Fail(error)) }
+            })
     }
 
 
@@ -58,6 +71,7 @@ class LoginViewModel @AssistedInject constructor(
                 setState { copy(user = Fail(error)) }
             })
     }
+
     @SuppressLint("CheckResult")
     private fun handleGetUser(userId: String) {
         setState { copy(dataUser = Loading()) }

@@ -74,7 +74,8 @@
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:src="@drawable/ic_star"
-                app:tint="@color/text_secondary" />
+                app:tint="@color/text_secondary"
+                android:contentDescription="Add" />
 
             <TextView
                 android:id="@+id/rating_text"
@@ -177,9 +178,9 @@
             android:paddingVertical="12dp">
 
             <ImageView
+                android:id="@+id/igm_add"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_add"
                 app:tint="@color/white" />
 
             <TextView
