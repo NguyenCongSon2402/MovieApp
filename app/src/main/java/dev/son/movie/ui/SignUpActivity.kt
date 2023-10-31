@@ -1,6 +1,5 @@
 package dev.son.movie.ui
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -13,9 +12,9 @@ import dev.son.movie.R
 import dev.son.movie.TrackingApplication
 import dev.son.movie.core.TrackingBaseActivity
 import dev.son.movie.databinding.ActivityLogoutScreenBinding
-import dev.son.movie.network.models.user.MovieTrackinglist
+import dev.son.movie.network.models.user.Category
 import dev.son.movie.network.models.user.UserId
-import dev.son.movie.ui.login.LoginActivity
+import dev.son.movie.network.models.user.ViewingHistory
 import dev.son.movie.ui.login.LoginViewAction
 import dev.son.movie.ui.login.LoginViewModel
 import dev.son.movie.ui.login.LoginViewState
@@ -85,10 +84,16 @@ class SignUpActivity : TrackingBaseActivity<ActivityLogoutScreenBinding>(), Logi
                             this.avatar = ""
                             this.name = ""
                             this.dateOfBirth = ""
-                            this.movieTrackinglist = MovieTrackinglist(
-                                arrayListOf(),
-                                arrayListOf(), arrayListOf()
-                            )
+                            this.favoriteMovies = arrayListOf()
+                            this.viewingHistory = arrayListOf(ViewingHistory(
+                                slug = "nu-hoang-elizabeth-de-nhat",
+                                type = "single",
+                                movieId = "movie_id_1",
+                                category = arrayListOf(
+                                    Category("Chính kịch", "chinh-kich")
+                                ),
+                                timestamp = "2023-10-17T10:30:00"
+                            ))
                         }
                         loginViewModel.handle(LoginViewAction.createUser(userId))
                     } else {
@@ -101,7 +106,6 @@ class SignUpActivity : TrackingBaseActivity<ActivityLogoutScreenBinding>(), Logi
                                 Toast.LENGTH_SHORT
                             ).show()
                         } else {
-                            // Xử lý các trường hợp lỗi khác
                             Log.w("TAG", "createUserWithEmail:failure", exception)
                             Toast.makeText(
                                 this,

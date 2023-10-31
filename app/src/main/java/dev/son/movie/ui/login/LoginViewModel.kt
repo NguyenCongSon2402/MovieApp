@@ -17,6 +17,7 @@ import dev.son.movie.core.TrackingViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dev.son.movie.network.models.user.MovieId1
 import dev.son.movie.network.models.user.UserId
 import dev.son.movie.network.repository.FirebaseRepository
 import kotlinx.coroutines.async
@@ -43,7 +44,7 @@ class LoginViewModel @AssistedInject constructor(
     }
 
     @SuppressLint("CheckResult")
-    private fun handleAddToList(idMovie: String, idUser: String) {
+    private fun handleAddToList(idMovie: MovieId1, idUser: String) {
         setState { copy(addTolist = Loading()) }
         firebaseRepository.addToList(idMovie,idUser)
             .subscribe({ add ->

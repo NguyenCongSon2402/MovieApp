@@ -50,6 +50,8 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
 import dev.son.movie.data.local.UserPreferences
+import dev.son.movie.network.models.Slug.Category
+import dev.son.movie.network.models.user.MovieId1
 import dev.son.movie.ui.login.LoginViewAction
 import dev.son.movie.ui.login.LoginViewModel
 import dev.son.movie.ui.login.LoginViewState
@@ -85,6 +87,8 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
 
     var mtList: Boolean? = false
     private var idUser: String? = null
+    private val movieId1: MovieId1 = MovieId1()
+    private var item: Slug = Slug()
 
     @Inject
     lateinit var homeViewModelFactory: HomeViewModel.Factory
@@ -109,6 +113,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             when (it.slug) {
                 is Success -> {
                     homeViewModel.handleRemoveStateSlug()
+                    item=it.slug.invoke()
                     showLoader(false)
                     updateDetails(it.slug.invoke())
                 }
@@ -144,6 +149,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             when (it.addTolist) {
                 is Success -> {
                     Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show()
+                    save(it.addTolist.invoke())
                 }
 
                 is Fail -> {
@@ -156,6 +162,11 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         setUpPlayVideo()
     }
 
+    private fun save(id: String) {
+        lifecycleScope.launch {
+            userPreferences.toggleWatchedMovie(id)
+        }
+    }
 
     private fun setUpPlayVideo() {
         handler = Handler(Looper.getMainLooper())
@@ -388,30 +399,43 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         views.videosList.isNestedScrollingEnabled = false
 
         lifecycleScope.launch {
-            val movieExists=userPreferences.checkWatchedMovie(movieID.toString())
-            if (movieExists){
-               // Toast.makeText(this@MovieDetailsActivity, "True", Toast.LENGTH_SHORT).show()
+            val movieExists = userPreferences.checkWatchedMovie(movieID.toString())
+            if (movieExists) {
+                // Toast.makeText(this@MovieDetailsActivity, "True", Toast.LENGTH_SHORT).show()
                 views.header.igmAdd.setImageResource(R.drawable.ic_check)
                 mtList = !mtList!!
-            }else {
+            } else {
                 //Toast.makeText(this@MovieDetailsActivity, "False", Toast.LENGTH_SHORT).show()
                 views.header.igmAdd.setImageResource(R.drawable.ic_add)
             }
         }
         lifecycleScope.launch {
             userPreferences.userId.collect { it ->
-                idUser=it
+                idUser = it
                 Toast.makeText(this@MovieDetailsActivity, "${idUser}", Toast.LENGTH_SHORT).show()
             }
         }
 
         views.header.igmAdd.setOnClickListener {
+            mtList = !mtList!!
             val imageResource = if (mtList == true) R.drawable.ic_check else R.drawable.ic_add
             views.header.igmAdd.setImageResource(imageResource)
-            loginViewModel.handle(LoginViewAction.addToList(movieID!!,idUser!!))
-            mtList = !mtList!!
+            movieId1.apply {
+                this.movieId1 = movieID
+                this.slug = movieSlug
+                this.category = ArrayList<Category>().apply {
+                    item.data?.item?.category?.get(0)?.let { add(it) }
+                }
+                this.type=item.data?.item?.type
+
+            }
+
+            if (!idUser.isNullOrEmpty()) {
+                loginViewModel.handle(LoginViewAction.addToList(movieId1, idUser!!))
+            }
         }
     }
+
     private fun showLoader(flag: Boolean) {
         if (flag) {
             views.loader.root.show()
