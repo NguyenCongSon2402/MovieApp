@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.airbnb.mvrx.Fail
 import dev.son.movie.R
+import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -68,6 +69,18 @@ fun extractVideoIdFromUrl(url: String): String? {
     }
     return null
 }
+fun getCurrentFormattedTime(): String {
+    val dateFormat = SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.getDefault())
+    val currentTime = Date(System.currentTimeMillis())
+    return dateFormat.format(currentTime)
+}
+fun getCurrentFormattedDateTimeWithMilliseconds(): String {
+    val dateFormat = SimpleDateFormat("HHmmssSSSddMMyyyy", Locale.getDefault())
+    val currentTime = Date(System.currentTimeMillis())
+    return dateFormat.format(currentTime)
+}
+
+
 
 fun <T> checkStatusApiRes(err: Fail<T>): Int {
     return when (err.error.message!!.trim()) {

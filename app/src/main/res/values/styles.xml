@@ -21,4 +21,10 @@
         <item name="cornerRadius">24dp</item>
 
     </style>
+    <style name="layoutSetting">
+        <item name="android:elevation">1dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:stateListAnimator">@drawable/shrink</item>
+        <item name="android:focusable">true</item>
+    </style>
 </resources>

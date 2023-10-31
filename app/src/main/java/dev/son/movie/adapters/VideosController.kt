@@ -9,12 +9,25 @@ import dev.son.movie.network.models.Slug.Item
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+import de.hdodenhof.circleimageview.CircleImageView
+import dev.son.movie.network.models.postcomment.UserIdComment
 
-class VideosController(private val onItemClick: ((Item) -> Unit)) :
-    TypedEpoxyController<List<Item>>() {
-    override fun buildModels(videos: List<Item>?) {
-        videos?.forEachIndexed { index, it ->
-
+class VideosController :
+    TypedEpoxyController<MutableList<UserIdComment>>() {
+    override fun buildModels(comment: MutableList<UserIdComment>?) {
+        if (comment.isNullOrEmpty()) {
+            EmptyModel_()
+                .id("emptyModel")
+                .addTo(this)
+        } else {
+            comment.forEachIndexed { index, it ->
+                it.let { data ->
+                    VideoModel_()
+                        .id("$index")
+                        .comment(data)
+                        .addTo(this)
+                }
+            }
         }
     }
 }
@@ -23,30 +36,37 @@ class VideosController(private val onItemClick: ((Item) -> Unit)) :
 abstract class VideoModel : EpoxyModelWithHolder<VideoModel.VideoHolder>() {
 
     @EpoxyAttribute
-    lateinit var video: Item
-
-    @EpoxyAttribute
-    lateinit var onClick: (Item) -> Unit
+    lateinit var comment: UserIdComment
 
     inner class VideoHolder : EpoxyHolder() {
-        lateinit var container: ConstraintLayout
-        lateinit var youtubePlayerView: YouTubePlayerView
-        lateinit var titleText: TextView
+        lateinit var img_user: CircleImageView
+        lateinit var user_name: TextView
+        lateinit var comment: TextView
+        lateinit var hour: TextView
         override fun bindView(itemView: View) {
-            container = itemView.findViewById(R.id.container)
-            youtubePlayerView = itemView.findViewById(R.id.youtube_player_view)
-            titleText = itemView.findViewById(R.id.title_text)
+            img_user = itemView.findViewById(R.id.img_user)
+            user_name = itemView.findViewById(R.id.user_name)
+            comment = itemView.findViewById(R.id.comment)
+            hour = itemView.findViewById(R.id.hour)
         }
     }
 
     override fun bind(holder: VideoHolder) {
-        holder.titleText.text = video.name
-        holder.youtubePlayerView.getYouTubePlayerWhenReady(object: YouTubePlayerCallback{
-            override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
-                //youTubePlayer.cueVideo(video.key, 0f)
-            }
-        })
+        holder.user_name.text = comment.name
+        holder.comment.text = comment.text
+        holder.hour.text = comment.timestamp
     }
 
-    override fun getDefaultLayout(): Int = R.layout.item_video
+    override fun getDefaultLayout(): Int = R.layout.item_comment
+}
+
+@EpoxyModelClass
+abstract class EmptyModel : EpoxyModelWithHolder<EmptyModel.EmptyHolder>() {
+    inner class EmptyHolder : EpoxyHolder() {
+        override fun bindView(itemView: View) {}
+    }
+
+    override fun bind(holder: EmptyHolder) {}
+
+    override fun getDefaultLayout(): Int = R.layout.item_empty
 }

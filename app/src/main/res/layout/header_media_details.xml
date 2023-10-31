@@ -203,16 +203,17 @@
             android:paddingVertical="12dp">
 
             <ImageView
+                android:id="@+id/img_favorite"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_thumb_up"
+                android:src="@drawable/ic_unfavorite"
                 app:tint="@color/white" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Rate"
+                android:text="Like"
                 android:textSize="12sp" />
         </LinearLayout>
 

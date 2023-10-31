@@ -13,6 +13,7 @@ import dev.son.movie.ui.CategoryMoviesActivity
 import dev.son.movie.ui.SignUpActivity
 import dev.son.movie.ui.login.LoginActivity
 import dev.son.movie.ui.search.SearchActivity
+import dev.son.moviestreamhub.screens.MoreFragment
 import javax.inject.Singleton
 
 @Component(
@@ -29,6 +30,7 @@ interface TrackingComponent {
     fun inject(searchActivity: SearchActivity)
     fun inject(categoryMoviesActivity: CategoryMoviesActivity)
     fun inject(homeFragment: HomeFragment)
+    fun inject(moreFragment: MoreFragment)
 
     fun inject(movieDetailsActivity: MovieDetailsActivity)
     fun inject(tvDetailsActivity: TvDetailsActivity)

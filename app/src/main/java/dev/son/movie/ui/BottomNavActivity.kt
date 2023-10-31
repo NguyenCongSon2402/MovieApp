@@ -12,17 +12,23 @@ import dev.son.movie.ui.comingsoon.ComingSoonFragment
 import dev.son.movie.ui.home.HomeViewAction
 import dev.son.movie.ui.home.HomeViewModel
 import dev.son.movie.ui.home.HomeViewState
+import dev.son.movie.ui.login.LoginViewModel
+import dev.son.movie.ui.login.LoginViewState
 import dev.son.moviestreamhub.screens.DownloadsFragment
 import dev.son.moviestreamhub.screens.MoreFragment
 import javax.inject.Inject
 
 
 @Suppress("DEPRECATION")
-class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), HomeViewModel.Factory {
+class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), HomeViewModel.Factory,
+    LoginViewModel.Factory {
 
 
     // Flags to know whether bottom tab fragments are displayed at least once
     private val fragmentFirstDisplay = mutableListOf(false, false, false)
+
+    @Inject
+    lateinit var loginViewModelFactory: LoginViewModel.Factory
 
     private val homeFragment = HomeFragment()
     private val comingSoonFragment = ComingSoonFragment()
@@ -102,6 +108,7 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), Home
 
                     true
                 }
+
                 R.id.more -> {
                     if (!fragmentFirstDisplay[2]) {
                         fragmentFirstDisplay[2] = true
@@ -128,5 +135,9 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), Home
 
     override fun create(initialState: HomeViewState): HomeViewModel {
         return homeViewModelFactory.create(initialState)
+    }
+
+    override fun create(initialState: LoginViewState): LoginViewModel {
+        return loginViewModelFactory.create(initialState)
     }
 }

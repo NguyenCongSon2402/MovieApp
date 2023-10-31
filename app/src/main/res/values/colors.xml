@@ -19,4 +19,6 @@
     <color name="red">#E50914</color>
     <color name="black_transparent">#BF000000</color>
     <color name="bottom_sheet_bg">#2B2B2B</color>
+    <color name="purple">#793BDD</color>
+    <color name="main">#1F1D2B</color>
 </resources>

@@ -52,13 +52,26 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstan
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
+import dev.son.movie.adapters.VideosController
+import dev.son.movie.data.local.UserPreferences
+import dev.son.movie.network.models.Slug.Category
+import dev.son.movie.network.models.postcomment.UserIdComment
+import dev.son.movie.network.models.user.MovieId1
+import dev.son.movie.network.models.user.UserId
+import dev.son.movie.ui.login.LoginViewAction
+import dev.son.movie.ui.login.LoginViewModel
+import dev.son.movie.ui.login.LoginViewState
+import dev.son.movie.utils.getCurrentFormattedDateTimeWithMilliseconds
+import dev.son.movie.utils.getCurrentFormattedTime
+import dev.son.movie.utils.hideKeyboard
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @Suppress("DEPRECATION")
 class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>(),
-    HomeViewModel.Factory {
+    HomeViewModel.Factory, LoginViewModel.Factory {
     private lateinit var episodeItemsAdapter: EpisodeItemsAdapter
     private lateinit var similarMoviesItemsAdapter: MoviesAdapter
 
@@ -74,9 +87,26 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
     private lateinit var progress_bar: ProgressBar
     var handler: Handler? = null
     private var url = ""
+    private var user: UserId = UserId()
+
+    var mtList: Boolean? = false
+    var favorite: Boolean? = false
+    private var idUser: String? = null
+    private val movieId1: MovieId1 = MovieId1()
+    private lateinit var videosController: VideosController
+    private var item: Slug = Slug()
+    private var userComment: UserIdComment = UserIdComment()
+    private var listData: MutableList<UserIdComment> = mutableListOf()
 
 
     private val homeViewModel: HomeViewModel by viewModel()
+    private val loginViewModel: LoginViewModel by viewModel()
+
+    @Inject
+    lateinit var loginviewmodelFactory: LoginViewModel.Factory
+
+    @Inject
+    lateinit var userPreferences: UserPreferences
 
     @Inject
     lateinit var homeViewModelFactory: HomeViewModel.Factory
@@ -86,7 +116,7 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
         get() = intent.extras?.getString("category")
     private val thumbUrl: String?
         get() = intent.extras?.getString("thumbUrl")
-    private val movieId: String?
+    private val movieID: String?
         get() = intent.extras?.getString("id")
 
 
@@ -99,11 +129,13 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
         super.onCreate(savedInstanceState)
         movieSlug?.let { homeViewModel.handle(HomeViewAction.getSlug(name = it)) }
         movieCategory?.let { homeViewModel.handle(HomeViewAction.getCategoriesMovies(name = it)) }
+        movieID?.let { LoginViewAction.getComment(it) }?.let { loginViewModel.handle(it) }
         setupUI()
         homeViewModel.subscribe(this) {
             when (it.slug) {
                 is Success -> {
                     homeViewModel.handleRemoveStateSlug()
+                    item=it.slug.invoke()
                     setLoading(false)
                     updateDetails(it.slug.invoke())
                 }
@@ -134,7 +166,78 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
                 else -> {}
             }
         }
+        loginViewModel.subscribe(this) {
+            when (it.addTolist) {
+                is Success -> {
+                    Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show()
+                    saveMyList(it.addTolist.invoke())
+                    loginViewModel.handleRemoveStateAddToList()
+                }
+
+                is Fail -> {
+                    Toast.makeText(this, "Fail", Toast.LENGTH_SHORT).show()
+                    loginViewModel.handleRemoveStateAddToList()
+                }
+
+                else -> {}
+            }
+            when(it.addToFavorite){
+                is Success -> {
+                    Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show()
+                    saveFavorite(it.addToFavorite.invoke())
+                    loginViewModel.handleRemoveStateAddToFavorite()
+                }
+
+                is Fail -> {
+                    Toast.makeText(this, "Fail", Toast.LENGTH_SHORT).show()
+                    loginViewModel.handleRemoveStateAddToFavorite()
+                }
+
+                else -> {}
+            }
+            when (it.getComments) {
+                is Success -> {
+                    Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show()
+                    listData = it.getComments.invoke()
+                    videosController.setData(listData)
+                    loginViewModel.handleRemoveStateAddToFavorite()
+                }
+
+                is Fail -> {
+                    Toast.makeText(this, "Fail", Toast.LENGTH_SHORT).show()
+                    loginViewModel.handleRemoveStateAddToFavorite()
+                }
+
+                else -> {}
+            }
+            when (it.addComments) {
+                is Success -> {
+                    Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show()
+                    listData.add(0, it.addComments.invoke())
+                    videosController.setData(listData)
+                    loginViewModel.handleRemoveStateAddComment()
+                }
+
+                is Fail -> {
+                    Toast.makeText(this, "Fail", Toast.LENGTH_SHORT).show()
+                    loginViewModel.handleRemoveStateAddComment()
+                }
+
+                else -> {}
+            }
+        }
         setUpPlayVideo()
+    }
+    private fun saveFavorite(id: String) {
+        lifecycleScope.launch {
+            userPreferences.toggleFavoriteMovie(id)
+        }
+    }
+
+    private fun saveMyList(id: String) {
+        lifecycleScope.launch {
+            userPreferences.toggleWatchedMovie(id)
+        }
     }
 
     private fun setUpPlayVideo() {
@@ -375,42 +478,116 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
         }
         views.menusTabLayout.addOnTabSelectedListener(tabSelectedListener)
 
-//        views.seasonPicker.setOnClickListener { handleSeasonPickerSelectClick() }
-
         episodeItemsAdapter = EpisodeItemsAdapter(this::handleEpisodeClick, thumbUrl!!)
         views.episodesList.adapter = episodeItemsAdapter
         views.episodesList.isNestedScrollingEnabled = false
 
         similarMoviesItemsAdapter = MoviesAdapter(this::handleTvClick)
         views.similarTvsList.adapter = similarMoviesItemsAdapter
-        views.similarTvsList.isNestedScrollingEnabled = false
-//
-//        videosController = VideosController {}
-//        binding.videosList.adapter = videosController.adapter
-//        binding.videosList.isNestedScrollingEnabled = false
+        views.similarTvsList.isNestedScrollingEnabled = true
+        videosController = VideosController()
+        views.videosList.adapter = videosController.adapter
+        views.videosList.isNestedScrollingEnabled = true
+
+
+        //add favorite
+        lifecycleScope.launch {
+            val movieExists = userPreferences.checkFavoriteMovie(movieID.toString()).first()
+            if (movieExists) {
+                // Toast.makeText(this@MovieDetailsActivity, "True", Toast.LENGTH_SHORT).show()
+                views.header.imgFavorite.setImageResource(R.drawable.ic_favorite)
+                favorite = !favorite!!
+            } else {
+                //Toast.makeText(this@MovieDetailsActivity, "False", Toast.LENGTH_SHORT).show()
+                views.header.imgFavorite.setImageResource(R.drawable.ic_unfavorite)
+            }
+        }
+
+
+        // add to list
+        lifecycleScope.launch {
+            val movieExists = userPreferences.checkWatchedMovie(movieID.toString()).first()
+            if (movieExists) {
+                // Toast.makeText(this@MovieDetailsActivity, "True", Toast.LENGTH_SHORT).show()
+                views.header.igmAdd.setImageResource(R.drawable.ic_check)
+                mtList = !mtList!!
+            } else {
+                //Toast.makeText(this@MovieDetailsActivity, "False", Toast.LENGTH_SHORT).show()
+                views.header.igmAdd.setImageResource(R.drawable.ic_add)
+            }
+        }
+        lifecycleScope.launch {
+            userPreferences.userId.collect {
+                if (it != null) {
+                    idUser = it.userId
+                    user = it
+                }
+                Toast.makeText(this@TvDetailsActivity, "${idUser}", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        views.header.igmAdd.setOnClickListener {
+            mtList = !mtList!!
+            val imageResource = if (mtList == true) R.drawable.ic_check else R.drawable.ic_add
+            views.header.igmAdd.setImageResource(imageResource)
+            movieId1.apply {
+                this.movieId1 = movieID
+                this.slug = movieSlug
+                this.category = ArrayList<Category>().apply {
+                    item.data?.item?.category?.get(0)?.let { add(it) }
+                }
+                this.type=item.data?.item?.type
+                this.thumbUrl=item.data?.item?.thumbUrl
+
+            }
+
+            if (!idUser.isNullOrEmpty()) {
+                loginViewModel.handle(LoginViewAction.addToList(movieId1, idUser!!))
+            }
+        }
+        views.header.imgFavorite.setOnClickListener {
+            favorite = !favorite!!
+            val imageResource = if (favorite == true) R.drawable.ic_favorite else R.drawable.ic_unfavorite
+            views.header.imgFavorite.setImageResource(imageResource)
+            movieId1.apply {
+                this.movieId1 = movieID
+                this.slug = movieSlug
+                this.category = ArrayList<Category>().apply {
+                    item.data?.item?.category?.get(0)?.let { add(it) }
+                }
+                this.type=item.data?.item?.type
+                this.thumbUrl=item.data?.item?.thumbUrl
+            }
+
+            if (!idUser.isNullOrEmpty()) {
+                loginViewModel.handle(LoginViewAction.addToFavorite(movieId1, idUser!!))
+            }
+        }
+
+        // add comment
+        views.layoutTab.setOnClickListener {
+            hideKeyboard()
+            views.commentTextInput.clearFocus()
+        }
+        views.addIcon.setOnClickListener {
+            val comment = views.commentTextInput.text.toString()
+            if (!comment.isNullOrEmpty() && comment.isNotBlank()) {
+                userComment.apply {
+                    this.userId1 = user.userId
+                    this.name = user.name
+                    this.timestamp = getCurrentFormattedTime()
+                    this.text = comment
+                    this.commentId = getCurrentFormattedDateTimeWithMilliseconds()
+                }
+                views.commentTextInput.setText("")
+                hideKeyboard()
+                views.commentTextInput.clearFocus()
+                loginViewModel.handle(LoginViewAction.addComment(movieID.toString(), userComment))
+            }
+        }
+
     }
 
-    //    private fun handleSeasonPickerSelectClick() {
-//        val details = tvShowDetailsViewModel.details.value?.data
-//        if (details != null) {
-//            val seasonNames =
-//                details.seasons.mapIndexed { _, season -> season.name } as ArrayList<String>
-//
-//            val itemPickerFragment: ItemPickerFragment =
-//                ItemPickerFragment.newInstance(seasonNames,
-//                    tvShowDetailsViewModel.selectedSeasonNameIndexPair.value?.second!!)
-//            itemPickerFragment.showsDialog = true
-//            itemPickerFragment.show(supportFragmentManager, "pickerDialog")
-//            itemPickerFragment.setItemClickListener { newSelectedPosition ->
-//                val selectedSeason = details.seasons[newSelectedPosition]
-//                tvShowDetailsViewModel.selectedSeasonNameIndexPair.value =
-//                    Pair(selectedSeason.name, newSelectedPosition)
-//                lifecycleScope.launch {
-//                    tvShowDetailsViewModel.fetchSeasonDetails(tvId!!, selectedSeason.seasonNumber)
-//                }
-//            }
-//        }
-//    }
     private fun setLoading(flag: Boolean) {
         if (flag) {
             views.loader.root.show()
@@ -522,6 +699,8 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
                     views.episodesList.show()
                     views.videosList.hide()
                     views.tabContentLoader.hide()
+                    views.titleComment.hide()
+                    views.commentContainer.hide()
                 }
 
                 1 -> {
@@ -529,6 +708,8 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
                     views.episodesList.hide()
                     views.similarTvsList.show()
                     views.videosList.hide()
+                    views.titleComment.hide()
+                    views.commentContainer.hide()
                 }
 
                 2 -> {
@@ -537,6 +718,8 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
                     views.episodesList.hide()
                     views.videosList.show()
                     views.tabContentLoader.hide()
+                    views.titleComment.show()
+                    views.commentContainer.show()
                 }
             }
         }
@@ -563,5 +746,9 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
         super.onPause()
         exoPlayer!!.pause()
         views.youtubePlayerView.release()
+    }
+
+    override fun create(initialState: LoginViewState): LoginViewModel {
+        return loginviewmodelFactory.create(initialState)
     }
 }

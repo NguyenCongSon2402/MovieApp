@@ -57,6 +57,7 @@
         android:layout_weight="1">
 
         <LinearLayout
+            android:id="@+id/layout_tab"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -91,13 +92,13 @@
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/more_like_this"
+                    android:text="@string/propose"
                     tools:ignore="HardcodedText" />
 
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/trailers_amp_more"
+                    android:text="@string/comment"
                     tools:ignore="HardcodedText" />
 
 
@@ -116,16 +117,70 @@
                 tools:itemCount="10"
                 tools:listitem="@layout/item_media" />
 
+            <TextView
+                android:id="@+id/title_comment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="10dp"
+                android:text="@string/comment"
+                android:textSize="22sp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/comment_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/black"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="16dp">
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/ic_person" />
+
+                <EditText
+                    android:id="@+id/comment_text_input"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/white"
+                    android:background="@android:color/transparent"
+                    android:gravity="bottom"
+                    android:hint="Thêm bình luận ..."
+                    android:imeOptions="actionDone"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:textColorHint="@color/divider"
+                    android:textSize="18sp" />
+
+                <ImageView
+                    android:id="@+id/add_icon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_send" />
+
+            </LinearLayout>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/videos_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
+                android:divider="@drawable/divider"
                 android:paddingHorizontal="2dp"
                 android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:itemCount="10"
-                tools:listitem="@layout/item_video" />
+                tools:listitem="@layout/item_comment" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

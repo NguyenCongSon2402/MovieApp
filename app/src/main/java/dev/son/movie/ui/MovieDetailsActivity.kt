@@ -18,6 +18,7 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.viewModel
@@ -28,34 +29,43 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.material.tabs.TabLayout
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
 import dev.son.movie.R
 import dev.son.movie.TrackingApplication
 import dev.son.movie.adapters.MoviesAdapter
 import dev.son.movie.adapters.VideosController
 import dev.son.movie.core.TrackingBaseActivity
+import dev.son.movie.data.local.UserPreferences
+import dev.son.movie.databinding.ActivityMovieDetailsBinding
+import dev.son.movie.network.models.Slug.Category
 import dev.son.movie.network.models.Slug.Item
 import dev.son.movie.network.models.Slug.Slug
 import dev.son.movie.network.models.categorymovie.CategoryMovie
 import dev.son.movie.network.models.home.Items
-import dev.son.movie.databinding.ActivityMovieDetailsBinding
+import dev.son.movie.network.models.postcomment.UserIdComment
+import dev.son.movie.network.models.user.MovieId1
+import dev.son.movie.network.models.user.UserId
 import dev.son.movie.ui.home.HomeViewAction
 import dev.son.movie.ui.home.HomeViewModel
 import dev.son.movie.ui.home.HomeViewState
-import dev.son.movie.utils.checkStatusApiRes
-import dev.son.movie.utils.extractVideoIdFromUrl
-import dev.son.movie.utils.hide
-import dev.son.movie.utils.show
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
-import dev.son.movie.data.local.UserPreferences
 import dev.son.movie.ui.login.LoginViewAction
 import dev.son.movie.ui.login.LoginViewModel
 import dev.son.movie.ui.login.LoginViewState
+import dev.son.movie.utils.checkStatusApiRes
+import dev.son.movie.utils.extractVideoIdFromUrl
+import dev.son.movie.utils.getCurrentFormattedDateTimeWithMilliseconds
+import dev.son.movie.utils.getCurrentFormattedTime
+import dev.son.movie.utils.hide
+import dev.son.movie.utils.hideKeyboard
+import dev.son.movie.utils.show
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 
 @Suppress("DEPRECATION")
 class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>(),
@@ -76,6 +86,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
 
     private lateinit var similarMoviesItemsAdapter: MoviesAdapter
     private lateinit var videosController: VideosController
+    private var listData: MutableList<UserIdComment> = mutableListOf()
     private val movieSlug: String?
         get() = intent.extras?.getString("name")
     private val movieCategory: String?
@@ -84,7 +95,12 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         get() = intent.extras?.getString("id")
 
     var mtList: Boolean? = false
+    var favorite: Boolean? = false
     private var idUser: String? = null
+    private var user: UserId = UserId()
+    private var userComment: UserIdComment = UserIdComment()
+    private val movieId1: MovieId1 = MovieId1()
+    private var item: Slug = Slug()
 
     @Inject
     lateinit var homeViewModelFactory: HomeViewModel.Factory
@@ -104,11 +120,14 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         super.onCreate(savedInstanceState)
         movieSlug?.let { homeViewModel.handle(HomeViewAction.getSlug(name = it)) }
         movieCategory?.let { homeViewModel.handle(HomeViewAction.getCategoriesMovies(name = it)) }
+        movieID?.let { LoginViewAction.getComment(it) }?.let { loginViewModel.handle(it) }
+
         setupUI()
         homeViewModel.subscribe(this) {
             when (it.slug) {
                 is Success -> {
                     homeViewModel.handleRemoveStateSlug()
+                    item = it.slug.invoke()
                     showLoader(false)
                     updateDetails(it.slug.invoke())
                 }
@@ -144,10 +163,57 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             when (it.addTolist) {
                 is Success -> {
                     Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show()
+                    saveMyList(it.addTolist.invoke())
+                    loginViewModel.handleRemoveStateAddToList()
                 }
 
                 is Fail -> {
                     Toast.makeText(this, "Fail", Toast.LENGTH_SHORT).show()
+                    loginViewModel.handleRemoveStateAddToList()
+                }
+
+                else -> {}
+            }
+            when (it.addToFavorite) {
+                is Success -> {
+                    Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show()
+                    saveFavorite(it.addToFavorite.invoke())
+                    loginViewModel.handleRemoveStateAddToFavorite()
+                }
+
+                is Fail -> {
+                    Toast.makeText(this, "Fail", Toast.LENGTH_SHORT).show()
+                    loginViewModel.handleRemoveStateAddToFavorite()
+                }
+
+                else -> {}
+            }
+            when (it.getComments) {
+                is Success -> {
+                    Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show()
+                    listData = it.getComments.invoke()
+                    videosController.setData(listData)
+                    loginViewModel.handleRemoveStateGetComment()
+                }
+
+                is Fail -> {
+                    Toast.makeText(this, "Fail", Toast.LENGTH_SHORT).show()
+                    loginViewModel.handleRemoveStateGetComment()
+                }
+
+                else -> {}
+            }
+            when (it.addComments) {
+                is Success -> {
+                    Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show()
+                    listData.add(0, it.addComments.invoke())
+                    videosController.setData(listData)
+                    loginViewModel.handleRemoveStateAddComment()
+                }
+
+                is Fail -> {
+                    Toast.makeText(this, "Fail", Toast.LENGTH_SHORT).show()
+                    loginViewModel.handleRemoveStateAddComment()
                 }
 
                 else -> {}
@@ -156,6 +222,17 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         setUpPlayVideo()
     }
 
+    private fun saveFavorite(id: String) {
+        lifecycleScope.launch {
+            userPreferences.toggleFavoriteMovie(id)
+        }
+    }
+
+    private fun saveMyList(id: String) {
+        lifecycleScope.launch {
+            userPreferences.toggleWatchedMovie(id)
+        }
+    }
 
     private fun setUpPlayVideo() {
         handler = Handler(Looper.getMainLooper())
@@ -288,12 +365,14 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     private fun onProgress() {
         val player = exoPlayer
         val position = player?.currentPosition ?: 0
+        Log.e("currentPosition1",position.toString())
         handler!!.removeCallbacks(updateProgressAction)
         val playbackState = player?.playbackState ?: Player.STATE_IDLE
         if (playbackState != Player.STATE_IDLE && playbackState != Player.STATE_ENDED) {
             var delayMs: Long
             if (player!!.playWhenReady && playbackState == Player.STATE_READY) {
                 delayMs = 1000 - position % 1000
+                Log.e("currentPosition2",delayMs.toString())
                 if (delayMs < 200) {
                     delayMs += 1000
                 }
@@ -305,9 +384,6 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     }
 
     private fun lockScreen(lock: Boolean) {
-//just hide the control for lock screen and vise versa
-
-        //just hide the control for lock screen and vise versa
         val sec_mid = findViewById<LinearLayout>(R.id.sec_controlvid1)
         val sec_bottom = findViewById<LinearLayout>(R.id.sec_controlvid2)
         if (lock) {
@@ -381,37 +457,118 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
 
         similarMoviesItemsAdapter = MoviesAdapter(this::handleMovieClick)
         views.similarMoviesList.adapter = similarMoviesItemsAdapter
-        views.similarMoviesList.isNestedScrollingEnabled = false
-
-        videosController = VideosController {}
+        views.similarMoviesList.isNestedScrollingEnabled = true
+        videosController = VideosController()
         views.videosList.adapter = videosController.adapter
-        views.videosList.isNestedScrollingEnabled = false
+        views.videosList.setHasFixedSize(true)
+        views.videosList.addItemDecoration(
+            DividerItemDecoration(
+                baseContext,DividerItemDecoration.VERTICAL
+            )
+        )
+        views.videosList.isNestedScrollingEnabled = true
 
+
+        // add favorite
         lifecycleScope.launch {
-            val movieExists=userPreferences.checkWatchedMovie(movieID.toString())
-            if (movieExists){
-               // Toast.makeText(this@MovieDetailsActivity, "True", Toast.LENGTH_SHORT).show()
+            val movieExists = userPreferences.checkFavoriteMovie(movieID.toString()).first()
+            if (movieExists) {
+                // Toast.makeText(this@MovieDetailsActivity, "True", Toast.LENGTH_SHORT).show()
+                views.header.imgFavorite.setImageResource(R.drawable.ic_favorite)
+                favorite = !favorite!!
+            } else {
+                //Toast.makeText(this@MovieDetailsActivity, "False", Toast.LENGTH_SHORT).show()
+                views.header.imgFavorite.setImageResource(R.drawable.ic_unfavorite)
+            }
+        }
+
+        // add to list
+        lifecycleScope.launch {
+            val movieExists = userPreferences.checkWatchedMovie(movieID.toString()).first()
+            if (movieExists) {
+                // Toast.makeText(this@MovieDetailsActivity, "True", Toast.LENGTH_SHORT).show()
                 views.header.igmAdd.setImageResource(R.drawable.ic_check)
                 mtList = !mtList!!
-            }else {
+            } else {
                 //Toast.makeText(this@MovieDetailsActivity, "False", Toast.LENGTH_SHORT).show()
                 views.header.igmAdd.setImageResource(R.drawable.ic_add)
             }
         }
+        //get Id user
         lifecycleScope.launch {
-            userPreferences.userId.collect { it ->
-                idUser=it
+            userPreferences.userId.collect {
+                if (it != null) {
+                    idUser = it.userId.toString()
+                    user = it
+                }
                 Toast.makeText(this@MovieDetailsActivity, "${idUser}", Toast.LENGTH_SHORT).show()
             }
         }
 
+        // add
         views.header.igmAdd.setOnClickListener {
+            mtList = !mtList!!
             val imageResource = if (mtList == true) R.drawable.ic_check else R.drawable.ic_add
             views.header.igmAdd.setImageResource(imageResource)
-            loginViewModel.handle(LoginViewAction.addToList(movieID!!,idUser!!))
-            mtList = !mtList!!
+            movieId1.apply {
+                this.movieId1 = movieID
+                this.slug = movieSlug
+                this.category = ArrayList<Category>().apply {
+                    item.data?.item?.category?.get(0)?.let { add(it) }
+                }
+                this.type = item.data?.item?.type
+                this.thumbUrl=item.data?.item?.thumbUrl
+
+            }
+
+            if (!idUser.isNullOrEmpty()) {
+                loginViewModel.handle(LoginViewAction.addToList(movieId1, idUser!!))
+            }
+        }
+        views.header.imgFavorite.setOnClickListener {
+            favorite = !favorite!!
+            val imageResource =
+                if (favorite == true) R.drawable.ic_favorite else R.drawable.ic_unfavorite
+            views.header.imgFavorite.setImageResource(imageResource)
+            movieId1.apply {
+                this.movieId1 = movieID
+                this.slug = movieSlug
+                this.category = ArrayList<Category>().apply {
+                    item.data?.item?.category?.get(0)?.let { add(it) }
+                }
+                this.type = item.data?.item?.type
+                this.thumbUrl=item.data?.item?.thumbUrl
+
+            }
+
+            if (!idUser.isNullOrEmpty()) {
+                loginViewModel.handle(LoginViewAction.addToFavorite(movieId1, idUser!!))
+            }
+        }
+
+        // add comment
+        views.layoutTab.setOnClickListener {
+            hideKeyboard()
+            views.commentTextInput.clearFocus()
+        }
+        views.addIcon.setOnClickListener {
+            val comment = views.commentTextInput.text.toString()
+            if (!comment.isNullOrEmpty() && comment.isNotBlank()) {
+                userComment.apply {
+                    this.userId1 = user.userId
+                    this.name = user.name
+                    this.timestamp = getCurrentFormattedTime()
+                    this.text = comment
+                    this.commentId = getCurrentFormattedDateTimeWithMilliseconds()
+                }
+                views.commentTextInput.setText("")
+                hideKeyboard()
+                views.commentTextInput.clearFocus()
+                loginViewModel.handle(LoginViewAction.addComment(movieID.toString(), userComment))
+            }
         }
     }
+
     private fun showLoader(flag: Boolean) {
         if (flag) {
             views.loader.root.show()
@@ -515,9 +672,13 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             if (tab?.position == 0) {
                 views.similarMoviesList.show()
                 views.videosList.hide()
+                views.titleComment.hide()
+                views.commentContainer.hide()
             } else {
                 views.similarMoviesList.hide()
                 views.videosList.show()
+                views.titleComment.show()
+                views.commentContainer.show()
             }
         }
 

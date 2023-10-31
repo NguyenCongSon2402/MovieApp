@@ -2,14 +2,13 @@ package dev.son.movie.data.local
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import dev.son.movie.network.models.user.MovieTrackinglist
 import dev.son.movie.network.models.user.UserId
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -23,12 +22,15 @@ class UserPreferences @Inject constructor(context: Context) {
 
     val username: Flow<String?>
         get() = mContext.dataStore.data.map { preferences ->
-            preferences[USERNAME]
+            preferences[USER_NAME]
         }
 
-    val userId: Flow<String?>
+    val userId: Flow<UserId?>
         get() = mContext.dataStore.data.map { preferences ->
-            preferences[USER_ID]
+            UserId(
+                userId = preferences[USER_ID],
+                name = preferences[USER_NAME]
+            )
         }
 
 
@@ -43,45 +45,15 @@ class UserPreferences @Inject constructor(context: Context) {
         get() = mContext.dataStore.data.map { preferences ->
             preferences[USER_EMAIL]
         }
-    val getUserId: Flow<UserId?>
-        get() = mContext.dataStore.data.map { preferences ->
-            UserId(
-                userId = preferences[USER_ID],
-                movieTrackinglist = MovieTrackinglist(
-                    watchedMovies = ArrayList(preferences[WATCHED_MOVIES] ?: emptySet()),
-                    favoriteMovies = ArrayList(
-                        preferences[FAVORITE_MOVIES] ?: emptySet()
-                    )
-                )
-            )
-        }
-
-
-    fun getUserDataFlow(): Flow<UserId> {
-        return mContext.dataStore.data
-            .map { preferences ->
-                UserId(
-                    userId = preferences[USER_ID] ?: "",
-                    email = preferences[USER_EMAIL] ?: "email@gmail.com",
-                    movieTrackinglist = MovieTrackinglist(
-                        watchedMovies = (preferences[WATCHED_MOVIES]
-                            ?: emptySet()) as ArrayList<String>,
-                        favoriteMovies = (preferences[FAVORITE_MOVIES]
-                            ?: emptySet()) as ArrayList<String>
-                    )
-                )
-            }
-    }
 
     suspend fun saveUserData(user: UserId) {
         mContext.dataStore.edit { preferences ->
-            preferences[USER_ID] = user.userId ?: ""
-            preferences[USER_EMAIL] = user.email ?: "email@gmail.com"
-            // Lưu danh sách watched_movies và favorite_movies dưới dạng Set
-            preferences[WATCHED_MOVIES] =
-                user.movieTrackinglist?.watchedMovies?.toSet() ?: emptySet()
-            preferences[FAVORITE_MOVIES] =
-                user.movieTrackinglist?.favoriteMovies?.toSet() ?: emptySet()
+            preferences[USER_ID] = user.userId.toString()
+            preferences[USER_NAME] = user.name.toString()
+            preferences[USER_EMAIL] = user.email.toString()
+            preferences[USER_AVATAR] = user.avatar.toString()
+            preferences[USER_DATE_OF_BIRTH] = user.dateOfBirth.toString()
+            // Lưu danh sách yêu thích phim (favoriteMovies) - chỉ lưu các khóa
         }
     }
 
@@ -102,17 +74,39 @@ class UserPreferences @Inject constructor(context: Context) {
         }
     }
 
-    suspend fun checkWatchedMovie(movieId: String): Boolean {
-        var movieExists = false // Khởi tạo biến để kiểm tra xem movieId đã tồn tại hay chưa
+    suspend fun toggleFavoriteMovie(movieId: String) {
         mContext.dataStore.edit { preferences ->
             // Nếu userId trùng khớp, lấy danh sách watchedMovies hiện tại
-            val currentWatchedMovies = preferences[WATCHED_MOVIES] ?: emptySet()
+            val currentFavoriteMovies = preferences[FAVORITE_MOVIES] ?: emptySet()
+
             // Kiểm tra xem movieId đã tồn tại trong danh sách chưa
-            if (movieId in currentWatchedMovies) {
-                movieExists = true // Đánh dấu rằng movieId đã tồn tại
+            if (movieId in currentFavoriteMovies) {
+                // Nếu đã tồn tại, xoá nó đi
+                preferences[FAVORITE_MOVIES] = currentFavoriteMovies - movieId
+            } else {
+                // Nếu chưa tồn tại, thêm nó vào
+                preferences[FAVORITE_MOVIES] = currentFavoriteMovies + movieId
             }
+
         }
-        return movieExists // Trả về kết quả kiểm tra
+    }
+
+    suspend fun checkWatchedMovie(movieId: String): Flow<Boolean> = flow {
+        val movieExists = mContext.dataStore.data.map { preferences ->
+            val currentWatchedMovies = preferences[WATCHED_MOVIES] ?: emptySet()
+            movieId in currentWatchedMovies
+        }.first() // Lấy giá trị đầu tiên từ Flow
+
+        emit(movieExists) // Trả về kết quả kiểm tra
+    }
+
+    suspend fun checkFavoriteMovie(movieId: String): Flow<Boolean> = flow {
+        val movieExists = mContext.dataStore.data.map { preferences ->
+            val currentWatchedMovies = preferences[FAVORITE_MOVIES] ?: emptySet()
+            movieId in currentWatchedMovies
+        }.first() // Lấy giá trị đầu tiên từ Flow
+
+        emit(movieExists) // Trả về kết quả kiểm tra
     }
 
 
@@ -129,9 +123,9 @@ class UserPreferences @Inject constructor(context: Context) {
         private val FAVORITE_MOVIES = stringSetPreferencesKey("favorite_movies")
 
         private val USER_ID = stringPreferencesKey("key_user_id")
-        private val USER_ROLE = stringPreferencesKey("user_role")
-        private val USERNAME = stringPreferencesKey("key_user_name")
-        private val USER_FULLNAME = stringPreferencesKey("key_user_fullname")
+        private val USER_DATE_OF_BIRTH = stringPreferencesKey("user_dob")
+        private val USER_NAME = stringPreferencesKey("key_user_name")
+        private val USER_AVATAR = stringPreferencesKey("key_user_avatar")
         private val USER_EMAIL = stringPreferencesKey("key_user_email")
         const val APP_PREFERENCES = "nimpe_data_store"
     }

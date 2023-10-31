@@ -35,6 +35,17 @@
     <string name="username_not_empty">Email not empty</string>
     <string name="password_not_empty">Password not empty</string>
     <string name="registration_failed_please_try_again">failed</string>
-    <string name="Manager">More</string>
+    <string name="Manager">Manager</string>
     <string name="sign_up_success">Sign Up Success</string>
+    <string name="comment">Comment</string>
+    <string name="propose">Propose</string>
+    <string name="notification">Notification</string>
+    <string name="my_list">My List</string>
+    <string name="desception_my_list">Mỗi khi bạn thêm một nội dung vào Danh sách của tôi, tác phẩm đó sẽ xuất hiện ở đây</string>
+    <string name="title_button_my_list">Tìm nội dung để thêm</string>
+    <string name="watching_movie">Watching history</string>
+    <string name="favorite_list">Favorite List</string>
+    <string name="setting">Setting</string>
+    <string name="logout">Logout</string>
+    <string name="support">Support</string>
 </resources>
