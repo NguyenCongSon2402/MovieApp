@@ -20,6 +20,8 @@ data class LoginViewState(
     val getMyList: Async<ArrayList<MovieId1>> = Uninitialized,
     val getFavoriteList: Async<ArrayList<MovieId1>> = Uninitialized,
     val getHistoryList: Async<ArrayList<ViewingHistory>> = Uninitialized,
+    val upDateUser: Async<UserId> = Uninitialized,
+    val upLoadImage: Async<String> = Uninitialized,
 ) : MvRxState {
     fun isLoadding() = user is Loading
 }

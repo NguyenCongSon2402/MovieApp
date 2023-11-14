@@ -3,7 +3,9 @@ package dev.son.movie.adapters
 import android.view.View
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat.getDrawable
 import com.airbnb.epoxy.*
+import com.bumptech.glide.Glide
 import dev.son.movie.R
 import dev.son.movie.network.models.Slug.Item
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
@@ -55,6 +57,8 @@ abstract class VideoModel : EpoxyModelWithHolder<VideoModel.VideoHolder>() {
         holder.user_name.text = comment.name
         holder.comment.text = comment.text
         holder.hour.text = comment.timestamp
+        Glide.with(holder.img_user).load(comment.avatar).centerCrop()
+           .into(holder.img_user)
     }
 
     override fun getDefaultLayout(): Int = R.layout.item_comment

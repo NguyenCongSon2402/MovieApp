@@ -119,6 +119,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             intent.putExtra("thumbUrl", items.thumbUrl)
         }
         intent.putExtra("name", items.slug)
+        intent.putExtra("name1", items.name)
         intent.putExtra("category", randomSlug)
         intent.putExtra("id", items.Id)
 

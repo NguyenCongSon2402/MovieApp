@@ -41,7 +41,6 @@ class MainEpoxyController(private val onMediaClick: (Items, View) -> Unit) :
             }
         }
     }
-
 }
 
 
@@ -56,14 +55,12 @@ abstract class HeaderModel : EpoxyModelWithHolder<HeaderModel.HeaderHolder>() {
     inner class HeaderHolder : EpoxyHolder() {
         lateinit var backgroundImage: ImageView
         lateinit var genreText: TextView
-        lateinit var infoButton: LinearLayout
-        lateinit var addToList: LinearLayout
+        lateinit var play_button: LinearLayout
 
         override fun bindView(itemView: View) {
             backgroundImage = itemView.findViewById(R.id.background_image)
             genreText = itemView.findViewById(R.id.genres_text)
-            infoButton = itemView.findViewById(R.id.info_button)
-            addToList = itemView.findViewById(R.id.add_to_list_button)
+            play_button = itemView.findViewById(R.id.play_button)
         }
     }
 
@@ -81,18 +78,12 @@ abstract class HeaderModel : EpoxyModelWithHolder<HeaderModel.HeaderHolder>() {
             val animZoomOut =
                 AnimationUtils.loadAnimation(holder.backgroundImage.context, R.anim.zoom_out)
             holder.backgroundImage.startAnimation(animZoomOut)
-            holder.infoButton.setSingleClickListener {
-                onInfoClick(data!!.items[0], holder.backgroundImage)
-                //holder.infoButton.isEnabled = false
-            }
             holder.backgroundImage.setSingleClickListener {
                 onInfoClick(data!!.items[0], holder.backgroundImage)
-                //holder.backgroundImage.isEnabled = false
             }
-//            holder.addToList.setSingleClickListener {
-//                onInfoClick(data!!.items[0], holder.addToList[R.id.img_add])
-//            }
-
+            holder.play_button.setSingleClickListener {
+                onInfoClick(data!!.items[0], holder.backgroundImage)
+            }
         }
     }
 

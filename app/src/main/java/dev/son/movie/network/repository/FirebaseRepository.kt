@@ -1,10 +1,12 @@
 package dev.son.movie.network.repository
 
+import android.net.Uri
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.storage.FirebaseStorage
 import dev.son.movie.data.local.UserPreferences
 import dev.son.movie.network.models.postcomment.UserIdComment
 import dev.son.movie.network.models.user.MovieId1
@@ -16,24 +18,25 @@ import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
 
-class FirebaseRepository(val api: FirebaseDatabase, private val userPreferences: UserPreferences) :
+class FirebaseRepository(
+    val api: FirebaseDatabase,
+    val storage: FirebaseStorage,
+    private val userPreferences: UserPreferences
+) :
     FirebaseService {
     private val usersRef = api.getReference("users")
     private val commentsRef = api.getReference("comment")
-    private val comments: MutableList<UserIdComment> = mutableListOf()
+    private val storageRef = storage
 
     override fun register(user: UserId): Observable<UserId> {
         val userId = user.userId.toString()
         return Observable.create { emitter ->
             usersRef.child(userId).setValue(user)
                 .addOnSuccessListener { void ->
-                    // Đăng ký thành công
-                    Log.e("result", "Success")
                     emitter.onNext(user)
                     emitter.onComplete()
                 }
                 .addOnFailureListener { exception ->
-                    // Đăng ký thất bại
                     emitter.onError(exception)
                 }
         }.subscribeOn(Schedulers.io())
@@ -60,19 +63,19 @@ class FirebaseRepository(val api: FirebaseDatabase, private val userPreferences:
         }.subscribeOn(Schedulers.io())
     }
 
-    override fun addToList(idMovie: MovieId1, idUser: String): Observable<String> {
+    override fun addToList(id: MovieId1, idUser: String): Observable<String> {
         return Observable.create { emitter ->
             val watchedMoviesRef = usersRef.child(idUser).child("watched_movies")
 
             // Kiểm tra xem ID đã tồn tại trong danh sách chưa
             watchedMoviesRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    if (dataSnapshot.hasChild(idMovie.movieId1.toString())) {
-                        watchedMoviesRef.child(idMovie.movieId1.toString()).removeValue()
+                    if (dataSnapshot.hasChild(id.movieId1.toString())) {
+                        watchedMoviesRef.child(id.movieId1.toString()).removeValue()
                     } else {
-                        watchedMoviesRef.child(idMovie.movieId1.toString()).setValue(idMovie)
+                        watchedMoviesRef.child(id.movieId1.toString()).setValue(id)
                     }
-                    emitter.onNext(idMovie.movieId1.toString())
+                    emitter.onNext(id.movieId1.toString())
                     emitter.onComplete()
                 }
 
@@ -84,19 +87,19 @@ class FirebaseRepository(val api: FirebaseDatabase, private val userPreferences:
         }.subscribeOn(Schedulers.io())
     }
 
-    override fun addToFavorite(idMovie: MovieId1, idUser: String): Observable<String> {
+    override fun addToFavorite(id: MovieId1, idUser: String): Observable<String> {
         return Observable.create { emitter ->
             val favoriteMoviesRef = usersRef.child(idUser).child("favorite_movies")
 
             // Kiểm tra xem ID đã tồn tại trong danh sách chưa
             favoriteMoviesRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    if (dataSnapshot.hasChild(idMovie.movieId1.toString())) {
-                        favoriteMoviesRef.child(idMovie.movieId1.toString()).removeValue()
+                    if (dataSnapshot.hasChild(id.movieId1.toString())) {
+                        favoriteMoviesRef.child(id.movieId1.toString()).removeValue()
                     } else {
-                        favoriteMoviesRef.child(idMovie.movieId1.toString()).setValue(idMovie)
+                        favoriteMoviesRef.child(id.movieId1.toString()).setValue(id)
                     }
-                    emitter.onNext(idMovie.movieId1.toString())
+                    emitter.onNext(id.movieId1.toString())
                     emitter.onComplete()
                 }
 
@@ -228,11 +231,56 @@ class FirebaseRepository(val api: FirebaseDatabase, private val userPreferences:
                         emitter.onComplete() // Trả về danh sách trống nếu không có dữ liệu
                     }
                 }
+
                 override fun onCancelled(error: DatabaseError) {
                     emitter.onError(error.toException())
                 }
 
             })
+        }.subscribeOn(Schedulers.io())
+    }
+
+    override fun upDateUser(idUser: String?, User: HashMap<String, Any>): Observable<UserId> {
+        return Observable.create { emitter ->
+            val updateUserRef = idUser?.let { usersRef.child(it) }
+            updateUserRef?.updateChildren(User)?.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    usersRef.child(idUser).get().addOnSuccessListener { data ->
+                        // Parse the retrieved data into a UserId object (replace with actual parsing code)
+                        val user = data.getValue(UserId::class.java)
+
+                        if (user != null) {
+                            emitter.onNext(user)
+                            emitter.onComplete()
+                        } else {
+                            emitter.onError(Exception("Failed to parse UserId"))
+                        }
+                    }.addOnFailureListener { exception ->
+                            // Registration failed
+                            emitter.onError(exception)
+                        }
+                } else {
+                    emitter.onError(Exception("Cập nhật người dùng không thành công. Xin vui Lòng thử lại!"))
+                }
+            }
+        }.subscribeOn(Schedulers.io())
+    }
+
+    override fun upLoadImage(img: Uri, id: String): Observable<String> {
+        return Observable.create { emitter ->
+            val uploadTask = storageRef.getReference("avatars/$id")
+            uploadTask.putFile(img).addOnSuccessListener { taskSnapshot ->
+                // Lấy đường dẫn ảnh sau khi tải lên thành công
+                uploadTask.downloadUrl.addOnSuccessListener { uri ->
+                    val downloadUri = uri.toString()
+                    emitter.onNext(downloadUri) // Trả về đường link
+                    emitter.onComplete()
+                }.addOnFailureListener { exception ->
+                    emitter.onError(exception) // Gửi lỗi đến observable nếu có lỗi xảy ra khi lấy đường dẫn
+                }
+            }.addOnFailureListener { exception ->
+                emitter.onError(exception) // Gửi lỗi đến observable nếu có lỗi xảy ra khi tải ảnh lên Firebase Storage
+            }
         }.subscribeOn(Schedulers.io())
     }
 

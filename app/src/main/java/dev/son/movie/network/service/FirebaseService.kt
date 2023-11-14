@@ -1,5 +1,6 @@
 package dev.son.movie.network.service
 
+import android.net.Uri
 import dev.son.movie.network.models.postcomment.UserIdComment
 import dev.son.movie.network.models.user.MovieId1
 import dev.son.movie.network.models.user.UserId
@@ -18,4 +19,6 @@ interface FirebaseService {
     fun getMyList(idUser: String): Observable<ArrayList<MovieId1>>
     fun getFavoriteList(idUser: String): Observable<ArrayList<MovieId1>>
     fun getHistory(idUser: String): Observable<ArrayList<ViewingHistory>>
+    fun upDateUser(idUser: String?, idUser1: HashMap<String, Any>): Observable<UserId>
+    fun upLoadImage(img: Uri, id: String): Observable<String>
 }

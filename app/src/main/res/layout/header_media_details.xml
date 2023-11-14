@@ -2,12 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingHorizontal="8dp"
     tools:ignore="UnusedAttribute"
-    android:id="@+id/container"
     tools:targetApi="m">
 
     <TextView
@@ -73,9 +73,9 @@
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
+                android:contentDescription="Add"
                 android:src="@drawable/ic_star"
-                app:tint="@color/text_secondary"
-                android:contentDescription="Add" />
+                app:tint="@color/text_secondary" />
 
             <TextView
                 android:id="@+id/rating_text"
@@ -130,16 +130,47 @@
 
 
         <ImageView
+            android:id="@+id/img_down"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_download"
             app:tint="@color/white" />
 
         <TextView
+            android:id="@+id/txt_state_dow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:text="Download"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/downloaded_ll"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/dark_button_bg"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_download_done"
+            app:tint="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="Đã tải xong"
             android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -150,29 +181,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:lineHeight="20sp"
-        android:textColor="@color/white"
-        android:textSize="14sp"
         android:clickable="true"
+        android:ellipsize="end"
         android:focusable="true"
         android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:lineHeight="20sp"
         android:maxLines="4"
-        android:ellipsize="end"
+        android:textColor="@color/white"
+        android:textSize="14sp"
         tools:text="In a time when monsters walk the Earth, humanity’s fight for its future sets Godzilla and Kong on a collision course that will see the two most powerful forces of nature on the planet collide in a spectacular battle for the ages." />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="8dp">
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
 
         <LinearLayout
             android:id="@+id/mylist_ll"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
+            android:background="?android:selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:background="?android:selectableItemBackgroundBorderless"
             android:gravity="center"
             android:orientation="vertical"
             android:paddingVertical="12dp">
@@ -195,9 +226,9 @@
             android:id="@+id/rate_ll"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
+            android:background="?android:selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:background="?android:selectableItemBackgroundBorderless"
             android:gravity="center"
             android:orientation="vertical"
             android:paddingVertical="12dp">
@@ -221,9 +252,9 @@
             android:id="@+id/share_ll"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
+            android:background="?android:selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:background="?android:selectableItemBackgroundBorderless"
             android:gravity="center"
             android:orientation="vertical"
             android:paddingVertical="12dp">

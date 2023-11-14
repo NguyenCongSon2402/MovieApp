@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <com.google.android.material.appbar.MaterialToolbar
@@ -13,68 +13,53 @@
         app:title="Downloads"
         app:titleTextColor="@color/text_primary" />
 
-    <ScrollView
+    <TextView
+        android:id="@+id/list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        tools:text="Danh Sách" />
 
-        <LinearLayout
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="4dp"
+            android:gravity="center"
+            android:text="@string/smart_downloads"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            app:drawableStartCompat="@drawable/ic_settings_outline"
+            app:drawableTint="@color/text_secondary" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_downloaded_video"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginHorizontal="16dp">
+            tools:itemCount="10"
+            tools:listitem="@layout/item_downloaded" />
+    </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_secondary"
-                android:drawablePadding="4dp"
-                android:gravity="center"
-                android:textSize="14sp"
-                app:drawableTint="@color/text_secondary"
-                android:text="@string/smart_downloads"
-                app:drawableStartCompat="@drawable/ic_settings_outline" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:textColor="@color/text_primary"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:text="@string/introducing_downloads_for_you"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textColor="@color/text_secondary"
-                android:lineHeight="21sp"
-                android:textSize="14sp"
-                android:text="@string/we_ll_download_a_personalized"/>
-
-            <ImageView
-                android:id="@+id/poster_image"
-                android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:layout_marginTop="24dp"/>
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-                app:backgroundTint="@color/blue"
-                android:text="@string/set_up"/>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="32dp"
-                app:backgroundTint="@color/dark_gray"
-                android:textAllCaps="false"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-                android:text="@string/find_something_to_download"/>
-        </LinearLayout>
-    </ScrollView>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/splash_btn_background"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:text="@string/find_something_to_download"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textSize="16sp" />
 </LinearLayout>

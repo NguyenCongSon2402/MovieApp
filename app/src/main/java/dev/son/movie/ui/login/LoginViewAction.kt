@@ -1,5 +1,6 @@
 package dev.son.movie.ui.login
 
+import android.net.Uri
 import dev.son.movie.core.NimpeViewModelAction
 import dev.son.movie.network.models.postcomment.UserIdComment
 import dev.son.movie.network.models.user.MovieId1
@@ -18,4 +19,6 @@ sealed class LoginViewAction : NimpeViewModelAction {
     data class getMyList(val idUser:String) : LoginViewAction()
     data class getFavoriteList(val idUser:String) : LoginViewAction()
     data class getHistoryList(val idUser:String) : LoginViewAction()
+    data class upDateUser(val id: String?, val idUser: HashMap<String, Any>) : LoginViewAction()
+    data class upLoadImage(val img: Uri, val id: String) : LoginViewAction()
 }

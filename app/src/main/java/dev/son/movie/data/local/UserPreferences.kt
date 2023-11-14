@@ -2,9 +2,11 @@ package dev.son.movie.data.local
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import dev.son.movie.network.models.user.MovieId1
 import dev.son.movie.network.models.user.UserId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -29,10 +31,13 @@ class UserPreferences @Inject constructor(context: Context) {
         get() = mContext.dataStore.data.map { preferences ->
             UserId(
                 userId = preferences[USER_ID],
-                name = preferences[USER_NAME]
+                name = preferences[USER_NAME],
+                dateOfBirth = preferences[USER_DATE_OF_BIRTH],
+                email = preferences[USER_EMAIL],
+                avatar = preferences[USER_AVATAR],
+                coins = preferences[USER_COINS]
             )
         }
-
 
     suspend fun saveUserFullname(fullname: String) {
         mContext.dataStore.edit { preferences ->
@@ -41,10 +46,24 @@ class UserPreferences @Inject constructor(context: Context) {
     }
 
 
-    val userEmail: Flow<String?>
+    val userCoins: Flow<String?>
         get() = mContext.dataStore.data.map { preferences ->
             preferences[USER_EMAIL]
         }
+
+    suspend fun saveMyList(myList: ArrayList<MovieId1>) {
+        val idSet = myList.map { it.movieId1.toString() }.toSet()
+        mContext.dataStore.edit { preferences ->
+            preferences[WATCHED_MOVIES] = idSet
+        }
+    }
+
+    suspend fun saveLikeList(myList: ArrayList<MovieId1>) {
+        val idSet = myList.map { it.movieId1.toString() }.toSet()
+        mContext.dataStore.edit { preferences ->
+            preferences[FAVORITE_MOVIES] = idSet
+        }
+    }
 
     suspend fun saveUserData(user: UserId) {
         mContext.dataStore.edit { preferences ->
@@ -53,7 +72,7 @@ class UserPreferences @Inject constructor(context: Context) {
             preferences[USER_EMAIL] = user.email.toString()
             preferences[USER_AVATAR] = user.avatar.toString()
             preferences[USER_DATE_OF_BIRTH] = user.dateOfBirth.toString()
-            // Lưu danh sách yêu thích phim (favoriteMovies) - chỉ lưu các khóa
+            preferences[USER_COINS] = user.coins ?: 0
         }
     }
 
@@ -90,6 +109,19 @@ class UserPreferences @Inject constructor(context: Context) {
 
         }
     }
+    suspend fun upDateCoins(coins:Int,type:Boolean) {
+        mContext.dataStore.edit { preferences ->
+            // Nếu userId trùng khớp, lấy danh sách watchedMovies hiện tại
+            var currentCoins = preferences[USER_COINS] ?: 0
+            if (type){
+                preferences[USER_COINS]=currentCoins+coins
+            }else{
+                preferences[USER_COINS] = (currentCoins - coins).coerceAtLeast(0)
+
+            }
+
+        }
+    }
 
     suspend fun checkWatchedMovie(movieId: String): Flow<Boolean> = flow {
         val movieExists = mContext.dataStore.data.map { preferences ->
@@ -116,6 +148,7 @@ class UserPreferences @Inject constructor(context: Context) {
         }
     }
 
+
     companion object {
         // Use setPreferencesKey to save the lists as Set
         // Use stringSetPreferencesKey to save the lists as String Sets
@@ -127,6 +160,7 @@ class UserPreferences @Inject constructor(context: Context) {
         private val USER_NAME = stringPreferencesKey("key_user_name")
         private val USER_AVATAR = stringPreferencesKey("key_user_avatar")
         private val USER_EMAIL = stringPreferencesKey("key_user_email")
+        private val USER_COINS = intPreferencesKey("key_user_coins")
         const val APP_PREFERENCES = "nimpe_data_store"
     }
 }

@@ -1,84 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_background"
+    android:background="@color/main"
     android:orientation="vertical">
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <RelativeLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:background="@drawable/gradient_color_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <ProgressBar
-            android:id="@+id/loading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:visibility="gone" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_gravity="center"
-                android:scaleType="fitCenter"
-                android:src="@drawable/icon_logo" />
-
             <TextView
                 style="@style/TextAppearance.AppCompat.Title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="25dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="128dp"
                 android:text="@string/sign_in"
                 android:textColor="@color/white"
-                android:textSize="25sp" />
+                android:textSize="50sp"
+                android:textStyle="bold" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/email_til"
                 style="@style/NimpeInputLayoutLogin"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                android:hint="@string/account"
+                android:layout_height="50dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="120dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/splash_btn_background"
                 app:hintEnabled="false">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edt_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@color/transparent"
+                    android:ems="10"
                     android:hint="@string/account"
-                    android:textColorHint="@color/white"
-                    tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
+                    android:inputType="textEmailAddress"
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/password_til"
                 style="@style/NimpeInputLayoutLogin"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                app:errorEnabled="true"
-                app:hintEnabled="false"
-                app:passwordToggleEnabled="true">
+                android:layout_height="50dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/splash_btn_background"
+                app:hintEnabled="false">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@color/transparent"
+                    android:ems="10"
                     android:hint="@string/password"
                     android:inputType="textPassword"
-                    android:textColorHint="@color/white"
-                    tools:ignore="TextContrastCheck,VisualLintTextFieldSize" />
+                    android:textAlignment="viewStart"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
@@ -97,15 +106,16 @@
                     android:textSize="15sp" />
 
                 <TextView
+                    android:id="@+id/txt_forgot"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="end|center"
                     android:text="@string/forgot_passwor"
-                    android:textColor="@color/purple_500"
+                    android:textColor="@color/white"
                     android:textSize="15sp" />
             </LinearLayout>
 
-            <com.google.android.material.button.MaterialButton
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/login_submit"
                 style="@style/NimpeButtonLogin"
                 android:layout_width="match_parent"
@@ -114,7 +124,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="20dp"
-                android:backgroundTint="#5C546C"
+                android:background="@drawable/splash_btn_background"
                 android:padding="10dp"
                 android:paddingStart="40dp"
                 android:paddingEnd="40dp"
@@ -127,7 +137,7 @@
                 android:layout_marginTop="20dp"
                 android:text="@string/signinwith"
                 android:textColor="@color/white"
-                android:textSize="15sp" />
+                android:textSize="16sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -149,6 +159,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginBottom="32dp"
                 android:layout_marginEnd="20dp"
                 android:orientation="horizontal">
 
@@ -166,12 +177,14 @@
                     android:layout_height="wrap_content"
                     android:gravity="end"
                     android:text="@string/sign_up"
-                    android:textColor="@color/purple_500"
-                    android:textSize="15sp" />
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
 
             </LinearLayout>
         </LinearLayout>
-    </RelativeLayout>
 
 
-</ScrollView>
+    </ScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

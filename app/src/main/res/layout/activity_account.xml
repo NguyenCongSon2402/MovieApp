@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.AccountActivity">
+
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:visibility="visible"
+                app:navigationIcon="@drawable/ic_arrow_back"
+                app:title="@string/profile"
+                app:titleCentered="true"
+                app:titleTextColor="@color/text_primary" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/img_profile"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_centerInParent="true"
+                    app:civ_border_color="@color/white"
+                    app:civ_circle_background_color="@color/bottom_sheet_bg" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/img_edit"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignEnd="@id/img_profile"
+                    android:layout_alignBottom="@id/img_profile"
+                    android:src="@drawable/ic_edit"
+                    app:civ_border_color="@color/black"
+                    app:civ_circle_background_color="@color/teal_700" />
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="50dp"
+                android:text="@string/dislay_name"
+                android:textColor="@color/divider"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/edit_dislayName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:enabled="false"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                tools:text="Alex" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="@string/email"
+                android:textColor="@color/divider"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/edit_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:enabled="false"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                tools:text="alexds@gmail.com" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:text="@string/password"
+                    android:textColor="@color/divider"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
+                    android:gravity="end"
+                    android:text="@string/change_password"
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/edt_pass"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:enabled="false"
+                    android:layout_centerHorizontal="true"
+                    android:inputType="textEmailAddress"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    tools:text="*****************" />
+
+                <ImageView
+                    android:id="@+id/img_changePass"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignEnd="@id/edt_pass"
+                    android:src="@drawable/img_change_pass" />
+
+                <ImageView
+                    android:id="@+id/send"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignEnd="@id/edt_pass"
+                    android:src="@drawable/ic_send"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="@string/dob"
+                android:textColor="@color/divider"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/edit_dob"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:enabled="false"
+                android:inputType="datetime"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                tools:text="24/02/2001" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_cancel"
+                    style="@style/NimpeButtonLogin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="30dp"
+                    android:backgroundTint="#855D22"
+                    android:text="@string/cancel"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/btn_edit"
+                    style="@style/NimpeButtonLogin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/teal_700"
+                    android:text="@string/edit" />
+
+                <Button
+                    android:id="@+id/btn_save"
+                    style="@style/NimpeButtonLogin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:backgroundTint="@color/teal_700"
+                    android:text="@string/save"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -30,7 +30,7 @@
         android:layout_marginLeft="15dp"
         android:gravity="top"
         android:textColor="@color/white"
-        android:textSize="22sp"
+        android:textSize="16sp"
         app:layout_constraintLeft_toRightOf="@+id/img_user"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="user name" />
@@ -40,7 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="bottom"
-        android:textSize="18sp"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/user_name"
         tools:text="phim hay" />
@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:gravity="center|right"
         android:textColor="@color/divider"
-        android:textSize="18sp"
+        android:textSize="10sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="19:31 20/11/2023" />

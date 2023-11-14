@@ -15,9 +15,12 @@ import dev.son.movie.TrackingApplication
 import dev.son.movie.core.TrackingBaseActivity
 import dev.son.movie.data.local.UserPreferences
 import dev.son.movie.databinding.ActivityLoginScreenBinding
-import dev.son.movie.network.models.user.UserId
 import dev.son.movie.ui.BottomNavActivity
+import dev.son.movie.ui.ForgotPasswordActivity
 import dev.son.movie.ui.SignUpActivity
+import dev.son.movie.utils.hide
+import dev.son.movie.utils.setSingleClickListener
+import dev.son.movie.utils.show
 import javax.inject.Inject
 
 class LoginActivity : TrackingBaseActivity<ActivityLoginScreenBinding>(), LoginViewModel.Factory {
@@ -29,16 +32,6 @@ class LoginActivity : TrackingBaseActivity<ActivityLoginScreenBinding>(), LoginV
     lateinit var userPreferences: UserPreferences
     override fun getBinding(): ActivityLoginScreenBinding {
         return ActivityLoginScreenBinding.inflate(layoutInflater)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        if (FirebaseAuth.getInstance().currentUser != null) {
-            Intent(this, BottomNavActivity::class.java).also {
-                startActivity(it)
-                finish()
-            }
-        }
     }
 
 
@@ -53,17 +46,17 @@ class LoginActivity : TrackingBaseActivity<ActivityLoginScreenBinding>(), LoginV
                     loginViewModel.handle(LoginViewAction.SaveDataUser(it.dataUser.invoke()))
                     views.loading.visibility = View.GONE
                     val intent = Intent(this, BottomNavActivity::class.java)
+                    intent.putExtra("userId",it.dataUser.invoke().userId)
                     startActivity(intent)
                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
                     finish()
+                    views.loading.hide()
                 }
+
                 is Fail -> {
                     views.loading.visibility = View.GONE
                     Toast.makeText(this, "Sign in fail", Toast.LENGTH_SHORT).show()
-                }
-
-                is Loading -> {
-                    views.loading.visibility = View.VISIBLE
+                    views.loading.hide()
                 }
 
                 else -> {}
@@ -73,7 +66,12 @@ class LoginActivity : TrackingBaseActivity<ActivityLoginScreenBinding>(), LoginV
 
     private fun setUpUi() {
         views.loginSubmit.setOnClickListener {
+            views.loading.show()
             loginSubmit()
+        }
+        views.txtForgot.setSingleClickListener {
+            startActivity(Intent(this, ForgotPasswordActivity::class.java))
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
         views.signUp.setOnClickListener {
             val intent = Intent(this, SignUpActivity::class.java)
@@ -93,8 +91,10 @@ class LoginActivity : TrackingBaseActivity<ActivityLoginScreenBinding>(), LoginV
             FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-
-                        loginViewModel.handle(LoginViewAction.getUser(task.result.user!!.uid))
+                        val id = task.result.user!!.uid
+                        loginViewModel.handle((LoginViewAction.getMyList(id)))
+                        loginViewModel.handle((LoginViewAction.getFavoriteList(id)))
+                        loginViewModel.handle(LoginViewAction.getUser(id))
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w("TAG", "signInWithEmail:failure", task.exception)

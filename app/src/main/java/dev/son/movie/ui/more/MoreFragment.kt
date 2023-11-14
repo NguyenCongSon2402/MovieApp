@@ -7,13 +7,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.withState
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
+import dev.son.movie.R
 import dev.son.movie.TrackingApplication
 
 
@@ -26,14 +29,18 @@ import dev.son.movie.data.local.UserPreferences
 import dev.son.movie.databinding.FragmentMoreBinding
 import dev.son.movie.network.models.user.MovieId1
 import dev.son.movie.network.models.user.ViewingHistory
+import dev.son.movie.ui.AccountActivity
 import dev.son.movie.ui.MovieDetailsActivity
 import dev.son.movie.ui.TvDetailsActivity
 import dev.son.movie.ui.login.LoginActivity
 import dev.son.movie.ui.login.LoginViewAction
 import dev.son.movie.ui.login.LoginViewModel
 import dev.son.movie.ui.login.LoginViewState
+import dev.son.movie.ui.search.SearchActivity
+import dev.son.movie.utils.DialogUtil
 import dev.son.movie.utils.checkStatusApiRes
 import dev.son.movie.utils.hide
+import dev.son.movie.utils.setSingleClickListener
 import dev.son.movie.utils.show
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -69,9 +76,13 @@ class MoreFragment : TrackingBaseFragment<FragmentMoreBinding>() {
             userPreferences.userId.collect {
                 if (it != null) {
                     val userId = it.userId.toString()
+                    Glide.with(views.imgUser).load(it.avatar).centerCrop()
+                        .error(getDrawable(requireContext(), R.drawable.ic_person))
+                        .into(views.imgUser)
+                    views.textCoins.text=it.coins.toString()
                     loginViewModel.handle(LoginViewAction.getMyList(userId))
                     loginViewModel.handle(LoginViewAction.getFavoriteList(userId))
-                    loginViewModel.handle(LoginViewAction.getHistoryList(userId))
+                    //loginViewModel.handle(LoginViewAction.getHistoryList(userId))
                 }
             }
         }
@@ -82,11 +93,25 @@ class MoreFragment : TrackingBaseFragment<FragmentMoreBinding>() {
         views.mylis.adapter = myListAdapter
         favoriteListAdapter = FavoriteListAdapter(this::handleMediaClick)
         views.favoriteList.adapter = favoriteListAdapter
-        historyListAdapter = HistoryListAdapter(this::handleItemClick)
-        views.historyList.adapter = historyListAdapter
-        views.layoutSignOut.setOnClickListener {
-            FirebaseAuth.getInstance().signOut()
-            startActivity(Intent(activity, LoginActivity::class.java))
+//        historyListAdapter = HistoryListAdapter(this::handleItemClick)
+//        views.historyList.adapter = historyListAdapter
+        views.layoutSignOut.setSingleClickListener {
+            DialogUtil.showAlertDialogLogOut(requireActivity()) {
+                lifecycleScope.launch {
+                    userPreferences.clear()
+                }
+                FirebaseAuth.getInstance().signOut()
+                startActivity(Intent(activity, LoginActivity::class.java))
+            }
+        }
+        views.layoutManager.setSingleClickListener {
+            startActivity(Intent(activity, AccountActivity::class.java))
+        }
+        views.searchButton.setSingleClickListener {
+            startActivity(Intent(activity, SearchActivity::class.java))
+        }
+        views.searchButton2.setSingleClickListener {
+            startActivity(Intent(activity, SearchActivity::class.java))
         }
     }
 

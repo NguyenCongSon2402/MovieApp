@@ -2,6 +2,7 @@ package dev.son.movie.di
 
 import android.content.Context
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 import dev.son.movie.network.service.*
 import dev.son.movie.network.repository.HomeRepository
 
@@ -38,12 +39,17 @@ object NetWorkModule {
     fun provideFireBaseInstance(): FirebaseDatabase {
         return FirebaseDatabase.getInstance()
     }
+    @Provides
+    @Singleton
+    fun provideFireBaseStoreInstance(): FirebaseStorage {
+        return FirebaseStorage.getInstance()
+    }
 
     @Provides
     @Singleton
     fun provideFirebaseRepository(
-        database: FirebaseDatabase,userPreferences: UserPreferences
-    ): FirebaseRepository = FirebaseRepository(database,userPreferences)
+        database: FirebaseDatabase,storage: FirebaseStorage,userPreferences: UserPreferences
+    ): FirebaseRepository = FirebaseRepository(database,storage,userPreferences)
 
 
     @Provides

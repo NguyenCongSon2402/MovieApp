@@ -12,7 +12,7 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/transparent</item>
         <!-- Customize your theme here. -->
-        <item name="android:windowBackground">@color/main</item>
+        <item name="android:windowBackground">@drawable/gradient_color_background</item>
         <item name="android:textColor">@color/text_secondary</item>
         <item name="colorControlNormal">@color/white</item>
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
@@ -70,5 +70,9 @@
 
     <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/bottom_sheet_bg</item>
+    </style>
+    <style name="roundedImageRounded">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
     </style>
 </resources>

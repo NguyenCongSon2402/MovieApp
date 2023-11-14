@@ -7,5 +7,6 @@ data class UserIdComment(
     @SerializedName("name") var name: String? = null,
     @SerializedName("text") var text: String? = null,
     @SerializedName("timestamp") var timestamp: String? = null,
-    @SerializedName("comment_id") var commentId: String? = null
+    @SerializedName("comment_id") var commentId: String? = null,
+    @SerializedName("avatar") var avatar: String? = null
 )

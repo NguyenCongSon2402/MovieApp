@@ -27,4 +27,13 @@
         <item name="android:stateListAnimator">@drawable/shrink</item>
         <item name="android:focusable">true</item>
     </style>
+    <style name="TrackSelectionDialogThemeOverlay" parent="ThemeOverlay.AppCompat.Dialog.Alert">
+        <item name="windowNoTitle">false</item>
+    </style>
+
+    <style name="RoundedInclude">
+        <item name="android:background">@drawable/rounded_background</item>
+    </style>
+
+
 </resources>

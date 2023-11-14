@@ -1,6 +1,7 @@
 package dev.son.movie.ui.login
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.airbnb.mvrx.ActivityViewModelContext
 import com.airbnb.mvrx.Fail
@@ -37,10 +38,12 @@ class LoginViewModel @AssistedInject constructor(
             is LoginViewAction.addToList -> handleAddToList(action.IdMovie, action.IdUser)
             is LoginViewAction.addToFavorite -> handleAddToFavorite(action.IdMovie, action.IdUser)
             is LoginViewAction.getComment -> handleGetComment(action.movieId1)
-            is LoginViewAction.addComment -> handleAddComment(action.movieId1,action.userIdComment)
+            is LoginViewAction.addComment -> handleAddComment(action.movieId1, action.userIdComment)
             is LoginViewAction.getMyList -> handleGetMyList(action.idUser)
             is LoginViewAction.getFavoriteList -> handlegetFavoriteList(action.idUser)
             is LoginViewAction.getHistoryList -> handlegetHistoryList(action.idUser)
+            is LoginViewAction. upDateUser -> handleUpDateUser(action.id, action.idUser)
+            is LoginViewAction.upLoadImage -> handleUpLoadImage(action.img,action.id)
         }
     }
 
@@ -53,23 +56,25 @@ class LoginViewModel @AssistedInject constructor(
     @SuppressLint("CheckResult")
     private fun handleAddToList(idMovie: MovieId1, idUser: String) {
         setState { copy(addTolist = Loading()) }
-        firebaseRepository.addToList(idMovie,idUser)
+        firebaseRepository.addToList(idMovie, idUser)
             .subscribe({ add ->
                 setState { copy(addTolist = Success(add)) }
             }, { error ->
                 setState { copy(addTolist = Fail(error)) }
             })
     }
+
     @SuppressLint("CheckResult")
     private fun handleAddToFavorite(idMovie: MovieId1, idUser: String) {
         setState { copy(addToFavorite = Loading()) }
-        firebaseRepository.addToFavorite(idMovie,idUser)
+        firebaseRepository.addToFavorite(idMovie, idUser)
             .subscribe({ add ->
                 setState { copy(addToFavorite = Success(add)) }
             }, { error ->
                 setState { copy(addToFavorite = Fail(error)) }
             })
     }
+
     @SuppressLint("CheckResult")
     private fun handleGetComment(idMovie: String) {
         setState { copy(getComments = Loading()) }
@@ -80,16 +85,18 @@ class LoginViewModel @AssistedInject constructor(
                 setState { copy(getComments = Fail(error)) }
             })
     }
+
     @SuppressLint("CheckResult")
     private fun handleAddComment(idMovie: String, userIdComment: UserIdComment) {
         setState { copy(addComments = Loading()) }
-        firebaseRepository.addComment(idMovie,userIdComment)
+        firebaseRepository.addComment(idMovie, userIdComment)
             .subscribe({ add ->
                 setState { copy(addComments = Success(add)) }
             }, { error ->
                 setState { copy(addComments = Fail(error)) }
             })
     }
+
     @SuppressLint("CheckResult")
     private fun handleGetMyList(idUser: String) {
         setState { copy(getMyList = Loading()) }
@@ -100,6 +107,7 @@ class LoginViewModel @AssistedInject constructor(
                 setState { copy(getMyList = Fail(error)) }
             })
     }
+
     @SuppressLint("CheckResult")
     private fun handlegetFavoriteList(idUser: String) {
         setState { copy(getFavoriteList = Loading()) }
@@ -110,6 +118,7 @@ class LoginViewModel @AssistedInject constructor(
                 setState { copy(getFavoriteList = Fail(error)) }
             })
     }
+
     @SuppressLint("CheckResult")
     private fun handlegetHistoryList(idUser: String) {
         setState { copy(getHistoryList = Loading()) }
@@ -121,23 +130,59 @@ class LoginViewModel @AssistedInject constructor(
             })
     }
 
+    @SuppressLint("CheckResult")
+    private fun handleUpDateUser(id: String?, idUser1: HashMap<String, Any>) {
+        setState { copy(upDateUser = Loading()) }
+        firebaseRepository.upDateUser(id, idUser1)
+            .subscribe({ add ->
+                setState { copy(upDateUser = Success(add)) }
+            }, { error ->
+                setState { copy(upDateUser = Fail(error)) }
+            })
+    }
+
+    @SuppressLint("CheckResult")
+    private fun handleUpLoadImage(img: Uri, id: String) {
+        setState { copy(upLoadImage = Loading()) }
+        firebaseRepository.upLoadImage(img,id)
+            .subscribe({ add ->
+                setState { copy(upLoadImage = Success(add)) }
+            }, { error ->
+                setState { copy(upLoadImage = Fail(error)) }
+            })
+    }
+
 
     fun handleRemoveStateHome() =
         setState { copy(user = Uninitialized) }
+
     fun handleRemoveStateAddToList() =
         setState { copy(addTolist = Uninitialized) }
+
     fun handleRemoveStateAddToFavorite() =
         setState { copy(addToFavorite = Uninitialized) }
+
     fun handleRemoveStateGetComment() =
         setState { copy(getComments = Uninitialized) }
+
     fun handleRemoveStateAddComment() =
         setState { copy(addComments = Uninitialized) }
+
     fun handleRemoveStateGetMyList() =
         setState { copy(getMyList = Uninitialized) }
+
     fun handleRemoveStateGetFavorite() =
         setState { copy(getFavoriteList = Uninitialized) }
+
     fun handleRemoveStateGetHistory() =
         setState { copy(getHistoryList = Uninitialized) }
+
+
+    fun handleRemoveUpdateUser() =
+        setState { copy(upDateUser = Uninitialized) }
+    fun handleRemoveUpLoadr() =
+        setState { copy(upLoadImage = Uninitialized)}
+
     @SuppressLint("CheckResult")
     private fun handleCreateUser(userId: UserId) {
         setState { copy(user = Loading()) }

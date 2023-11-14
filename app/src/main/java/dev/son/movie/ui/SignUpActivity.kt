@@ -1,7 +1,9 @@
 package dev.son.movie.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Success
@@ -18,6 +20,8 @@ import dev.son.movie.network.models.user.ViewingHistory
 import dev.son.movie.ui.login.LoginViewAction
 import dev.son.movie.ui.login.LoginViewModel
 import dev.son.movie.ui.login.LoginViewState
+import dev.son.movie.utils.hide
+import dev.son.movie.utils.show
 import javax.inject.Inject
 
 @Suppress("DEPRECATION")
@@ -38,7 +42,13 @@ class SignUpActivity : TrackingBaseActivity<ActivityLogoutScreenBinding>(), Logi
         loginViewModel.subscribe(this) {
             when (it.user) {
                 is Success -> {
-                    Toast.makeText(this, R.string.sign_up_success, Toast.LENGTH_SHORT).show()
+                    loginViewModel.handle(LoginViewAction.SaveDataUser(it.user.invoke()))
+                    val intent = Intent(this, BottomNavActivity::class.java)
+                    intent.putExtra("userId",it.user.invoke().userId)
+                    startActivity(intent)
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                    finish()
+                    views.loading.hide()
                 }
 
                 is Fail -> {
@@ -47,6 +57,7 @@ class SignUpActivity : TrackingBaseActivity<ActivityLogoutScreenBinding>(), Logi
                         getString(R.string.registration_failed_please_try_again),
                         Toast.LENGTH_SHORT
                     ).show()
+                    views.loading.hide()
                 }
 
                 else -> {}
@@ -57,6 +68,7 @@ class SignUpActivity : TrackingBaseActivity<ActivityLogoutScreenBinding>(), Logi
     private fun setUpUi() {
         views.toolbar.setOnClickListener { finishAfterTransition() }
         views.signUpSubmit.setOnClickListener {
+            views.loading.show()
             signUpSubmit()
         }
     }
@@ -84,6 +96,7 @@ class SignUpActivity : TrackingBaseActivity<ActivityLogoutScreenBinding>(), Logi
                             this.avatar = ""
                             this.name = user.email?.substringBefore("@")
                             this.dateOfBirth = ""
+                            this.coins=0
                         }
                         loginViewModel.handle(LoginViewAction.createUser(userId))
                     } else {

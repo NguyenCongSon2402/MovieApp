@@ -10,5 +10,6 @@ data class UserId(
     @SerializedName("favorite_movies" ) var favoriteMovies : FavoriteMovies?           = FavoriteMovies(),
     @SerializedName("watched_movies"  ) var watchedMovies  : WatchedMovies?            = WatchedMovies(),
     @SerializedName("name"            ) var name           : String?                   = null,
-    @SerializedName("user_id"         ) var userId         : String?                   = null
+    @SerializedName("user_id"         ) var userId         : String?                   = null,
+    @SerializedName("coins"         ) var coins         : Int?                   = 0
 )

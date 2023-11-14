@@ -1,8 +1,10 @@
 package dev.son.movie.utils
 
+import android.content.Context
 import android.location.Location
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
@@ -13,14 +15,6 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.regex.Pattern
-
-fun Location?.toText(): String {
-    return if (this != null) {
-        "($latitude, $longitude)"
-    } else {
-        "Unknown location"
-    }
-}
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun Date.format(format: String? = null): String {
@@ -69,17 +63,18 @@ fun extractVideoIdFromUrl(url: String): String? {
     }
     return null
 }
+
 fun getCurrentFormattedTime(): String {
     val dateFormat = SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.getDefault())
     val currentTime = Date(System.currentTimeMillis())
     return dateFormat.format(currentTime)
 }
+
 fun getCurrentFormattedDateTimeWithMilliseconds(): String {
     val dateFormat = SimpleDateFormat("HHmmssSSSddMMyyyy", Locale.getDefault())
     val currentTime = Date(System.currentTimeMillis())
     return dateFormat.format(currentTime)
 }
-
 
 
 fun <T> checkStatusApiRes(err: Fail<T>): Int {
@@ -108,4 +103,18 @@ fun <T> checkStatusApiRes(err: Fail<T>): Int {
             R.string.http500
         }
     }
+}
+
+fun showDownloadConfirmationDialog(context: Context, onDownloadConfirmed: () -> Unit) {
+    val dialogBuilder = AlertDialog.Builder(context)
+    dialogBuilder.setMessage("Bạn có chắc chắn muốn huỷ?")
+    dialogBuilder.setPositiveButton("Đồng ý") { _, _ ->
+        // Xử lý tải
+        onDownloadConfirmed.invoke()
+    }
+    dialogBuilder.setNegativeButton("Huỷ") { dialog, _ ->
+        dialog.dismiss()
+    }
+    val dialog = dialogBuilder.create()
+    dialog.show()
 }

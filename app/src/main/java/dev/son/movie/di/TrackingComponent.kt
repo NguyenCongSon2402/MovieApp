@@ -9,6 +9,7 @@ import dev.son.movie.ui.home.HomeFragment
 
 import dagger.BindsInstance
 import dagger.Component
+import dev.son.movie.ui.AccountActivity
 import dev.son.movie.ui.CategoryMoviesActivity
 import dev.son.movie.ui.SignUpActivity
 import dev.son.movie.ui.login.LoginActivity
@@ -27,6 +28,7 @@ interface TrackingComponent {
     fun inject(bottomNavActivity: BottomNavActivity)
     fun inject(loginActivity: LoginActivity)
     fun inject(signUpActivity: SignUpActivity)
+    fun inject(activity: AccountActivity)
     fun inject(searchActivity: SearchActivity)
     fun inject(categoryMoviesActivity: CategoryMoviesActivity)
     fun inject(homeFragment: HomeFragment)

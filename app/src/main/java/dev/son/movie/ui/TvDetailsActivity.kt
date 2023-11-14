@@ -25,6 +25,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.MediaMetadata
 import com.google.android.exoplayer2.Player.*
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.material.tabs.TabLayout
@@ -54,6 +55,8 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.Abs
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
 import dev.son.movie.adapters.VideosController
 import dev.son.movie.data.local.UserPreferences
+import dev.son.movie.manager.DemoUtil
+import dev.son.movie.manager.DownloadTracker
 import dev.son.movie.network.models.Slug.Category
 import dev.son.movie.network.models.postcomment.UserIdComment
 import dev.son.movie.network.models.user.MovieId1
@@ -64,6 +67,7 @@ import dev.son.movie.ui.login.LoginViewState
 import dev.son.movie.utils.getCurrentFormattedDateTimeWithMilliseconds
 import dev.son.movie.utils.getCurrentFormattedTime
 import dev.son.movie.utils.hideKeyboard
+import dev.son.movie.utils.showDownloadConfirmationDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -118,15 +122,21 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
         get() = intent.extras?.getString("thumbUrl")
     private val movieID: String?
         get() = intent.extras?.getString("id")
+    private val movieName: String?
+        get() = intent.extras?.getString("name1")
 
 
     var isVideoRestarted = false
     var player: YouTubePlayer? = null
     var bannerVideoLoaded = false
+    private var media: MediaItem? = null
+    private var downloadTracker: DownloadTracker? = null
+    private var isDownloaded = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as TrackingApplication).trackingComponent.inject(this)
         super.onCreate(savedInstanceState)
+        setLoading(true)
         movieSlug?.let { homeViewModel.handle(HomeViewAction.getSlug(name = it)) }
         movieCategory?.let { homeViewModel.handle(HomeViewAction.getCategoriesMovies(name = it)) }
         movieID?.let { LoginViewAction.getComment(it) }?.let { loginViewModel.handle(it) }
@@ -135,7 +145,7 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
             when (it.slug) {
                 is Success -> {
                     homeViewModel.handleRemoveStateSlug()
-                    item=it.slug.invoke()
+                    item = it.slug.invoke()
                     setLoading(false)
                     updateDetails(it.slug.invoke())
                 }
@@ -169,7 +179,6 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
         loginViewModel.subscribe(this) {
             when (it.addTolist) {
                 is Success -> {
-                    Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show()
                     saveMyList(it.addTolist.invoke())
                     loginViewModel.handleRemoveStateAddToList()
                 }
@@ -181,9 +190,8 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
 
                 else -> {}
             }
-            when(it.addToFavorite){
+            when (it.addToFavorite) {
                 is Success -> {
-                    Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show()
                     saveFavorite(it.addToFavorite.invoke())
                     loginViewModel.handleRemoveStateAddToFavorite()
                 }
@@ -197,7 +205,6 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
             }
             when (it.getComments) {
                 is Success -> {
-                    Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show()
                     listData = it.getComments.invoke()
                     videosController.setData(listData)
                     loginViewModel.handleRemoveStateAddToFavorite()
@@ -212,7 +219,6 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
             }
             when (it.addComments) {
                 is Success -> {
-                    Toast.makeText(this, "Succes", Toast.LENGTH_SHORT).show()
                     listData.add(0, it.addComments.invoke())
                     videosController.setData(listData)
                     loginViewModel.handleRemoveStateAddComment()
@@ -228,6 +234,7 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
         }
         setUpPlayVideo()
     }
+
     private fun saveFavorite(id: String) {
         lifecycleScope.launch {
             userPreferences.toggleFavoriteMovie(id)
@@ -241,6 +248,7 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
     }
 
     private fun setUpPlayVideo() {
+        downloadTracker = DemoUtil.getDownloadTracker(this)
         handler = Handler(Looper.getMainLooper())
         bt_fullscreen = findViewById(R.id.bt_fullscreen)
         bt_lockscreen = findViewById(R.id.exo_lock)
@@ -461,16 +469,30 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
     }
 
     private fun setupUI() {
+        lifecycleScope.launch {
+            userPreferences.userId.collect {
+                if (it != null) {
+                    idUser = it.userId
+                    user = it
+                }
+                //Toast.makeText(this@TvDetailsActivity, "${idUser}", Toast.LENGTH_SHORT).show()
+            }
+        }
         initFullscreenDialog()
         views.toolbar.setNavigationOnClickListener {
             views.youtubePlayerView.release()
             finishAfterTransition()
         }
+        views.header.txtStateDow.text = "DownLoad"
+        views.header.imgDown.setImageResource(R.drawable.ic_download)
+        Glide.with(views.imgUser).load(user.avatar).centerCrop()
+            .error(getDrawable(R.drawable.ic_person)).into(views.imgUser)
         views.loader.root.show()
         views.loader.root.startShimmer()
         views.content.hide()
         views.youtubePlayerView.hide()
         views.thumbnail.container.hide()
+        views.commentContainer.hide()
         views.youtubePlayerView.addYouTubePlayerListener(youTubePlayerListener)
         views.header.overviewText.setOnClickListener {
             views.header.overviewText.maxLines = 10
@@ -516,15 +538,6 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
                 views.header.igmAdd.setImageResource(R.drawable.ic_add)
             }
         }
-        lifecycleScope.launch {
-            userPreferences.userId.collect {
-                if (it != null) {
-                    idUser = it.userId
-                    user = it
-                }
-                Toast.makeText(this@TvDetailsActivity, "${idUser}", Toast.LENGTH_SHORT).show()
-            }
-        }
 
         views.header.igmAdd.setOnClickListener {
             mtList = !mtList!!
@@ -536,8 +549,8 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
                 this.category = ArrayList<Category>().apply {
                     item.data?.item?.category?.get(0)?.let { add(it) }
                 }
-                this.type=item.data?.item?.type
-                this.thumbUrl=item.data?.item?.thumbUrl
+                this.type = item.data?.item?.type
+                this.thumbUrl = item.data?.item?.thumbUrl
 
             }
 
@@ -547,7 +560,8 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
         }
         views.header.imgFavorite.setOnClickListener {
             favorite = !favorite!!
-            val imageResource = if (favorite == true) R.drawable.ic_favorite else R.drawable.ic_unfavorite
+            val imageResource =
+                if (favorite == true) R.drawable.ic_favorite else R.drawable.ic_unfavorite
             views.header.imgFavorite.setImageResource(imageResource)
             movieId1.apply {
                 this.movieId1 = movieID
@@ -555,8 +569,8 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
                 this.category = ArrayList<Category>().apply {
                     item.data?.item?.category?.get(0)?.let { add(it) }
                 }
-                this.type=item.data?.item?.type
-                this.thumbUrl=item.data?.item?.thumbUrl
+                this.type = item.data?.item?.type
+                this.thumbUrl = item.data?.item?.thumbUrl
             }
 
             if (!idUser.isNullOrEmpty()) {
@@ -578,6 +592,7 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
                     this.timestamp = getCurrentFormattedTime()
                     this.text = comment
                     this.commentId = getCurrentFormattedDateTimeWithMilliseconds()
+                    this.avatar = user.avatar
                 }
                 views.commentTextInput.setText("")
                 hideKeyboard()
@@ -605,6 +620,11 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
     @SuppressLint("NotifyDataSetChanged")
     private fun updateDetails(data: Slug) {
         url = data.data?.item?.episodes?.get(0)?.serverData?.get(0)?.linkM3u8.toString()
+        media = MediaItem.Builder().setUri(url).setMediaId(movieSlug.toString()).setMediaMetadata(
+            MediaMetadata.Builder().setTitle(data.data?.item?.thumbUrl)
+                .setDisplayTitle(data.data?.item?.name)
+                .build()
+        ).build()
         Glide.with(this).load(data.data?.seoOnPage?.seoSchema?.image).transform(CenterCrop())
             .into(views.thumbnail.backdropImage)
         views.header.titleText.text = data.data?.item?.name
@@ -617,6 +637,44 @@ class TvDetailsActivity : TrackingBaseActivity<ActivityTvDetailsScreenBinding>()
         checkAndLoadVideo(data.data?.item!!)
 
         episodeItemsAdapter.submitList(data.data?.item?.episodes?.get(0)?.serverData)
+
+
+
+
+        if (downloadTracker?.isDownloaded(media!!) == true) {
+            views.header.downloadLl.hide()
+            views.header.downloadedLl.show()
+        }
+
+        if (downloadTracker?.downloading(media!!) == true) {
+            isDownloaded = true
+            views.header.txtStateDow.text = "Downloading"
+            views.header.imgDown.setImageResource(R.drawable.ic_downloading)
+        }
+        views.header.downloadLl.setOnClickListener {
+            if (isDownloaded) {
+                showDownloadConfirmationDialog(this) {
+                    downloadTracker?.removeDownload(Uri.parse(url))
+                    views.header.txtStateDow.text = "DownLoad"
+                    views.header.imgDown.setImageResource(R.drawable.ic_download)
+                    isDownloaded = false
+                }
+            } else {
+                views.header.txtStateDow.text = "Downloading"
+                views.header.imgDown.setImageResource(R.drawable.ic_downloading)
+                val renderersFactory = DemoUtil.buildRenderersFactory(this)
+                media?.let { it1 ->
+                    downloadTracker?.toggleDownload(
+                        supportFragmentManager, it1, renderersFactory, onDownloadCancel = {
+                            views.header.txtStateDow.text = "DownLoad"
+                            views.header.imgDown.setImageResource(R.drawable.ic_download)
+                        }
+                    )
+                }
+                isDownloaded = true
+            }
+        }
+
     }
 
     @SuppressLint("NotifyDataSetChanged")

@@ -13,7 +13,20 @@
           "package_name": "dev.son.movie"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "237141475462-sd7pe3p798co5k3vttgj2oh8mrtlg8m3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "dev.son.movie",
+            "certificate_hash": "872b2c40161348e24b6c29492c55cd625dd01a36"
+          }
+        },
+        {
+          "client_id": "237141475462-ec41oiglfbtitkjrk1nu59msk1gv57l0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDlOlvLtbq5xrDFEm1Icg8-zs5nFeZC6eQ"
@@ -21,9 +34,15 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "237141475462-ec41oiglfbtitkjrk1nu59msk1gv57l0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-7182834619756575~7738106401"
     }
   ],
   "configuration_version": "1"
