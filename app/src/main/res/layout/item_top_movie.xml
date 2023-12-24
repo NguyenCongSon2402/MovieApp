@@ -16,20 +16,42 @@
         android:id="@+id/backdrop_image"
         android:layout_width="150dp"
         android:layout_height="90dp"
-        android:scaleType="centerCrop"
-        android:background="@drawable/placeholder" />
+        android:background="@drawable/placeholder"
+        android:scaleType="centerCrop" />
 
-    <TextView
-        android:id="@+id/name_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_weight="1"
-        tools:text="King Kong" />
+        android:orientation="vertical">
 
-    <ImageView
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_marginHorizontal="8dp"
-        android:src="@drawable/ic_play_circle_outline" />
+        <TextView
+            android:id="@+id/name_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:gravity="bottom"
+            android:maxLines="1"
+            tools:text="King Kong" />
+
+        <TextView
+            android:id="@+id/year_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:gravity="top"
+            tools:text="2023" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/btn_edit"
+        android:layout_width="50dp"
+        android:layout_height="match_parent"
+        android:backgroundTint="@color/transparent"
+        android:src="@drawable/ic_more_event" />
+
+
 </LinearLayout>

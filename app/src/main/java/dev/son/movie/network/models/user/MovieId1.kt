@@ -1,7 +1,6 @@
 package dev.son.movie.network.models.user
 
 import com.google.gson.annotations.SerializedName
-import dev.son.movie.network.models.Slug.Category
 
 data class MovieId1(
 

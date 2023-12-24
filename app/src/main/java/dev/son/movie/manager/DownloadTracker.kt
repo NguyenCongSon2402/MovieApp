@@ -467,8 +467,8 @@ class DownloadTracker(
         private fun buildDownloadRequest(): DownloadRequest {
             return downloadHelper
                 .getDownloadRequest(
-                    mediaItem.mediaMetadata.title.toString(),//id
-                    Util.getUtf8Bytes(Preconditions.checkNotNull(mediaItem.mediaId))//data
+                    mediaItem.mediaId,//id
+                    Util.getUtf8Bytes(Preconditions.checkNotNull(mediaItem.mediaMetadata.title.toString()))//data
                 )
                 .copyWithKeySetId(Util.getUtf8Bytes(mediaItem.mediaMetadata.displayTitle as String))//key
         }

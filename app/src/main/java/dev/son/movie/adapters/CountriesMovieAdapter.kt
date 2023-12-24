@@ -1,18 +1,16 @@
 package dev.son.movie.adapters
 
-import android.graphics.Typeface
-import android.util.TypedValue
+
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import dev.son.movie.databinding.ItemPickerOptionBinding
-import dev.son.movie.network.models.countries.Items
+import dev.son.movie.network.models.movie.Genre
 
-class CountriesMovieAdapter(private val onItemClick: (Items) -> Unit) :
-    ListAdapter<Items, PickerItemViewHolder>(PickerItemDiffCallback()) {
+class CountriesMovieAdapter(private val onItemClick: (Genre) -> Unit) :
+    ListAdapter<Genre, PickerItemViewHolder>(PickerItemDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PickerItemViewHolder {
         val binding =
@@ -28,22 +26,22 @@ class CountriesMovieAdapter(private val onItemClick: (Items) -> Unit) :
 
 class PickerItemViewHolder(
     private val binding: ItemPickerOptionBinding,
-    private val onItemClick: (Items) -> Unit
+    private val onItemClick: (Genre) -> Unit
 ) :
     RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(pickerItem: Items) {
+    fun bind(pickerItem: Genre) {
         binding.optionText.text = pickerItem.name
         binding.root.setOnClickListener { onItemClick(pickerItem) }
     }
 }
 
-class PickerItemDiffCallback : DiffUtil.ItemCallback<Items>() {
-    override fun areItemsTheSame(oldItem: Items, newItem: Items): Boolean {
-        return oldItem.Id == newItem.Id
+class PickerItemDiffCallback : DiffUtil.ItemCallback<Genre>() {
+    override fun areItemsTheSame(oldItem: Genre, newItem: Genre): Boolean {
+        return oldItem.code == newItem.code
     }
 
-    override fun areContentsTheSame(oldItem: Items, newItem: Items): Boolean {
+    override fun areContentsTheSame(oldItem: Genre, newItem: Genre): Boolean {
         return oldItem == newItem
     }
 }

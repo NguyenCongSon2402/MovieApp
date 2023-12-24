@@ -42,7 +42,7 @@
     <string name="comment">Comment</string>
     <string name="propose">Propose</string>
     <string name="notification">Notification</string>
-    <string name="my_list">My List</string>
+    <string name="my_list">Commented List</string>
     <string name="desception_my_list">Mỗi khi bạn thêm một nội dung vào Danh sách của tôi, tác phẩm đó sẽ xuất hiện ở đây</string>
     <string name="title_button_my_list">Tìm nội dung để thêm</string>
     <string name="watching_movie">Watching history</string>
@@ -144,4 +144,12 @@
     <string name="email_is_empty">E-mail not Empty</string>
     <string name="rewarded_interstitial_ad_id_live">ca-app-pub-7182834619756575/4143557899</string>
     <string name="adUnitIdTest">ca-app-pub-3940256099942544/5224354917</string>
+    <string name="play_list">Danh sách phát</string>
+    <string name="admin">Admin panel</string>
+    <string name="category">Thể loại</string>
+    <string name="topic">Chủ đề</string>
+    <string name="country">Quốc gia</string>
+    <string name="delete">Delete</string>
+    <string name="add">Thêm</string>
+    <string name="edt">Sửa</string>
 </resources>

@@ -7,9 +7,6 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import com.airbnb.mvrx.Fail
-import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.withState
 
@@ -17,12 +14,9 @@ import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper
 import dev.son.movie.adapters.CommingSoonMovieAdapter
 import dev.son.movie.core.TrackingBaseFragment
 import dev.son.movie.databinding.FragmentComingSoonBinding
-import dev.son.movie.network.models.home.Items
+import dev.son.movie.network.models.movie.Movie
 import dev.son.movie.ui.MovieDetailsActivity
-import dev.son.movie.ui.TvDetailsActivity
-import dev.son.movie.ui.home.HomeViewAction
 import dev.son.movie.ui.home.HomeViewModel
-import dev.son.movie.utils.checkStatusApiRes
 
 
 class ComingSoonFragment : TrackingBaseFragment<FragmentComingSoonBinding>() {
@@ -57,27 +51,13 @@ class ComingSoonFragment : TrackingBaseFragment<FragmentComingSoonBinding>() {
 
         //addListScrollListener()
     }
-    private fun handleMediaClick(items: Items,itemView:View) {
-        val categoryList = items.category
-        val shuffledIndices = categoryList.indices.shuffled()
-        val randomIndex = shuffledIndices.first()
-        val randomCategory = categoryList[randomIndex]
-        val randomSlug = randomCategory.slug
+    private fun handleMediaClick(items: Movie,itemView:View) {
+        val intent = Intent(requireActivity(), MovieDetailsActivity::class.java)
 
-
-        val intent: Intent
-        if (items.type == "single") {
-            intent = Intent(activity, MovieDetailsActivity::class.java)
-        } else {
-            intent = Intent(activity, TvDetailsActivity::class.java)
-            intent.putExtra("thumbUrl", items.thumbUrl)
-        }
-        intent.putExtra("name", items.slug)
-        intent.putExtra("category", randomSlug)
-
+        intent.putExtra("movie", items)
 
         val options = ActivityOptions.makeSceneTransitionAnimation(
-            activity,
+            requireActivity(),
             itemView,
             "my_shared_element"
         )
@@ -122,23 +102,23 @@ class ComingSoonFragment : TrackingBaseFragment<FragmentComingSoonBinding>() {
 //    }
 
     private fun setupViewModel() {
-        homeViewModel.handle(HomeViewAction.getPhimSapChieu)
+//        homeViewModel.handle(HomeViewAction.getPhimSapChieu)
     }
     override fun invalidate(): Unit = withState(homeViewModel) {
-        when (it.phimSapChieu) {
-            is Success -> {
-                commingSoonMoviesAdapter.submitList(it.phimSapChieu.invoke().data?.items)
-            }
-
-            is Fail -> {
-                Toast.makeText(
-                    activity,
-                    checkStatusApiRes(it.phimSapChieu),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            else -> {}
-        }
+//        when (it.phimSapChieu) {
+//            is Success -> {
+//                commingSoonMoviesAdapter.submitList(it.phimSapChieu.invoke().data?.items)
+//            }
+//
+//            is Fail -> {
+//                Toast.makeText(
+//                    activity,
+//                    checkStatusApiRes(it.phimSapChieu),
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//            }
+//
+//            else -> {}
+//        }
     }
 }

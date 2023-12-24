@@ -4,7 +4,6 @@ package dev.son.movie.adapters
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -16,15 +15,14 @@ import com.bumptech.glide.Glide
 
 import com.google.android.exoplayer2.offline.Download
 import com.google.android.exoplayer2.util.Util
-import com.netflixclone.constants.BASE_IMG
 import dev.son.movie.databinding.ItemDownloadedBinding
 import dev.son.movie.manager.DemoUtil
-import dev.son.movie.ui.MovieDetailsActivity
+import dev.son.movie.ui.PlayMovieOfflineActivity
 import dev.son.movie.utils.hide
 import dev.son.movie.utils.show
 
 
-class OfflineVideoAdapter :
+class OfflineVideoAdapter() :
     ListAdapter<Download, OfflineVideoAdapter.DownloadedVideoViewHolder>(DownloadDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DownloadedVideoViewHolder {
@@ -36,13 +34,15 @@ class OfflineVideoAdapter :
     override fun onBindViewHolder(holder: DownloadedVideoViewHolder, position: Int) {
         val download = getItem(position)
         holder.bind(download)
-        if (download.state == Download.STATE_COMPLETED && download.percentDownloaded > 99f) {
+        if (download.state == Download.STATE_COMPLETED || download.percentDownloaded > 99f) {
             holder.itemView.setOnClickListener { it ->
+
                 it.context.startActivity(
-                    Intent(it.context, MovieDetailsActivity::class.java)
-                        .putExtra(BUNDLE_SLUG, download.request.data?.let { Util.fromUtf8Bytes(it) })// slug movie
-                        .putExtra(BUNDLE_NAME1,download.request.keySetId?.let { Util.fromUtf8Bytes(it) } )// slug movie
+                    Intent(it.context, PlayMovieOfflineActivity::class.java)
+                        .putExtra(BUNDLE_IMG, download.request.data.let { Util.fromUtf8Bytes(it) })// IMG movie
+                        .putExtra(BUNDLE_NAME,download.request.keySetId?.let { Util.fromUtf8Bytes(it) } )// Name movie
                         .putExtra(BUNDLE_URI, download.request.uri.toString())// uri movie
+                        .putExtra(BUNDLE_ID, download.request.id)// id movie
                 )
             }
         }
@@ -58,7 +58,7 @@ class OfflineVideoAdapter :
         @SuppressLint("SetTextI18n")
         fun bind(download: Download) {
             var posterUrl: String? = null
-            posterUrl = BASE_IMG + download.request.id
+            posterUrl = Util.fromUtf8Bytes(download.request.data)
             Glide.with(binding.poster.backdropImage).load(posterUrl)
                 .centerCrop()
                 .into(binding.poster.backdropImage)
@@ -126,10 +126,10 @@ class OfflineVideoAdapter :
     companion object {
         private const val BUNDLE_PERCENTAGE = "bundle_percentage"
         private const val BUNDLE_STATE = "bundle_state"
-        private const val BUNDLE_ID = "id"
-        private const val BUNDLE_URI = "uri"
-        private const val BUNDLE_SLUG = "name"
-        private const val BUNDLE_NAME1 = "name1"
+        private const val BUNDLE_ID = "idMovie"
+        private const val BUNDLE_URI = "uriMovie"
+        private const val BUNDLE_IMG = "imgMovie"
+        private const val BUNDLE_NAME = "nameMovie"
         private const val BUNDLE_BYTES_DOWNLOADED = "bundle_bytes_downloaded"
     }
 }

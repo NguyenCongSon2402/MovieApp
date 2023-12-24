@@ -2,31 +2,30 @@ package dev.son.movie.ui.login
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import com.airbnb.mvrx.Fail
-import com.airbnb.mvrx.Loading
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.viewModel
-import com.google.firebase.auth.FirebaseAuth
 import dev.son.movie.R
 import dev.son.movie.TrackingApplication
 import dev.son.movie.core.TrackingBaseActivity
 import dev.son.movie.data.local.UserPreferences
 import dev.son.movie.databinding.ActivityLoginScreenBinding
+import dev.son.movie.network.models.user.LoginRequest
 import dev.son.movie.ui.BottomNavActivity
 import dev.son.movie.ui.ForgotPasswordActivity
 import dev.son.movie.ui.SignUpActivity
 import dev.son.movie.utils.hide
 import dev.son.movie.utils.setSingleClickListener
 import dev.son.movie.utils.show
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class LoginActivity : TrackingBaseActivity<ActivityLoginScreenBinding>(), LoginViewModel.Factory {
+class LoginActivity : TrackingBaseActivity<ActivityLoginScreenBinding>(), AuthViewModel.Factory {
     @Inject
-    lateinit var loginViewModelFactory: LoginViewModel.Factory
-    private val loginViewModel: LoginViewModel by viewModel()
+    lateinit var authViewModelFactory: AuthViewModel.Factory
+    private val authViewModel: AuthViewModel by viewModel()
 
     @Inject
     lateinit var userPreferences: UserPreferences
@@ -40,23 +39,39 @@ class LoginActivity : TrackingBaseActivity<ActivityLoginScreenBinding>(), LoginV
         super.onCreate(savedInstanceState)
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         setUpUi()
-        loginViewModel.subscribe(this) {
-            when (it.dataUser) {
+        authViewModel.subscribe(this) {
+            when (it.tokenResponse) {
                 is Success -> {
-                    loginViewModel.handle(LoginViewAction.SaveDataUser(it.dataUser.invoke()))
-                    views.loading.visibility = View.GONE
-                    val intent = Intent(this, BottomNavActivity::class.java)
-                    intent.putExtra("userId",it.dataUser.invoke().userId)
-                    startActivity(intent)
-                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-                    finish()
                     views.loading.hide()
+                    lifecycleScope.launch {
+                        val isTokenSaved =
+                            userPreferences.saveToken(it.tokenResponse.invoke().accessToken.toString())
+                        val isUserSaved = it.tokenResponse.invoke().data?.let { it1 ->
+                            userPreferences.saveUserData(
+                                it1
+                            )
+                        }
+                        if (isTokenSaved && isUserSaved == true) {
+                            // Token đã được lưu thành công
+                            val intent = Intent(this@LoginActivity, BottomNavActivity::class.java)
+                            startActivity(intent)
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                            finish()
+                        } else {
+                            // Xử lý khi lưu token không thành công
+                            Toast.makeText(
+                                this@LoginActivity,
+                                "Lưu token không thành công",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+
                 }
 
                 is Fail -> {
-                    views.loading.visibility = View.GONE
-                    Toast.makeText(this, "Sign in fail", Toast.LENGTH_SHORT).show()
                     views.loading.hide()
+                    Toast.makeText(this, "Sign in fail", Toast.LENGTH_SHORT).show()
                 }
 
                 else -> {}
@@ -88,28 +103,13 @@ class LoginActivity : TrackingBaseActivity<ActivityLoginScreenBinding>(), LoginV
         if (password.isNullOrEmpty()) views.passwordTil.error =
             getString(R.string.password_not_empty)
         if (!email.isNullOrEmpty() && !password.isNullOrEmpty()) {
-            FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        val id = task.result.user!!.uid
-                        loginViewModel.handle((LoginViewAction.getMyList(id)))
-                        loginViewModel.handle((LoginViewAction.getFavoriteList(id)))
-                        loginViewModel.handle(LoginViewAction.getUser(id))
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w("TAG", "signInWithEmail:failure", task.exception)
-                        Toast.makeText(
-                            this,
-                            "Authentication failed.",
-                            Toast.LENGTH_SHORT,
-                        ).show()
-                    }
-                }
+            val loginRequest = LoginRequest(email = email, password = password)
 
+            authViewModel.handle(AuthViewAction.auth(loginRequest))
         }
     }
 
-    override fun create(initialState: LoginViewState): LoginViewModel {
-        return loginViewModelFactory.create(initialState)
+    override fun create(initialState: AuthViewState): AuthViewModel {
+        return authViewModelFactory.create(initialState)
     }
 }

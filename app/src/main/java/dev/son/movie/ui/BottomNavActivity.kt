@@ -1,60 +1,53 @@
 package dev.son.movie.ui
 
-import android.app.ProgressDialog
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
-import com.airbnb.mvrx.Fail
-import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.viewModel
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.MobileAds
-import com.google.android.gms.ads.OnUserEarnedRewardListener
-import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd
-import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAdLoadCallback
 import dev.son.movie.R
 import dev.son.movie.TrackingApplication
 import dev.son.movie.core.TrackingBaseActivity
 import dev.son.movie.data.local.UserPreferences
 import dev.son.movie.databinding.ActivityBottomNavBinding
+import dev.son.movie.network.models.user.UserId
 import dev.son.movie.ui.home.HomeFragment
 import dev.son.movie.ui.comingsoon.ComingSoonFragment
 import dev.son.movie.ui.home.HomeViewAction
 import dev.son.movie.ui.home.HomeViewModel
 import dev.son.movie.ui.home.HomeViewState
-import dev.son.movie.ui.login.LoginViewAction
-import dev.son.movie.ui.login.LoginViewModel
-import dev.son.movie.ui.login.LoginViewState
+import dev.son.movie.ui.login.AuthViewModel
+import dev.son.movie.ui.login.AuthViewState
 import dev.son.moviestreamhub.screens.DownloadsFragment
 import dev.son.moviestreamhub.screens.MoreFragment
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @Suppress("DEPRECATION")
 class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), HomeViewModel.Factory,
-    LoginViewModel.Factory {
-
+    AuthViewModel.Factory {
+    private var token: String? = null
     private var rewardedAd: RewardedAd? = null
-    private var rewardAmount: Int ?=0
+    private var rewardAmount: Int? = 0
     private var mRewardedInterstitialAd: RewardedInterstitialAd? = null
     private final var TAG = "BottomNavActivity"
     private val userID: String?
         get() = intent.extras?.getString("userId")
 
+
+    private lateinit var userId: UserId
+
     // Flags to know whether bottom tab fragments are displayed at least once
     private val fragmentFirstDisplay = mutableListOf(false, false, false)
 
     @Inject
-    lateinit var loginViewModelFactory: LoginViewModel.Factory
+    lateinit var authViewModelFactory: AuthViewModel.Factory
 
     private val homeFragment = HomeFragment()
     private val comingSoonFragment = ComingSoonFragment()
@@ -64,7 +57,7 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), Home
     private var activeFragment: Fragment = homeFragment
 
     private val homeViewModel: HomeViewModel by viewModel()
-    private val loginViewModel: LoginViewModel by viewModel()
+    private val authViewModel: AuthViewModel by viewModel()
 
     @Inject
     lateinit var userPreferences: UserPreferences
@@ -76,9 +69,7 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), Home
         (applicationContext as TrackingApplication).trackingComponent.inject(this)
         setTheme(R.style.Base_Theme_MovieStreamHub)
         super.onCreate(savedInstanceState)
-        //ads()
-        loadAndShowRewardedInterstitialAd()
-        resultData()
+        //loadAndShowRewardedInterstitialAd()
         getData()
         setupUI()
     }
@@ -117,11 +108,11 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), Home
         rewardedAd?.let { ad ->
             ad.show(this) { rewardItem ->
                 // Handle the reward.
-               rewardAmount = rewardItem.amount
+                rewardAmount = rewardItem.amount
                 val rewardType = rewardItem.type
                 val updateData = HashMap<String, Any>()
-                updateData["coins"] = rewardAmount!!
-                loginViewModel.handle(LoginViewAction.upDateUser(userID, updateData))
+                updateData["coins"] = rewardAmount!! + userId.coins!!
+                //loginViewModel.handle(LoginViewAction.upDateUser(userID, updateData))
                 Log.d(TAG, "User earned the reward.${rewardAmount}-$rewardType")
             }
         } ?: run {
@@ -152,65 +143,11 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), Home
         )
     }
 
-    private fun resultData() {
-        loginViewModel.subscribe(this) {
-            when (it.getMyList) {
-                is Success -> {
-                    lifecycleScope.launch {
-                        userPreferences.saveMyList(it.getMyList.invoke())
-                    }
-                }
-
-                is Fail -> {
-                    Toast.makeText(this, "Lỗi trong quá trình lấy dữ liệu", Toast.LENGTH_SHORT)
-                        .show()
-                }
-
-                else -> {}
-            }
-            when (it.getFavoriteList) {
-                is Success -> {
-                    lifecycleScope.launch {
-                        userPreferences.saveLikeList(it.getFavoriteList.invoke())
-                    }
-                }
-
-                is Fail -> {
-                    Toast.makeText(this, "Lỗi trong quá trình lấy dữ liệu", Toast.LENGTH_SHORT)
-                        .show()
-                }
-
-                else -> {}
-            }
-            when (it.upDateUser) {
-                is Success -> {
-                    lifecycleScope.launch {
-                        userPreferences.upDateCoins(rewardAmount!!,true)
-                    }
-                }
-
-                is Fail -> {
-
-                }
-
-                else -> {}
-            }
-        }
-    }
 
     private fun getData() {
-        homeViewModel.handle(HomeViewAction.getHome)
-        homeViewModel.handle(HomeViewAction.getPhimBo)
-        homeViewModel.handle(HomeViewAction.getPhimLe)
-        homeViewModel.handle(HomeViewAction.getPhimHoatHinh)
-        homeViewModel.handle(HomeViewAction.getTvShows)
-        homeViewModel.handle(HomeViewAction.getVietSub)
-        homeViewModel.handle(HomeViewAction.getThuyetMinh)
-        homeViewModel.handle(HomeViewAction.getPhimLongTieng)
-        homeViewModel.handle(HomeViewAction.getPhimBoDangChieu)
-        homeViewModel.handle(HomeViewAction.getPhimBoDaHoanThanh)
+        token= userPreferences.token
+        homeViewModel.handle(HomeViewAction.getGenre)
         homeViewModel.handle(HomeViewAction.getCountries)
-        homeViewModel.handle(HomeViewAction.getCategory)
     }
 
     override fun getBinding(): ActivityBottomNavBinding {
@@ -285,7 +222,7 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), Home
         return homeViewModelFactory.create(initialState)
     }
 
-    override fun create(initialState: LoginViewState): LoginViewModel {
-        return loginViewModelFactory.create(initialState)
+    override fun create(initialState: AuthViewState): AuthViewModel {
+        return authViewModelFactory.create(initialState)
     }
 }

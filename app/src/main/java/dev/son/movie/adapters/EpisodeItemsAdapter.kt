@@ -2,59 +2,54 @@ package dev.son.movie.adapters
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.netflixclone.constants.BASE_IMG
-import dev.son.movie.network.models.Slug.ServerData
 import dev.son.movie.databinding.ItemEpisodeBinding
-import dev.son.movie.utils.hide
 
-class EpisodeItemsAdapter(private val onItemClick: (ServerData) -> Unit,private  val imgPosterUrl: String) :
-    ListAdapter<ServerData, EpisodeItemViewHolder>(EpisodeItemDiffCallback()) {
-
+class EpisodeItemsAdapter(private val onItemClick: (String, Int) -> Unit) :
+    ListAdapter<String, EpisodeItemViewHolder>(EpisodeItemDiffCallback()) {
+    private var selectedItem = 0
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EpisodeItemViewHolder {
         val binding = ItemEpisodeBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return EpisodeItemViewHolder(binding, onItemClick,imgPosterUrl)
+        return EpisodeItemViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: EpisodeItemViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: EpisodeItemViewHolder, @SuppressLint("RecyclerView") position: Int) {
         val episode = getItem(position)
         holder.bind(episode, position)
+        holder.itemView.setOnClickListener {
+            val previousItem = selectedItem
+            selectedItem = position
+            notifyItemChanged(previousItem)
+            notifyItemChanged(position)
+            onItemClick(episode, position)
+        }
+        holder.itemView.isSelected = selectedItem == position
     }
+
 }
 
 class EpisodeItemViewHolder(
-    private val binding: ItemEpisodeBinding,
-    private val onItemClick: ((ServerData) -> Unit),
-    private val imgPosterUrl: String
+    private val binding: ItemEpisodeBinding
 ) :
     RecyclerView.ViewHolder(binding.root) {
 
     @SuppressLint("SetTextI18n")
-    fun bind(episode: ServerData, position: Int) {
-        val title = "${episode.filename}"
-        val stillUrl = episode.slug
-        Glide.with(binding.stillImage).load(BASE_IMG+imgPosterUrl).transform(CenterCrop())
-            .into(binding.stillImage)
-        binding.stillImage.clipToOutline = true
-        binding.nameText.text = title
-        binding.ratingText.hide()
-        binding.overviewText.hide()
-        binding.root.setOnClickListener { onItemClick(episode) }
+    fun bind(episode: String, position: Int) {
+        binding.txtEpisode.text = (position+1).toString()
     }
 }
 
-class EpisodeItemDiffCallback : DiffUtil.ItemCallback<ServerData>() {
-    override fun areItemsTheSame(oldItem: ServerData, newItem: ServerData): Boolean {
-        return oldItem.name == newItem.name
+class EpisodeItemDiffCallback : DiffUtil.ItemCallback<String>() {
+    override fun areItemsTheSame(oldItem: String, newItem: String): Boolean {
+        return oldItem == newItem
     }
 
     @SuppressLint("DiffUtilEquals")
-    override fun areContentsTheSame(oldItem: ServerData, newItem: ServerData): Boolean {
+    override fun areContentsTheSame(oldItem: String, newItem: String): Boolean {
         return oldItem == newItem
     }
 }

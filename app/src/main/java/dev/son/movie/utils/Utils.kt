@@ -1,16 +1,26 @@
+@file:Suppress("DEPRECATION")
+
 package dev.son.movie.utils
 
 import android.content.Context
-import android.location.Location
+import android.graphics.Bitmap
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.Uri
 import android.os.Build
+import android.util.Base64
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.airbnb.mvrx.Fail
+import com.bumptech.glide.Glide
 import dev.son.movie.R
-import java.text.SimpleDateFormat
+import dev.son.movie.network.models.movie.Genre
+import java.io.ByteArrayOutputStream
+import java.time.Instant
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -64,16 +74,12 @@ fun extractVideoIdFromUrl(url: String): String? {
     return null
 }
 
-fun getCurrentFormattedTime(): String {
-    val dateFormat = SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.getDefault())
-    val currentTime = Date(System.currentTimeMillis())
-    return dateFormat.format(currentTime)
-}
 
-fun getCurrentFormattedDateTimeWithMilliseconds(): String {
-    val dateFormat = SimpleDateFormat("HHmmssSSSddMMyyyy", Locale.getDefault())
-    val currentTime = Date(System.currentTimeMillis())
-    return dateFormat.format(currentTime)
+fun convertStringToFormattedDate(dateString: String): String {
+    val instant = Instant.parse(dateString)
+    val localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+    val formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyyy")
+    return localDateTime.format(formatter)
 }
 
 
@@ -117,4 +123,88 @@ fun showDownloadConfirmationDialog(context: Context, onDownloadConfirmed: () -> 
     }
     val dialog = dialogBuilder.create()
     dialog.show()
+}
+fun getNamesByCodes(codes: String): String {
+    val names = codes.split(", ")
+        .map { it.trim() }
+        .filter { !it.contains("@") }
+        .mapNotNull { getNameByCode(it) ?:"" }
+    return names.joinToString("-")
+}
+fun getListNamesByCodes(codes: String): List<String> {
+    val names = codes.split(", ")
+        .map { it.trim() }
+        .filter { !it.contains("@") }
+        .mapNotNull { getNameByCode(it) ?:"" }
+    return names
+}
+fun getListCodesByCodes(codes: String): List<String> {
+    val names = codes.split(", ")
+        .map { it.trim() }
+        .filter { !it.contains("@") }
+    return names
+}
+fun getNameByCode(code: String): String? {
+    val genres: Array<Genre> = arrayOf(
+        Genre("Hành Động", "action"),
+        Genre("Tình Cảm", "romance"),
+        Genre("Hài Hước", "comedy"),
+        Genre("Cổ Trang", "historical"),
+        Genre("Tâm Lý", "drama"),
+        Genre("Hình Sự", "crime"),
+        Genre("Chiến Tranh", "war"),
+        Genre("Thể Thao", "sports"),
+        Genre("Võ Thuật", "martial_arts"),
+        Genre("Viễn Tưởng", "sci_fi"),
+        Genre("Phiêu Lưu", "adventure"),
+        Genre("Khoa Học", "science"),
+        Genre("Kinh Dị", "horror"),
+        Genre("Âm Nhạc", "music"),
+        Genre("Thần Thoại", "mythology"),
+        Genre("Tài Liệu", "documentary"),
+        Genre("Gia Đình", "family"),
+        Genre("Chính kịch", "drama"),
+        Genre("Bí ẩn", "mystery"),
+        Genre("Học Đường", "school"),
+        Genre("Kinh Điển", "classic"),
+        Genre("Phim 18+", "adult"),
+        Genre("Phim Bộ", "@series"),
+        Genre("Phim Lẻ", "@single"),
+        Genre("Phim Hoạt Hình", "@hoathinh"),
+        Genre("TV Show", "@tvshows"),
+        Genre("Phim VietSub", "@vietSub"),
+        Genre("Phim Thuyết Minh", "@thuyetminh"),
+        Genre("Phim Bộ Đang Chiếu", "@dangchieu"),
+        Genre("Phim Bộ Đã Hoàn Thành", "@hoanthanh")
+    )
+    val genre = genres.find { it.code == code }
+    return genre?.name ?: ""
+}
+fun parseTitle(inputString: String): String {
+    val regex = Regex("""Tập (\d+)? (.+)""")
+    val matchResult = regex.matchEntire(inputString)
+
+    return matchResult?.groups?.get(2)?.value ?: inputString
+}
+fun isNetworkAvailable(context: Context): Boolean {
+    val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        val network = connectivityManager.activeNetwork
+        val capabilities = connectivityManager.getNetworkCapabilities(network)
+        return capabilities != null &&
+                (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))
+    } else {
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
+    }
+}
+ fun convertBitmapToBase64(bitmap: Bitmap): String? {
+    val byteArrayOutputStream = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+    val byteArray = byteArrayOutputStream.toByteArray()
+    val base64Image = Base64.encodeToString(byteArray, Base64.DEFAULT)
+    return "data:image/png;base64,$base64Image"
 }

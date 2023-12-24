@@ -13,16 +13,16 @@ import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
 import com.airbnb.epoxy.TypedEpoxyController
 import com.bumptech.glide.Glide
-import com.netflixclone.constants.BASE_IMG
 import dev.son.movie.R
-import dev.son.movie.network.models.home.Data
-import dev.son.movie.network.models.home.Items
+import dev.son.movie.network.models.movie.ApiResponse
+import dev.son.movie.network.models.movie.Movie
+import dev.son.movie.utils.getNamesByCodes
 import dev.son.movie.utils.setSingleClickListener
 
-class MainEpoxyController(private val onMediaClick: (Items, View) -> Unit) :
-    TypedEpoxyController<MutableList<Data?>>() {
+class MainEpoxyController(private val onMediaClick: (Movie, View) -> Unit) :
+    TypedEpoxyController<MutableList<ApiResponse<List<Movie>>?>>() {
 
-    override fun buildModels(data: MutableList<Data?>) {
+    override fun buildModels(data: MutableList<ApiResponse<List<Movie>>?>) {
         data.let { categories ->
             HeaderModel_()
                 .id("header")
@@ -47,10 +47,10 @@ class MainEpoxyController(private val onMediaClick: (Items, View) -> Unit) :
 @EpoxyModelClass
 abstract class HeaderModel : EpoxyModelWithHolder<HeaderModel.HeaderHolder>() {
     @EpoxyAttribute
-    var data: Data? = null
+    var data: ApiResponse<List<Movie>>? = null
 
     @EpoxyAttribute
-    lateinit var onInfoClick: (Items, View) -> Unit
+    lateinit var onInfoClick: (Movie, View) -> Unit
 
     inner class HeaderHolder : EpoxyHolder() {
         lateinit var backgroundImage: ImageView
@@ -65,24 +65,23 @@ abstract class HeaderModel : EpoxyModelWithHolder<HeaderModel.HeaderHolder>() {
     }
 
     override fun bind(holder: HeaderHolder) {
-        var posterUrl: String? = null
         if (data != null) {
-            posterUrl = BASE_IMG + data!!.items[0].thumbUrl
-            Glide.with(holder.backgroundImage).load(posterUrl).into(holder.backgroundImage)
-            val categories = data?.items?.get(0)?.category
+            val movie = data?.data?.random()
 
-            val categoryNames = categories?.joinToString("-") { it.name.toString() }
+            Glide.with(holder.backgroundImage).load(movie?.posterHorizontal)
+                .into(holder.backgroundImage)
+            val categories = getNamesByCodes(movie?.genre!!)
 
-            holder.genreText.text = categoryNames ?: "No categories available"
+            holder.genreText.text = categories
 
             val animZoomOut =
                 AnimationUtils.loadAnimation(holder.backgroundImage.context, R.anim.zoom_out)
             holder.backgroundImage.startAnimation(animZoomOut)
             holder.backgroundImage.setSingleClickListener {
-                onInfoClick(data!!.items[0], holder.backgroundImage)
+                onInfoClick(movie, holder.backgroundImage)
             }
             holder.play_button.setSingleClickListener {
-                onInfoClick(data!!.items[0], holder.backgroundImage)
+                onInfoClick(movie, holder.backgroundImage)
             }
         }
     }
@@ -93,10 +92,10 @@ abstract class HeaderModel : EpoxyModelWithHolder<HeaderModel.HeaderHolder>() {
 @EpoxyModelClass
 abstract class CategoryModel : EpoxyModelWithHolder<CategoryModel.FeedItemHorizontalListHolder>() {
     @EpoxyAttribute
-    var data: Data? = null
+    var data: ApiResponse<List<Movie>>? = null
 
     @EpoxyAttribute
-    lateinit var onItemClick: (Items, View) -> Unit
+    lateinit var onItemClick: (Movie, View) -> Unit
 
     inner class FeedItemHorizontalListHolder : EpoxyHolder() {
         lateinit var titleText: TextView
@@ -112,7 +111,7 @@ abstract class CategoryModel : EpoxyModelWithHolder<CategoryModel.FeedItemHorizo
         if (data != null) {
             holder.titleText.text = data!!.titlePage
             val controller = MediaItemsController(onItemClick)
-            controller.setData(data!!.items)
+            controller.setData(data!!.data)
             holder.postersList.isNestedScrollingEnabled = true
             holder.postersList.adapter = controller.adapter
         }
@@ -121,9 +120,9 @@ abstract class CategoryModel : EpoxyModelWithHolder<CategoryModel.FeedItemHorizo
     override fun getDefaultLayout(): Int = R.layout.item_feed_horizontal_list
 }
 
-class MediaItemsController(val onMediaClick: (Items, View) -> Unit) :
-    TypedEpoxyController<List<Items>>() {
-    override fun buildModels(it: List<Items>) {
+class MediaItemsController(val onMediaClick: (Movie, View) -> Unit) :
+    TypedEpoxyController<List<Movie>>() {
+    override fun buildModels(it: List<Movie>) {
         it.mapIndexed { index, item ->
             MediaModel_()
                 .id(index)
@@ -138,14 +137,13 @@ class MediaItemsController(val onMediaClick: (Items, View) -> Unit) :
 abstract class MediaModel :
     EpoxyModelWithHolder<MediaModel.MediaHolder>() {
     @EpoxyAttribute
-    lateinit var items: Items
+    lateinit var items: Movie
 
     @EpoxyAttribute
-    lateinit var onClick: (Items, View) -> Unit
+    lateinit var onClick: (Movie, View) -> Unit
 
     inner class MediaHolder : EpoxyHolder() {
         lateinit var posterImage: ImageView
-
         override fun bindView(itemView: View) {
             posterImage = itemView.findViewById(R.id.poster_image)
         }
@@ -153,7 +151,7 @@ abstract class MediaModel :
 
     override fun bind(holder: MediaHolder) {
         var posterUrl: String? = null
-        posterUrl = BASE_IMG + items.thumbUrl
+        posterUrl = items.posterHorizontal
         holder.posterImage.setSingleClickListener { onClick(items, holder.posterImage) }
         Glide.with(holder.posterImage).load(posterUrl).into(holder.posterImage)
         holder.posterImage.clipToOutline = true

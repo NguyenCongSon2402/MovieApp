@@ -77,7 +77,7 @@ public class OfflineVideoDownloadService extends DownloadService {
     protected Notification getForegroundNotification(List<Download> downloads, int notMetRequirements) {
                 String videoTitle="";
         for (Download download : downloads) {
-                videoTitle = Util.fromUtf8Bytes(download.request.data); // Giả sử tiêu đề được lưu trong request.data
+                videoTitle = Util.fromUtf8Bytes(download.request.keySetId); // Giả sử tiêu đề được lưu trong request.data
         }
         return Objects.requireNonNull(DemoUtil.getDownloadNotificationHelper(this))
                 .buildProgressNotification(

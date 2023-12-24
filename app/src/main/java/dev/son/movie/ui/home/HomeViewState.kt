@@ -1,44 +1,44 @@
 package dev.son.movie.ui.home
 
 import com.airbnb.mvrx.Async
-import com.airbnb.mvrx.Loading
+
 import com.airbnb.mvrx.MvRxState
 import com.airbnb.mvrx.Uninitialized
-import dev.son.movie.network.models.Slug.Slug
-import dev.son.movie.network.models.categories.Categories
-import dev.son.movie.network.models.categorymovie.CategoryMovie
+import dev.son.movie.network.models.Favorite.addFavorite
+
 import dev.son.movie.network.models.countries.Countries
 import dev.son.movie.network.models.countries.CountriesMovie
-import dev.son.movie.network.models.home.Home
-import dev.son.movie.network.models.home.LongTieng
-import dev.son.movie.network.models.home.PhimBo
-import dev.son.movie.network.models.home.PhimBoDaHoanThanh
-import dev.son.movie.network.models.home.PhimBoDangChieu
-import dev.son.movie.network.models.home.PhimHoatHinh
-import dev.son.movie.network.models.home.PhimLe
-import dev.son.movie.network.models.home.PhimSapChieu
-import dev.son.movie.network.models.home.ThuyetMinh
-import dev.son.movie.network.models.home.TvShows
-import dev.son.movie.network.models.home.VietSub
+
+import dev.son.movie.network.models.movie.ApiResponse
+import dev.son.movie.network.models.movie.Genre
+import dev.son.movie.network.models.movie.Movie
+import dev.son.movie.network.models.postcomment.Comment
+import dev.son.movie.network.models.rate.RateRespone
 
 data class HomeViewState(
-    val homes: Async<Home> = Uninitialized,
-    val phimBo: Async<PhimBo> = Uninitialized,
-    val phimLe: Async<PhimLe> = Uninitialized,
-    val phimHoatHinh: Async<PhimHoatHinh> = Uninitialized,
-    val tvShows: Async<TvShows> = Uninitialized,
-    val vietsub: Async<VietSub> = Uninitialized,
-    val thuyetMinh: Async<ThuyetMinh> = Uninitialized,
-    val longTieng: Async<LongTieng> = Uninitialized,
-    val phimBoDangChieu: Async<PhimBoDangChieu> = Uninitialized,
-    val phimBoHoanThanh: Async<PhimBoDaHoanThanh> = Uninitialized,
-    val phimSapChieu: Async<PhimSapChieu> = Uninitialized,
-    val slug: Async<Slug> = Uninitialized,
-    val categoriesMovies: Async<CategoryMovie> = Uninitialized,
-    val countriesMovies: Async<CountriesMovie> = Uninitialized,
-    val countries: Async<Countries> = Uninitialized,
-    val category: Async<Categories> = Uninitialized,
-) : MvRxState {
-    fun isLoadding() = homes is Loading || phimBo is Loading || phimLe is Loading || slug is Loading
-            || categoriesMovies is Loading
+    val genre: Async<ApiResponse<List<Genre>>> = Uninitialized,
+    val moviePhimBo: Async<ApiResponse<List<Movie>>> = Uninitialized,
+    val moviePhimLe: Async<ApiResponse<List<Movie>>> = Uninitialized,
+    val phimHoatHinh: Async<ApiResponse<List<Movie>>> = Uninitialized,
+    val movieTvShow: Async<ApiResponse<List<Movie>>> = Uninitialized,
+    val movieVietSub: Async<ApiResponse<List<Movie>>> = Uninitialized,
+    val movieThuyetMinh: Async<ApiResponse<List<Movie>>> = Uninitialized,
+    val movieDangChieu: Async<ApiResponse<List<Movie>>> = Uninitialized,
+    val movieHoanThanh: Async<ApiResponse<List<Movie>>> = Uninitialized,
+    val listMovieSimilar: Async<ApiResponse<List<Movie>>> = Uninitialized,
+    val movieRateRes: Async<ApiResponse<RateRespone>> = Uninitialized,
+    val setmovieRate: Async<ApiResponse<RateRespone>> = Uninitialized,
+    val addFavorite: Async<ApiResponse<addFavorite>> = Uninitialized,
+    val removeFavorite: Async<ApiResponse<String>> = Uninitialized,
+    val movieById: Async<ApiResponse<Movie>> = Uninitialized,
+    val getCommentByMovie: Async<ApiResponse<List<Comment>>> = Uninitialized,
+    val createComment: Async<ApiResponse<Comment>> = Uninitialized,
+    val getMovieByCategory: Async<ApiResponse<List<Movie>>> = Uninitialized,
+    val getMoviesRecommendation: Async<ApiResponse<List<Movie>>> = Uninitialized,
+    val getMovieByCountry: Async<ApiResponse<List<Movie>>> = Uninitialized,
+
+    val countriesMovies: Async<ApiResponse<List<Genre>>> = Uninitialized,
+
+    ) : MvRxState {
+
 }

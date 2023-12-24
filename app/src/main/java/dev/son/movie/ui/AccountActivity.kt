@@ -6,9 +6,9 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -18,18 +18,18 @@ import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.viewModel
 import com.bumptech.glide.Glide
-import com.google.firebase.auth.FirebaseAuth
 import dev.son.movie.R
 import dev.son.movie.TrackingApplication
 import dev.son.movie.core.TrackingBaseActivity
 import dev.son.movie.data.local.UserPreferences
 import dev.son.movie.databinding.ActivityAccountBinding
-import dev.son.movie.network.models.user.UserId
-import dev.son.movie.ui.login.LoginViewAction
-import dev.son.movie.ui.login.LoginViewModel
-import dev.son.movie.ui.login.LoginViewState
+import dev.son.movie.network.models.user.User
+import dev.son.movie.ui.login.AuthViewAction
+import dev.son.movie.ui.login.AuthViewModel
+import dev.son.movie.ui.login.AuthViewState
 import dev.son.movie.utils.DialogUtil
 import dev.son.movie.utils.PermissionUtils
+import dev.son.movie.utils.convertBitmapToBase64
 import dev.son.movie.utils.hide
 import dev.son.movie.utils.setSingleClickListener
 import dev.son.movie.utils.show
@@ -37,15 +37,15 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-class AccountActivity : TrackingBaseActivity<ActivityAccountBinding>(), LoginViewModel.Factory {
+class AccountActivity : TrackingBaseActivity<ActivityAccountBinding>(), AuthViewModel.Factory {
     private val REQUEST_CODE_READ_EXTERNAL_STORAGE = 2
 
     @Inject
-    lateinit var loginViewModelFactory: LoginViewModel.Factory
-    private val loginViewModel: LoginViewModel by viewModel()
+    lateinit var authViewModelFactory: AuthViewModel.Factory
+    private val authViewModel: AuthViewModel by viewModel()
     private var id: String? = null
     private var image: Uri? = null
-    private var user: UserId = UserId()
+    private var user: User = User()
     private var updateData = HashMap<String, Any>()
 
     @Inject
@@ -62,12 +62,12 @@ class AccountActivity : TrackingBaseActivity<ActivityAccountBinding>(), LoginVie
     }
 
     private fun resultUpdate() {
-        loginViewModel.subscribe(this) {
+        authViewModel.subscribe(this) {
             when (it.upDateUser) {
                 is Success -> {
-                    Toast.makeText(this, "Cập nhập thành công", Toast.LENGTH_SHORT).show()
-                    loginViewModel.handleRemoveUpdateUser()
-                    loginViewModel.handle(LoginViewAction.SaveDataUser(it.upDateUser.invoke()))
+                    Toast.makeText(this, "${it.upDateUser.invoke().message}", Toast.LENGTH_SHORT)
+                        .show()
+                    authViewModel.handleRemoveUpdateUser()
                     views.loading.hide()
                 }
 
@@ -75,8 +75,8 @@ class AccountActivity : TrackingBaseActivity<ActivityAccountBinding>(), LoginVie
                     Toast.makeText(this, "${it.upDateUser.error}", Toast.LENGTH_SHORT).show()
                     views.editEmail.setText(user.email)
                     views.editDislayName.setText(user.name)
-                    views.editDob.setText(user.dateOfBirth)
-                    loginViewModel.handleRemoveUpdateUser()
+                    views.editDob.setText(user.birthday)
+                    authViewModel.handleRemoveUpdateUser()
                     views.loading.hide()
                 }
 
@@ -85,14 +85,14 @@ class AccountActivity : TrackingBaseActivity<ActivityAccountBinding>(), LoginVie
             when (it.upLoadImage) {
                 is Success -> {
                     val updateData = HashMap<String, Any>()
-                    updateData["avatar"] = it.upLoadImage.invoke()
-                    loginViewModel.handle(LoginViewAction.upDateUser(id, updateData))
-                    loginViewModel.handleRemoveUpLoadr()
+                    updateData["photoURL"] = it.upLoadImage.invoke()
+                    authViewModel.handle(AuthViewAction.upDateUser(updateData))
+                    authViewModel.handleRemoveUpLoadr()
                 }
 
                 is Fail -> {
                     Toast.makeText(this, "Lỗi khi cập nhập", Toast.LENGTH_SHORT).show()
-                    loginViewModel.handleRemoveUpLoadr()
+                    authViewModel.handleRemoveUpLoadr()
                     views.loading.hide()
                 }
 
@@ -104,23 +104,17 @@ class AccountActivity : TrackingBaseActivity<ActivityAccountBinding>(), LoginVie
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun setUpUi() {
         lifecycleScope.launch {
-            userPreferences.userId.collect {
-
+            userPreferences.user.collect {
                 if (it != null) {
                     views.editEmail.setText(it.email)
                     views.editDislayName.setText(it.name)
-                    views.editDob.setText(it.dateOfBirth)
+                    views.editDob.setText(it.birthday)
                     views.edtPass.setText("**************")
-                    Glide.with(views.imgProfile).load(it.avatar).centerCrop()
+                    Glide.with(views.imgProfile).load(it.photoURL).centerCrop()
                         .error(getDrawable(R.drawable.ic_person))
                         .into(views.imgProfile)
-                    id = it.userId
-                    user.apply {
-                        this.name = it.name
-                        this.email = it.email
-                        this.dateOfBirth = it.dateOfBirth
-                        this.avatar = it.avatar
-                    }
+                    id = it.id.toString()
+                    user = it
                 }
             }
         }
@@ -141,7 +135,6 @@ class AccountActivity : TrackingBaseActivity<ActivityAccountBinding>(), LoginVie
                 views.edtPass.setText("")
                 val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.showSoftInput(views.edtPass, InputMethodManager.SHOW_IMPLICIT)
-                val user = FirebaseAuth.getInstance().currentUser
                 val newPassword = views.edtPass.text
 
 
@@ -150,30 +143,7 @@ class AccountActivity : TrackingBaseActivity<ActivityAccountBinding>(), LoginVie
                     if (newPassword.isNullOrEmpty()) views.edtPass.error =
                         R.string.password_not_empty.toString()
                     else {
-                        user!!.updatePassword(newPassword.toString())
-                            .addOnCompleteListener { task ->
-                                if (task.isSuccessful) {
-                                    Toast.makeText(
-                                        this,
-                                        "User password updated",
-                                        Toast.LENGTH_SHORT
-                                    )
-                                        .show()
-                                    views.loading.hide()
-                                    views.edtPass.isEnabled = false
-                                    views.edtPass.setText("**********")
-                                    views.send.hide()
-                                    views.imgChangePass.show()
-                                } else {
-                                    Toast.makeText(
-                                        this,
-                                        "Không thể thay đổi mật khẩu.\n Hãy đăng nhập lại!",
-                                        Toast.LENGTH_SHORT
-                                    )
-                                        .show()
-                                    views.loading.hide()
-                                }
-                            }
+
                     }
                 }
             })
@@ -192,9 +162,8 @@ class AccountActivity : TrackingBaseActivity<ActivityAccountBinding>(), LoginVie
                 val dob = views.editDob.text.toString()
                 val data = checkChange(name, dob)
                 if (!data.isNullOrEmpty()) {
-                    loginViewModel.handle(LoginViewAction.upDateUser(id, data))
-                }
-                else
+                    authViewModel.handle(AuthViewAction.upDateUser(data))
+                } else
                     views.loading.hide()
             }
         }
@@ -256,9 +225,15 @@ class AccountActivity : TrackingBaseActivity<ActivityAccountBinding>(), LoginVie
                     try {
                         image = result.data?.data
                         views.imgProfile.setImageURI(image)
-                        id?.let { LoginViewAction.upLoadImage(image!!, it) }
-                            ?.let { loginViewModel.handle(it) }
-                        views.loading.show()
+
+                        val imageStr=convertBitmapToBase64((views.imgProfile.drawable as BitmapDrawable).bitmap)
+                        val imgUser = HashMap<String, Any>()
+                        imageStr?.let {
+                            imgUser["photoURL"] = it
+                            authViewModel.handle(AuthViewAction.upDateUser(imgUser))
+                            views.loading.show()
+                        }
+
                     } catch (e: Exception) {
                         Toast.makeText(this, "No Image Selected", Toast.LENGTH_SHORT).show()
                     }
@@ -287,8 +262,8 @@ class AccountActivity : TrackingBaseActivity<ActivityAccountBinding>(), LoginVie
         if (name != user.name) {
             updateData["name"] = name
         }
-        if (dob != user.dateOfBirth) {
-            updateData["dateOfBirth"] = dob
+        if (dob != user.birthday) {
+            updateData["birthday"] = dob
         }
         return updateData
     }
@@ -298,7 +273,7 @@ class AccountActivity : TrackingBaseActivity<ActivityAccountBinding>(), LoginVie
         return ActivityAccountBinding.inflate(layoutInflater)
     }
 
-    override fun create(initialState: LoginViewState): LoginViewModel {
-        return loginViewModelFactory.create(initialState)
+    override fun create(initialState: AuthViewState): AuthViewModel {
+        return authViewModelFactory.create(initialState)
     }
 }

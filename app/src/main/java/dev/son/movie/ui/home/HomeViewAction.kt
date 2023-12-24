@@ -1,24 +1,33 @@
 package dev.son.movie.ui.home
 
 import dev.son.movie.core.NimpeViewModelAction
+import dev.son.movie.network.models.postcomment.Comment
 
 sealed class HomeViewAction : NimpeViewModelAction {
-    object getHome : HomeViewAction()
-    object getPhimBo : HomeViewAction()
-    object getPhimLe : HomeViewAction()
-    object getPhimHoatHinh : HomeViewAction()
-    object getTvShows : HomeViewAction()
-    object getVietSub : HomeViewAction()
-    object getThuyetMinh : HomeViewAction()
-    object getPhimLongTieng : HomeViewAction()
-    object getPhimBoDangChieu : HomeViewAction()
-    object getPhimBoDaHoanThanh : HomeViewAction()
-    object getPhimSapChieu : HomeViewAction()
-    object getCountries : HomeViewAction()
-    object getCategory : HomeViewAction()
 
-    data class getSlug(val name: String) : HomeViewAction()
-    data class getCategoriesMovies(val name: String) : HomeViewAction()
-    data class getCountriesMovies(val name: String) : HomeViewAction()
+
+
+    object getGenre : HomeViewAction()
+    object getCountries : HomeViewAction()
+    data class  getMoviePhimBo(val genreCode:String):HomeViewAction()
+    data class  getMoviePhimLe(val genreCode:String):HomeViewAction()
+    data class  getMoviePhimHoatHinh(val genreCode:String):HomeViewAction()
+    data class  getMovieTvShow(val genreCode:String):HomeViewAction()
+    data class  getMovieVietSub(val genreCode:String):HomeViewAction()
+    data class  getMovieThuyetMinh(val genreCode:String):HomeViewAction()
+    data class  getMovieDangChieu(val genreCode:String):HomeViewAction()
+    data class  getMovieHoanThanh(val genreCode:String):HomeViewAction()
+    data class  getMovieSimilar(val genreCode:String):HomeViewAction()
+    data class  getMovieByCategory(val genreCode:String):HomeViewAction()
+    data class  getMovieByCountry(val countryCode:String):HomeViewAction()
+    data class  getMovieRate(val movieId:String):HomeViewAction()
+    data class  setRateMovie(val movieId:String,val rating:Int):HomeViewAction()
+    data class  addFavorite(val movieId:String):HomeViewAction()
+    data class  removeFavorite(val movieId:String):HomeViewAction()
+    data class  movieById(val movieId:String):HomeViewAction()
+    data class  getCommentByMovie(val movieId:String):HomeViewAction()
+    data class  getMoviesRecommendation(val movieId:String):HomeViewAction()
+    data class  createComment(val movieId:String,val comment:String):HomeViewAction()
+
 
 }

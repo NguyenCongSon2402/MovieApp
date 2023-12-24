@@ -10,12 +10,10 @@ import androidx.fragment.app.DialogFragment
 import dev.son.movie.R
 import dev.son.movie.adapters.CountriesMovieAdapter
 import dev.son.movie.databinding.FragmentItemPickerBinding
-import dev.son.movie.network.models.countries.Data
-import dev.son.movie.network.models.countries.Items
+import dev.son.movie.network.models.movie.Genre
 import dev.son.movie.ui.CategoryMoviesActivity
-import dev.son.movie.ui.MovieDetailsActivity
 
-class ItemPickerFragment(private val data: Data, private val title: String) : DialogFragment() {
+class ItemPickerFragment(private val data: List<Genre>, private val title: String) : DialogFragment() {
     private lateinit var binding: FragmentItemPickerBinding
     private lateinit var pickerItemsAdapter: CountriesMovieAdapter
 
@@ -32,9 +30,9 @@ class ItemPickerFragment(private val data: Data, private val title: String) : Di
     }
 
 
-    private fun handleItemClick(item: Items) {
+    private fun handleItemClick(item: Genre) {
         val intent = Intent(activity, CategoryMoviesActivity::class.java)
-        intent.putExtra("slug", item.slug)
+        intent.putExtra("code", item.code)
         intent.putExtra("name", item.name)
         intent.putExtra("title", title)
         startActivity(intent)
@@ -44,7 +42,7 @@ class ItemPickerFragment(private val data: Data, private val title: String) : Di
     private fun setupUI() {
         pickerItemsAdapter = CountriesMovieAdapter(this::handleItemClick)
         binding.optionsList.adapter = pickerItemsAdapter
-        pickerItemsAdapter.submitList(data.items)
+        pickerItemsAdapter.submitList(data)
         pickerItemsAdapter.notifyDataSetChanged()
         binding.title.text = title
         binding.content.setOnClickListener { dismiss() }
@@ -56,7 +54,7 @@ class ItemPickerFragment(private val data: Data, private val title: String) : Di
     }
 
     companion object {
-        fun newInstance(data: Data, s: String): ItemPickerFragment {
+        fun newInstance(data: List<Genre>, s: String): ItemPickerFragment {
             return ItemPickerFragment(data, s)
         }
     }

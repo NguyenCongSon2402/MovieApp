@@ -3,51 +3,48 @@ package dev.son.moviestreamhub.screens
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Success
 import com.airbnb.mvrx.activityViewModel
 import com.airbnb.mvrx.withState
 import com.bumptech.glide.Glide
-import com.google.firebase.auth.FirebaseAuth
 import dev.son.movie.R
 import dev.son.movie.TrackingApplication
 
 
 import dev.son.movie.adapters.FavoriteListAdapter
-import dev.son.movie.adapters.HistoryListAdapter
 import dev.son.movie.adapters.MyListAdapter
 import dev.son.movie.core.TrackingBaseFragment
 import dev.son.movie.data.local.UserPreferences
 
 import dev.son.movie.databinding.FragmentMoreBinding
-import dev.son.movie.network.models.user.MovieId1
-import dev.son.movie.network.models.user.ViewingHistory
+import dev.son.movie.network.models.movie.Movie
 import dev.son.movie.ui.AccountActivity
+import dev.son.movie.ui.AdminActivity
 import dev.son.movie.ui.MovieDetailsActivity
-import dev.son.movie.ui.TvDetailsActivity
 import dev.son.movie.ui.login.LoginActivity
-import dev.son.movie.ui.login.LoginViewAction
-import dev.son.movie.ui.login.LoginViewModel
-import dev.son.movie.ui.login.LoginViewState
+import dev.son.movie.ui.login.AuthViewAction
+import dev.son.movie.ui.login.AuthViewModel
 import dev.son.movie.ui.search.SearchActivity
 import dev.son.movie.utils.DialogUtil
 import dev.son.movie.utils.checkStatusApiRes
 import dev.son.movie.utils.hide
 import dev.son.movie.utils.setSingleClickListener
 import dev.son.movie.utils.show
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 class MoreFragment : TrackingBaseFragment<FragmentMoreBinding>() {
-    private val loginViewModel: LoginViewModel by activityViewModel()
+    private val authViewModel: AuthViewModel by activityViewModel()
 
     @Inject
     lateinit var userPreferences: UserPreferences
@@ -55,7 +52,6 @@ class MoreFragment : TrackingBaseFragment<FragmentMoreBinding>() {
 
     private lateinit var myListAdapter: MyListAdapter
     private lateinit var favoriteListAdapter: FavoriteListAdapter
-    private lateinit var historyListAdapter: HistoryListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (requireActivity().application as TrackingApplication).trackingComponent.inject(
@@ -66,23 +62,35 @@ class MoreFragment : TrackingBaseFragment<FragmentMoreBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fectchData()
+        //fectchData()
         setupUI()
     }
 
+    override fun onResume() {
+        super.onResume()
+        fectchData()
+    }
 
     private fun fectchData() {
         lifecycleScope.launch {
-            userPreferences.userId.collect {
+            userPreferences.user.collect {
                 if (it != null) {
-                    val userId = it.userId.toString()
-                    Glide.with(views.imgUser).load(it.avatar).centerCrop()
+                    Glide.with(views.imgUser).load(it.photoURL).centerCrop()
                         .error(getDrawable(requireContext(), R.drawable.ic_person))
                         .into(views.imgUser)
-                    views.textCoins.text=it.coins.toString()
-                    loginViewModel.handle(LoginViewAction.getMyList(userId))
-                    loginViewModel.handle(LoginViewAction.getFavoriteList(userId))
-                    //loginViewModel.handle(LoginViewAction.getHistoryList(userId))
+                    views.txtName.text = it.name
+                    views.textCoins.text = it.coins.toString()
+                    authViewModel.handle(AuthViewAction.getCommentedMovies)
+                    authViewModel.handle(AuthViewAction.getFavoriteList)
+                    Log.e("ADMIN", "${it.isAdmin}")
+                    if (it.isAdmin == true) {
+                        views.layoutAdmin.show()
+                        views.layoutAdmin.setSingleClickListener {
+                            startActivity(Intent(requireActivity(), AdminActivity::class.java))
+                        }
+                    } else {
+                        views.layoutAdmin.hide()
+                    }
                 }
             }
         }
@@ -98,10 +106,14 @@ class MoreFragment : TrackingBaseFragment<FragmentMoreBinding>() {
         views.layoutSignOut.setSingleClickListener {
             DialogUtil.showAlertDialogLogOut(requireActivity()) {
                 lifecycleScope.launch {
-                    userPreferences.clear()
+                    val isCleared = async { userPreferences.clear() }.await()
+                    if (isCleared) {
+                        startActivity(Intent(activity, LoginActivity::class.java))
+                        requireActivity().finish()
+                    } else {
+                        Toast.makeText(requireContext(), "Hãy tử lại", Toast.LENGTH_SHORT).show()
+                    }
                 }
-                FirebaseAuth.getInstance().signOut()
-                startActivity(Intent(activity, LoginActivity::class.java))
             }
         }
         views.layoutManager.setSingleClickListener {
@@ -115,61 +127,31 @@ class MoreFragment : TrackingBaseFragment<FragmentMoreBinding>() {
         }
     }
 
-    private fun handleMediaClick(items: MovieId1, itemView: View) {
-        val categoryList = items.category
-        val shuffledIndices = categoryList.indices.shuffled()
-        val randomIndex = shuffledIndices.first()
-        val randomCategory = categoryList[randomIndex]
-        val randomSlug = randomCategory.slug
+    private fun handleMediaClick(items: Movie, itemView: View) {
+        val intent = Intent(requireActivity(), MovieDetailsActivity::class.java)
 
-
-        val intent: Intent
-        if (items.type == "single") {
-            intent = Intent(activity, MovieDetailsActivity::class.java)
-        } else {
-            intent = Intent(activity, TvDetailsActivity::class.java)
-            intent.putExtra("thumbUrl", items.thumbUrl)
-        }
-        intent.putExtra("name", items.slug)
-        intent.putExtra("category", randomSlug)
-        intent.putExtra("id", items.movieId1)
-
+        intent.putExtra("movie", items)
 
         val options = ActivityOptions.makeSceneTransitionAnimation(
-            activity,
+            requireActivity(),
             itemView,
             "my_shared_element"
         )
         startActivity(intent, options.toBundle())
     }
 
-    private fun handleItemClick(items: ViewingHistory, itemView: View) {
-        val categoryList = items.category
-        val shuffledIndices = categoryList.indices.shuffled()
-        val randomIndex = shuffledIndices.first()
-        val randomCategory = categoryList[randomIndex]
-        val randomSlug = randomCategory.slug
-
-
-        val intent: Intent
-        if (items.type == "single") {
-            intent = Intent(activity, MovieDetailsActivity::class.java)
-        } else {
-            intent = Intent(activity, TvDetailsActivity::class.java)
-            intent.putExtra("thumbUrl", items.thumbUrl)
-        }
-        intent.putExtra("name", items.slug)
-        intent.putExtra("category", randomSlug)
-        intent.putExtra("id", items.movieId)
-
-
-        val options = ActivityOptions.makeSceneTransitionAnimation(
-            activity,
-            itemView,
-            "my_shared_element"
-        )
-        startActivity(intent, options.toBundle())
-    }
+//    private fun handleItemClick(items: ViewingHistory, itemView: View) {
+//        val intent = Intent(requireActivity(), MovieDetailsActivity::class.java)
+//
+//        intent.putExtra("movie", items)
+//
+//        val options = ActivityOptions.makeSceneTransitionAnimation(
+//            requireActivity(),
+//            itemView,
+//            "my_shared_element"
+//        )
+//        startActivity(intent, options.toBundle())
+//    }
 
     override fun getBinding(
         inflater: LayoutInflater,
@@ -182,28 +164,30 @@ class MoreFragment : TrackingBaseFragment<FragmentMoreBinding>() {
         //fetchData()
     }
 
-    override fun invalidate(): Unit = withState(loginViewModel) {
-        when (it.getMyList) {
+    override fun invalidate(): Unit = withState(authViewModel) {
+        when (it.getCommentedMovies) {
             is Success -> {
-                val data = it.getMyList.invoke()
-                if (data.isNullOrEmpty()) {
+                val data = it.getCommentedMovies.invoke()
+                if (data.data.isNullOrEmpty()) {
                     views.mylis.hide()
                     views.layoutEmptyList.show()
                 } else {
                     views.mylis.show()
                     views.layoutEmptyList.hide()
-                    myListAdapter.submitList(data)
+                    myListAdapter.submitList(data.data)
                 }
-                loginViewModel.handleRemoveStateGetMyList()
+                authViewModel.handleRemoveStateGetCommentedMovies()
             }
 
             is Fail -> {
                 views.mylis.hide()
                 views.layoutEmptyList.show()
                 Toast.makeText(
-                    requireContext(), getString(checkStatusApiRes(it.getMyList)), Toast.LENGTH_SHORT
+                    requireContext(),
+                    getString(checkStatusApiRes(it.getCommentedMovies)),
+                    Toast.LENGTH_SHORT
                 ).show()
-                loginViewModel.handleRemoveStateGetMyList()
+                authViewModel.handleRemoveStateGetCommentedMovies()
             }
 
             else -> {}
@@ -211,15 +195,15 @@ class MoreFragment : TrackingBaseFragment<FragmentMoreBinding>() {
         when (it.getFavoriteList) {
             is Success -> {
                 val data = it.getFavoriteList.invoke()
-                if (data.isNullOrEmpty()) {
+                if (data.data.isNullOrEmpty()) {
                     views.favoriteList.hide()
                     views.layoutEmptyLike.show()
                 } else {
                     views.favoriteList.show()
                     views.layoutEmptyLike.hide()
-                    favoriteListAdapter.submitList(data)
+                    favoriteListAdapter.submitList(data.data)
                 }
-                loginViewModel.handleRemoveStateGetFavorite()
+                authViewModel.handleRemoveStateGetFavorite()
             }
 
             is Fail -> {
@@ -230,37 +214,37 @@ class MoreFragment : TrackingBaseFragment<FragmentMoreBinding>() {
                     getString(checkStatusApiRes(it.getFavoriteList)),
                     Toast.LENGTH_SHORT
                 ).show()
-                loginViewModel.handleRemoveStateGetFavorite()
+                authViewModel.handleRemoveStateGetFavorite()
             }
 
             else -> {}
         }
-        when (it.getHistoryList) {
-            is Success -> {
-                val data = it.getHistoryList.invoke()
-                if (data.isNullOrEmpty()) {
-                    views.historyList.hide()
-                    views.layoutEmptyHistory.show()
-                } else {
-                    views.historyList.show()
-                    views.layoutEmptyHistory.hide()
-                    historyListAdapter.submitList(data)
-                }
-                loginViewModel.handleRemoveStateGetHistory()
-            }
-
-            is Fail -> {
-                views.mylis.hide()
-                views.layoutEmptyList.show()
-                Toast.makeText(
-                    requireContext(),
-                    getString(checkStatusApiRes(it.getHistoryList)),
-                    Toast.LENGTH_SHORT
-                ).show()
-                loginViewModel.handleRemoveStateGetHistory()
-            }
-
-            else -> {}
-        }
+//        when (it.getHistoryList) {
+//            is Success -> {
+//                val data = it.getHistoryList.invoke()
+//                if (data.isNullOrEmpty()) {
+//                    views.historyList.hide()
+//                    views.layoutEmptyHistory.show()
+//                } else {
+//                    views.historyList.show()
+//                    views.layoutEmptyHistory.hide()
+//                    historyListAdapter.submitList(data)
+//                }
+//                loginViewModel.handleRemoveStateGetHistory()
+//            }
+//
+//            is Fail -> {
+//                views.mylis.hide()
+//                views.layoutEmptyList.show()
+//                Toast.makeText(
+//                    requireContext(),
+//                    getString(checkStatusApiRes(it.getHistoryList)),
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//                loginViewModel.handleRemoveStateGetHistory()
+//            }
+//
+//            else -> {}
+//        }
     }
 }

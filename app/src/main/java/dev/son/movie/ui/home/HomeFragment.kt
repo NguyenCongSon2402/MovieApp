@@ -4,6 +4,7 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,16 +21,15 @@ import com.netflixclone.constants.COUNTRIES
 import dev.son.movie.R
 import dev.son.movie.adapters.MainEpoxyController
 import dev.son.movie.core.TrackingBaseFragment
-import dev.son.movie.network.models.home.Data
-import dev.son.movie.network.models.home.Items
 import dev.son.movie.databinding.FragmentFeedBinding
+import dev.son.movie.network.models.movie.ApiResponse
+import dev.son.movie.network.models.movie.Genre
+import dev.son.movie.network.models.movie.Movie
 import dev.son.movie.ui.MovieDetailsActivity
 import dev.son.movie.ui.search.SearchActivity
-import dev.son.movie.ui.TvDetailsActivity
 import dev.son.movie.utils.checkStatusApiRes
 import dev.son.movie.utils.hide
 import dev.son.movie.utils.show
-import timber.log.Timber
 import kotlin.math.min
 
 
@@ -37,10 +37,10 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
     private lateinit var mainEpoxyController: MainEpoxyController
     private val homeViewModel: HomeViewModel by activityViewModel()
-
-    private val listData: MutableList<Data?> = MutableList(10) { null }
-    private var dataCountries: dev.son.movie.network.models.countries.Data? = null
-    private var dataCategory: dev.son.movie.network.models.countries.Data? = null
+    private var genres: List<Genre>? = null
+    private val listData: MutableList<ApiResponse<List<Movie>>?> = MutableList(8) { null }
+    private var dataCountries: List<Genre>? = null
+    private var dataCategory: List<Genre>? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -84,7 +84,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         views.feedItemsList.adapter = mainEpoxyController.adapter
         views.feedItemsList.setItemViewCacheSize(50)
 
-
+//countries
         views.countriesTv.setOnClickListener {
             dataCountries?.let { it1 ->
                 val fragment = ItemPickerFragment.newInstance(it1, COUNTRIES)
@@ -94,7 +94,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             }
         }
 
-
+//categories
         views.categoriesTv.setOnClickListener {
             dataCategory?.let { it1 ->
                 val fragment = ItemPickerFragment.newInstance(it1, CATEGORIES)
@@ -105,23 +105,12 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         }
     }
 
-    private fun handleMediaClick(items: Items, posterItems: View) {
-        val categoryList = items.category
-        val shuffledIndices = categoryList.indices.shuffled()
-        val randomIndex = shuffledIndices.first()
-        val randomCategory = categoryList[randomIndex]
-        val randomSlug = randomCategory.slug
-        val intent: Intent
-        if (items.type == "single") {
-            intent = Intent(activity, MovieDetailsActivity::class.java)
-        } else {
-            intent = Intent(activity, TvDetailsActivity::class.java)
-            intent.putExtra("thumbUrl", items.thumbUrl)
+    private fun handleMediaClick(items: Movie, posterItems: View) {
+        val intent = Intent(activity, MovieDetailsActivity::class.java)
+        if (items.genre.contains("@single")) {
+            intent.putExtra("single", true)
         }
-        intent.putExtra("name", items.slug)
-        intent.putExtra("name1", items.name)
-        intent.putExtra("category", randomSlug)
-        intent.putExtra("id", items.Id)
+        intent.putExtra("movie", items)
 
 
         val options = ActivityOptions.makeSceneTransitionAnimation(
@@ -156,49 +145,103 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         return Color.argb(alpha, red, green, blue)
     }
 
-    override fun invalidate(): Unit = withState(homeViewModel) {
-        when (it.homes) {
+    override fun invalidate(): Unit = withState(homeViewModel) { it ->
+        when (it.genre) {
             is Success -> {
-                Timber.e("homes")
-                val data = it.homes.invoke().data.apply {
-                    this?.titlePage = "Phim Mới"
+                genres = it.genre.invoke().data
+                val (genresWithAt, genresWithoutAt) = genres?.partition { genre ->
+                    genre.code?.contains("@") == true
+                } ?: Pair(emptyList(), emptyList())
+
+// In danh sách có chứa "@"
+                Log.e("Genres with @", genresWithAt.toString())
+
+// In danh sách không chứa "@"
+                Log.e("Genres without @", genresWithoutAt.toString())
+
+                dataCategory = genresWithoutAt
+                genresWithAt.forEach { genresWithAt ->
+                    when (genresWithAt.code) {
+                        "@series" -> {
+                            homeViewModel.handle(HomeViewAction.getMoviePhimBo(genresWithAt.code))
+                        }
+
+                        "@single" -> {
+                            homeViewModel.handle(HomeViewAction.getMoviePhimLe(genresWithAt.code))
+                        }
+
+                        "@hoathinh" -> {
+                            homeViewModel.handle(HomeViewAction.getMoviePhimHoatHinh(genresWithAt.code))
+                        }
+
+                        "@tvshows" -> {
+                            homeViewModel.handle(HomeViewAction.getMovieTvShow(genresWithAt.code))
+                        }
+
+                        "@vietSub" -> {
+                            homeViewModel.handle(HomeViewAction.getMovieVietSub(genresWithAt.code))
+                        }
+
+                        "@thuyetminh" -> {
+                            homeViewModel.handle(HomeViewAction.getMovieThuyetMinh(genresWithAt.code))
+                        }
+
+                        "@dangchieu" -> {
+                            homeViewModel.handle(HomeViewAction.getMovieDangChieu(genresWithAt.code))
+                        }
+
+                        "@hoanthanh" -> {
+                            homeViewModel.handle(HomeViewAction.getMovieHoanThanh(genresWithAt.code))
+                        }
+                    }
                 }
-                val index = 0
-                if (index < listData.size) {
-                    data?.let { it1 -> listData[index] = it1 }
-                } else {
-                    data?.let { it1 -> listData.add(it1) }
-                }
-                mainEpoxyController.setData(listData)
-                views.loader.root.stopShimmer()
-                views.loader.root.hide()
-                homeViewModel.handleRemoveStateHome()
+                homeViewModel.handleRemoveStateGetGenre()
             }
 
             is Fail -> {
                 Toast.makeText(
-                    requireContext(), getString(checkStatusApiRes(it.homes)), Toast.LENGTH_SHORT
+                    activity,
+                    "genre " +
+                            checkStatusApiRes(it.genre),
+                    Toast.LENGTH_SHORT
                 ).show()
-                homeViewModel.handleRemoveStateHome()
+                homeViewModel.handleRemoveStateGetGenre()
             }
 
             else -> {}
         }
-        when (it.phimBo) {
+        when (it.countriesMovies) {
             is Success -> {
-                Timber.e("phimBo")
-                val data = it.phimBo.invoke().data.apply {
-                    this?.titlePage = "Phim Bộ"
-                }
-                val index = 1
-                if (index < listData.size) {
-                    data?.let { it1 -> listData[index] = it1 }
-                } else {
-                    // Thêm vào cuối danh sách
-                    data?.let { it1 -> listData.add(it1) }
-                }
+                dataCountries = it.countriesMovies.invoke().data
+                homeViewModel.handleRemoveStateCountries()
+            }
 
-                mainEpoxyController.setData(listData)
+            is Fail -> {
+                Toast.makeText(
+                    activity,
+                    "countriesMovies " +
+                            checkStatusApiRes(it.countriesMovies),
+                    Toast.LENGTH_SHORT
+                ).show()
+                homeViewModel.handleRemoveStateCountries()
+            }
+
+            else -> {}
+        }
+        when (it.moviePhimBo) {
+            is Success -> {
+                val data = it.moviePhimBo.invoke().apply {
+                    this.titlePage = "Phim Bộ"
+                }
+                if (!data.data.isNullOrEmpty()) {
+                    val index = 0
+                    if (index < listData.size) {
+                        data.let { it1 -> listData[index] = it1 }
+                    } else {
+                        data.let { it1 -> listData.add(it1) }
+                    }
+                    mainEpoxyController.setData(listData)
+                }
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
                 homeViewModel.handleRemoveStatePhimBo()
@@ -206,29 +249,31 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
             is Fail -> {
                 Toast.makeText(
-                    requireContext(), getString(checkStatusApiRes(it.phimBo)), Toast.LENGTH_SHORT
+                    activity,
+                    "phimBo " +
+                            checkStatusApiRes(it.moviePhimBo),
+                    Toast.LENGTH_SHORT
                 ).show()
-                homeViewModel.handleRemoveStatePhimBo()
+                homeViewModel.handleRemoveStateGetGenre()
             }
 
             else -> {}
         }
-        when (it.phimLe) {
+        when (it.moviePhimLe) {
             is Success -> {
-                Timber.e("phimLe")
-                val data = it.phimLe.invoke().data.apply {
-                    this?.titlePage = "Phim Lẻ"
+                val data = it.moviePhimLe.invoke().apply {
+                    this.titlePage = "Phim Lẻ"
+                }
+                if (!data.data.isNullOrEmpty()) {
+                    val index = 1
+                    if (index < listData.size) {
+                        data.let { it1 -> listData[index] = it1 }
+                    } else {
+                        data.let { it1 -> listData.add(it1) }
+                    }
+                    mainEpoxyController.setData(listData)
                 }
 
-                val index = 2
-                if (index < listData.size) {
-                    data?.let { it1 -> listData[index] = it1 }
-                } else {
-                    // Thêm vào cuối danh sách
-                    data?.let { it1 -> listData.add(it1) }
-                }
-
-                mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
                 homeViewModel.handleRemoveStatePhimle()
@@ -236,7 +281,10 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
             is Fail -> {
                 Toast.makeText(
-                    requireContext(), getString(checkStatusApiRes(it.phimLe)), Toast.LENGTH_SHORT
+                    activity,
+                    "phimLe " +
+                            checkStatusApiRes(it.moviePhimLe),
+                    Toast.LENGTH_SHORT
                 ).show()
                 homeViewModel.handleRemoveStatePhimle()
             }
@@ -245,20 +293,19 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         }
         when (it.phimHoatHinh) {
             is Success -> {
-                Timber.e("phimHoatHinh")
-                val data = it.phimHoatHinh.invoke().data.apply {
-                    this?.titlePage = "Phim Hoạt hình"
+                val data = it.phimHoatHinh.invoke().apply {
+                    this.titlePage = "Phim Hoạt Hình"
                 }
-                //Log.e("TAG3phimHoatHinh", "Size${listData.size} data ${data?.titlePage.toString()}")
-                val index = 3
-                if (index < listData.size) {
-                    data?.let { it1 -> listData[index] = it1 }
-                } else {
-                    // Thêm vào cuối danh sách
-                    data?.let { it1 -> listData.add(it1) }
+                if (!data.data.isNullOrEmpty()) {
+                    val index = 2
+                    if (index < listData.size) {
+                        data.let { it1 -> listData[index] = it1 }
+                    } else {
+                        data.let { it1 -> listData.add(it1) }
+                    }
+                    mainEpoxyController.setData(listData)
                 }
 
-                mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
                 homeViewModel.handleRemoveStatePhimHoatHinh()
@@ -266,8 +313,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
             is Fail -> {
                 Toast.makeText(
-                    requireContext(),
-                    getString(checkStatusApiRes(it.phimHoatHinh)),
+                    activity,
+                    "phimHoatHinh " +
+                            checkStatusApiRes(it.phimHoatHinh),
                     Toast.LENGTH_SHORT
                 ).show()
                 homeViewModel.handleRemoveStatePhimHoatHinh()
@@ -275,22 +323,21 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
             else -> {}
         }
-        when (it.tvShows) {
+        when (it.movieTvShow) {
             is Success -> {
-                Timber.e("tvSHow")
-                val data = it.tvShows.invoke().data.apply {
-                    this?.titlePage = "TV Shows"
+                val data = it.movieTvShow.invoke().apply {
+                    this.titlePage = "Tv Show"
+                }
+                if (!data.data.isNullOrEmpty()) {
+                    val index = 3
+                    if (index < listData.size) {
+                        data.let { it1 -> listData[index] = it1 }
+                    } else {
+                        data.let { it1 -> listData.add(it1) }
+                    }
+                    mainEpoxyController.setData(listData)
                 }
 
-                val index = 4
-                if (index < listData.size) {
-                    data?.let { it1 -> listData[index] = it1 }
-                } else {
-                    // Thêm vào cuối danh sách
-                    data?.let { it1 -> listData.add(it1) }
-                }
-
-                mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
                 homeViewModel.handleRemoveStateTvShows()
@@ -298,8 +345,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
             is Fail -> {
                 Toast.makeText(
-                    requireContext(),
-                    getString(checkStatusApiRes(it.tvShows)),
+                    activity,
+                    "tvShow " +
+                            checkStatusApiRes(it.movieTvShow),
                     Toast.LENGTH_SHORT
                 ).show()
                 homeViewModel.handleRemoveStateTvShows()
@@ -307,23 +355,21 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
             else -> {}
         }
-        when (it.vietsub) {
+        when (it.movieVietSub) {
             is Success -> {
-                Timber.e("vietsub")
-                val data = it.vietsub.invoke().data.apply {
-                    this?.titlePage = "VietSub"
+                val data = it.movieVietSub.invoke().apply {
+                    this.titlePage = "VietSub"
+                }
+                if (!data.data.isNullOrEmpty()) {
+                    val index = 4
+                    if (index < listData.size) {
+                        data.let { it1 -> listData[index] = it1 }
+                    } else {
+                        data.let { it1 -> listData.add(it1) }
+                    }
+                    mainEpoxyController.setData(listData)
                 }
 
-                val index = 5
-                if (index < listData.size) {
-                    data?.let { it1 -> listData[index] = it1 }
-                } else {
-                    // Thêm vào cuối danh sách
-                    data?.let { it1 -> listData.add(it1) }
-                }
-
-
-                mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
                 homeViewModel.handleRemoveStateVietsub()
@@ -331,31 +377,31 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
             is Fail -> {
                 Toast.makeText(
-                    requireContext(),
-                    getString(checkStatusApiRes(it.vietsub)),
+                    activity,
+                    "VietSub " +
+                            checkStatusApiRes(it.movieVietSub),
                     Toast.LENGTH_SHORT
                 ).show()
-                homeViewModel.handleRemoveStateVietsub()
+                homeViewModel.handleRemoveStateTvShows()
             }
 
             else -> {}
         }
-        when (it.thuyetMinh) {
+        when (it.movieThuyetMinh) {
             is Success -> {
-                Timber.e("thuyetminh")
-                val data = it.thuyetMinh.invoke().data.apply {
-                    this?.titlePage = "Phim Thuyết Minh"
+                val data = it.movieThuyetMinh.invoke().apply {
+                    this.titlePage = "Phim Thuyết Minh"
                 }
-                val index = 6
-                if (index < listData.size) {
-                    data?.let { it1 -> listData[index] = it1 }
-                } else {
-                    // Thêm vào cuối danh sách
-                    data?.let { it1 -> listData.add(it1) }
+                if (!data.data.isNullOrEmpty()) {
+                    val index = 5
+                    if (index < listData.size) {
+                        data.let { it1 -> listData[index] = it1 }
+                    } else {
+                        data.let { it1 -> listData.add(it1) }
+                    }
+                    mainEpoxyController.setData(listData)
                 }
 
-
-                mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
                 homeViewModel.handleRemoveStateThuyetMinh()
@@ -363,8 +409,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
             is Fail -> {
                 Toast.makeText(
-                    requireContext(),
-                    getString(checkStatusApiRes(it.thuyetMinh)),
+                    activity,
+                    "ThuyetMinh " +
+                            checkStatusApiRes(it.movieThuyetMinh),
                     Toast.LENGTH_SHORT
                 ).show()
                 homeViewModel.handleRemoveStateThuyetMinh()
@@ -372,51 +419,21 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
             else -> {}
         }
-        when (it.longTieng) {
+        when (it.movieDangChieu) {
             is Success -> {
-                Timber.e("longtieng")
-                val data = it.longTieng.invoke().data.apply {
-                    this?.titlePage = "Phim Lồng Tiếng"
+                val data = it.movieDangChieu.invoke().apply {
+                    this.titlePage = "Phim Bộ Đang Chiếu"
                 }
-                val index = 7
-                if (index < listData.size) {
-                    data?.let { it1 -> listData[index] = it1 }
-                } else {
-                    // Thêm vào cuối danh sách
-                    data?.let { it1 -> listData.add(it1) }
-                }
-                mainEpoxyController.setData(listData)
-                views.loader.root.stopShimmer()
-                views.loader.root.hide()
-                homeViewModel.handleRemoveStateLongTieng()
-            }
-
-            is Fail -> {
-                Toast.makeText(
-                    requireContext(),
-                    getString(checkStatusApiRes(it.longTieng)),
-                    Toast.LENGTH_SHORT
-                ).show()
-                homeViewModel.handleRemoveStateLongTieng()
-            }
-
-            else -> {}
-        }
-        when (it.phimBoDangChieu) {
-            is Success -> {
-                Timber.e("phimdangChieu")
-                val data = it.phimBoDangChieu.invoke().data.apply {
-                    this?.titlePage = "Phim Đang Chiếu"
-                }
-                val index = 8
-                if (index < listData.size) {
-                    data?.let { it1 -> listData[index] = it1 }
-                } else {
-                    // Thêm vào cuối danh sách
-                    data?.let { it1 -> listData.add(it1) }
+                if (!data.data.isNullOrEmpty()) {
+                    val index = 6
+                    if (index < listData.size) {
+                        data.let { it1 -> listData[index] = it1 }
+                    } else {
+                        data.let { it1 -> listData.add(it1) }
+                    }
+                    mainEpoxyController.setData(listData)
                 }
 
-                mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
                 homeViewModel.handleRemoveStatePhimBoDangChieu()
@@ -424,8 +441,9 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
             is Fail -> {
                 Toast.makeText(
-                    requireContext(),
-                    getString(checkStatusApiRes(it.phimBoDangChieu)),
+                    activity,
+                    "dangChieu " +
+                            checkStatusApiRes(it.movieDangChieu),
                     Toast.LENGTH_SHORT
                 ).show()
                 homeViewModel.handleRemoveStatePhimBoDangChieu()
@@ -433,21 +451,21 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
             else -> {}
         }
-        when (it.phimBoHoanThanh) {
+        when (it.movieHoanThanh) {
             is Success -> {
-                Timber.e("phimDaHoanThanh")
-                val data = it.phimBoHoanThanh.invoke().data.apply {
-                    this?.titlePage = "Phim Bộ Đã Hoàn Thành"
+                val data = it.movieHoanThanh.invoke().apply {
+                    this.titlePage = "Phim Bộ Hoàn Thành"
                 }
-                val index = 9
-                if (index < listData.size) {
-                    data?.let { it1 -> listData[index] = it1 }
-                } else {
-                    // Thêm vào cuối danh sách
-                    data?.let { it1 -> listData.add(it1) }
+                if (!data.data.isNullOrEmpty()) {
+                    val index = 7
+                    if (index < listData.size) {
+                        data.let { it1 -> listData[index] = it1 }
+                    } else {
+                        data.let { it1 -> listData.add(it1) }
+                    }
+                    mainEpoxyController.setData(listData)
                 }
 
-                mainEpoxyController.setData(listData)
                 views.loader.root.stopShimmer()
                 views.loader.root.hide()
                 homeViewModel.handleRemoveStatePhimBoHoanThanh()
@@ -455,47 +473,12 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
             is Fail -> {
                 Toast.makeText(
-                    requireContext(),
-                    getString(checkStatusApiRes(it.phimBoHoanThanh)),
+                    activity,
+                    "haonThanh " +
+                            checkStatusApiRes(it.movieHoanThanh),
                     Toast.LENGTH_SHORT
                 ).show()
                 homeViewModel.handleRemoveStatePhimBoHoanThanh()
-            }
-
-            else -> {}
-        }
-        when (it.countries) {
-            is Success -> {
-                Timber.e("countries")
-                dataCountries = it.countries.invoke().data
-                homeViewModel.handleRemoveStateCountries()
-            }
-
-            is Fail -> {
-                Toast.makeText(
-                    requireContext(),
-                    getString(checkStatusApiRes(it.countries)),
-                    Toast.LENGTH_SHORT
-                ).show()
-                homeViewModel.handleRemoveStateCountries()
-            }
-
-            else -> {}
-        }
-        when (it.category) {
-            is Success -> {
-                Timber.e("category")
-                dataCategory = it.category.invoke().data
-                homeViewModel.handleRemoveStateCategories()
-            }
-
-            is Fail -> {
-                Toast.makeText(
-                    requireContext(),
-                    getString(checkStatusApiRes(it.category)),
-                    Toast.LENGTH_SHORT
-                ).show()
-                homeViewModel.handleRemoveStateCategories()
             }
 
             else -> {}

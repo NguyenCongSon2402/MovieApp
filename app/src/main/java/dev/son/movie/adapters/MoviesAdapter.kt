@@ -8,14 +8,13 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.netflixclone.constants.BASE_IMG
-import dev.son.movie.network.models.home.Items
 
 import dev.son.movie.databinding.ItemMediaBinding
+import dev.son.movie.network.models.movie.Movie
 import dev.son.movie.utils.setSingleClickListener
 
-class MoviesAdapter(private val onItemClick: (Items,View) -> Unit) :
-        ListAdapter<Items, MovieViewHolder>(MovieDiffCallback()) {
+class MoviesAdapter(private val onItemClick: (Movie,View) -> Unit) :
+        ListAdapter<Movie, MovieViewHolder>(MovieDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
         val binding = ItemMediaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -30,17 +29,15 @@ class MoviesAdapter(private val onItemClick: (Items,View) -> Unit) :
 
 class MovieViewHolder(
         var binding: ItemMediaBinding,
-        private val onItemClick:(Items,View) -> Unit
+        private val onItemClick:(Movie,View) -> Unit
 ) :
         RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(movie: Items?) {
+    fun bind(movie: Movie?) {
         if (movie == null) {
             return
         }
-        var posterUrl: String? = null
-        posterUrl = BASE_IMG + movie.thumbUrl
-        Glide.with(binding.posterImage).load(posterUrl).transform(CenterCrop())
+        Glide.with(binding.posterImage).load(movie.posterHorizontal).transform(CenterCrop())
                 .into(binding.posterImage)
         binding.posterImage.clipToOutline = true
 
@@ -48,12 +45,12 @@ class MovieViewHolder(
     }
 }
 
-class MovieDiffCallback : DiffUtil.ItemCallback<Items>() {
-    override fun areItemsTheSame(oldItem: Items, newItem: Items): Boolean {
-        return oldItem.Id == newItem.Id
+class MovieDiffCallback : DiffUtil.ItemCallback<Movie>() {
+    override fun areItemsTheSame(oldItem: Movie, newItem: Movie): Boolean {
+        return oldItem.id == newItem.id
     }
 
-    override fun areContentsTheSame(oldItem: Items, newItem: Items): Boolean {
+    override fun areContentsTheSame(oldItem: Movie, newItem: Movie): Boolean {
         return oldItem == newItem
     }
 }

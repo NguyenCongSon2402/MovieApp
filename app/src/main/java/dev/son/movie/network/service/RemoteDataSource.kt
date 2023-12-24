@@ -1,15 +1,16 @@
 package dev.son.movie.network.service
 
-import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
-import dev.son.movie.BuildConfig
-import dev.son.movie.utils.format
 import com.google.gson.GsonBuilder
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
+import dev.son.movie.BuildConfig
+import dev.son.movie.data.local.UserPreferences
+import dev.son.movie.network.TokenAuthenticator
+import dev.son.movie.utils.format
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -29,17 +30,16 @@ import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
 @Singleton
-class RemoteDataSource() {
+class RemoteDataSource(val userPreferences: UserPreferences) {
 
     companion object {
         private const val BASE_URL =
-            "https://ophim1.com"
-        private const val BASE_IMG ="https://img.ophim9.cc/uploads/movies/"
+            "http://192.168.1.14:3100/api/v1/"
+        private const val BASE_IMG = "https://img.ophim9.cc/uploads/movies/"
         private const val DEFAULT_USER_AGENT = "Nimpe-Android"
         private const val DEFAULT_CONTENT_TYPE = "application/json"
-        private const val FIREBASE_BASE_URL =
-            "https://moviedata-70216-default-rtdb.asia-southeast1.firebasedatabase.app/"
     }
+
     fun <Api> buildApi(
         api: Class<Api>
     ): Api {
@@ -49,23 +49,43 @@ class RemoteDataSource() {
             .create()
 
 
+        val token = userPreferences.token ?: ""
+
+
+//        var authenticator: Authenticator? = null
+//        authenticator = if (token != null) {
+//            TokenAuthenticator(token)
+//        } else
+//            TokenAuthenticator("")
+
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .client(getRetrofitClient())
+            .client(getRetrofitClient(token))
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
             .create(api)
     }
+
+    private fun createAuthorizationInterceptor(token: String): Interceptor {
+        return Interceptor { chain: Interceptor.Chain ->
+            val originalRequest = chain.request()
+            val modifiedRequest: Request.Builder = originalRequest.newBuilder()
+            modifiedRequest.addHeader("Authorization", "Bearer $token")
+            chain.proceed(modifiedRequest.build())
+        }
+    }
+
+
     private fun getRetrofitClient(
+        token: String
     ): OkHttpClient {
 
         return getUnsafeOkHttpClient()
             .writeTimeout(31, TimeUnit.SECONDS)
             .readTimeout(31, TimeUnit.SECONDS)
             .connectTimeout(31, TimeUnit.SECONDS)
-            .cookieJar(cookieJar())
-            .addNetworkInterceptor(loggingInterceptor())
+            .addInterceptor(createAuthorizationInterceptor(token))
             .also { client ->
                 if (BuildConfig.DEBUG) {
                     client.addInterceptor(loggingInterceptor())
@@ -74,13 +94,6 @@ class RemoteDataSource() {
             .build()
     }
 
-    private fun cookieJar(): CookieJar {
-        val cookieManager = CookieManager().apply {
-            setCookiePolicy(CookiePolicy.ACCEPT_ALL)
-        }
-
-        return JavaNetCookieJar(cookieManager)
-    }
 
     private fun loggingInterceptor(): Interceptor {
         return HttpLoggingInterceptor().apply {

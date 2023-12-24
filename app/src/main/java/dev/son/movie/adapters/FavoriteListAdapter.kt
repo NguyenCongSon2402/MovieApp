@@ -8,13 +8,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.netflixclone.constants.BASE_IMG
-import dev.son.movie.databinding.ItemMediaBinding
 import dev.son.movie.databinding.ItemPosterBinding
-import dev.son.movie.network.models.home.Items
+import dev.son.movie.network.models.movie.Movie
 import dev.son.movie.network.models.user.MovieId1
 
-class FavoriteListAdapter(private val onItemClick: (MovieId1, View) -> Unit) :
-    ListAdapter<MovieId1, ItemFavoriteViewHolder>(ItemDiffCallback()) {
+class FavoriteListAdapter(private val onItemClick: (Movie, View) -> Unit) :
+    ListAdapter<Movie, ItemFavoriteViewHolder>(ItemDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemFavoriteViewHolder {
         val binding = ItemPosterBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -29,18 +28,16 @@ class FavoriteListAdapter(private val onItemClick: (MovieId1, View) -> Unit) :
 
 class ItemFavoriteViewHolder(
     var binding: ItemPosterBinding,
-    private val onItemClick: ((MovieId1, View) -> Unit)
+    private val onItemClick: ((Movie, View) -> Unit)
 ) :
     RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(items: MovieId1?) {
+    fun bind(items: Movie?) {
         if (items == null) {
             return
         }
 
-        var posterUrl: String?
-        posterUrl = BASE_IMG + items.thumbUrl
-        Glide.with(binding.posterImage).load(posterUrl).transform(CenterCrop())
+        Glide.with(binding.posterImage).load(items.posterHorizontal).transform(CenterCrop())
             .into(binding.posterImage)
         binding.posterImage.clipToOutline = true
 

@@ -1,8 +1,6 @@
 package dev.son.movie.di
 
 import android.content.Context
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.storage.FirebaseStorage
 import dev.son.movie.network.service.*
 import dev.son.movie.network.repository.HomeRepository
 
@@ -12,6 +10,7 @@ import dagger.Provides
 import dev.son.movie.data.local.UserPreferences
 import dev.son.movie.network.repository.FirebaseRepository
 import dev.son.movie.network.repository.SearchRepository
+import dev.son.movie.network.repository.UserRepository
 import javax.inject.Singleton
 
 @Module
@@ -20,10 +19,11 @@ object NetWorkModule {
     fun providerLocaleHelper(): LocalHelper = LocalHelper()
 
     @Provides
-    fun providerRemoteDateSource(): RemoteDataSource = RemoteDataSource()
+    fun providerRemoteDateSource(userPreferences: UserPreferences): RemoteDataSource = RemoteDataSource(userPreferences)
 
     @Provides
     fun providerUserPreferences(context: Context): UserPreferences = UserPreferences(context)
+
     @Provides
     fun providerHomeApi(
         remoteDataSource: RemoteDataSource
@@ -35,21 +35,27 @@ object NetWorkModule {
     ) = remoteDataSource.buildApi(SearchApi::class.java)
 
     @Provides
-    @Singleton
-    fun provideFireBaseInstance(): FirebaseDatabase {
-        return FirebaseDatabase.getInstance()
-    }
-    @Provides
-    @Singleton
-    fun provideFireBaseStoreInstance(): FirebaseStorage {
-        return FirebaseStorage.getInstance()
-    }
+    fun providerUserApi(
+        remoteDataSource: RemoteDataSource
+    ) = remoteDataSource.buildApi(UserAPI::class.java)
 
-    @Provides
-    @Singleton
-    fun provideFirebaseRepository(
-        database: FirebaseDatabase,storage: FirebaseStorage,userPreferences: UserPreferences
-    ): FirebaseRepository = FirebaseRepository(database,storage,userPreferences)
+//    @Provides
+//    @Singleton
+//    fun provideFireBaseInstance(): FirebaseDatabase {
+//        return FirebaseDatabase.getInstance()
+//    }
+//
+//    @Provides
+//    @Singleton
+//    fun provideFireBaseStoreInstance(): FirebaseStorage {
+//        return FirebaseStorage.getInstance()
+//    }
+//
+//    @Provides
+//    @Singleton
+//    fun provideFirebaseRepository(
+//        database: FirebaseDatabase, storage: FirebaseStorage, userPreferences: UserPreferences
+//    ): FirebaseRepository = FirebaseRepository(database, storage, userPreferences)
 
 
     @Provides
@@ -61,4 +67,10 @@ object NetWorkModule {
     fun providerSearchRepository(
         api: SearchApi
     ): SearchRepository = SearchRepository(api)
+
+
+    @Provides
+    fun providerUserRepository(
+        api: UserAPI,userPreferences: UserPreferences
+    ): UserRepository = UserRepository(api,userPreferences)
 }

@@ -23,183 +23,235 @@ class HomeViewModel @AssistedInject constructor(
     //    private var job: Job? = null
     override fun handle(action: HomeViewAction) {
         when (action) {
-            is HomeViewAction.getHome -> handleGetHome()
-            is HomeViewAction.getPhimBo -> handleGetPhimBo()
-            is HomeViewAction.getPhimLe -> handleGetPhimLe()
-            is HomeViewAction.getPhimHoatHinh -> handleGetPhimHoatHinh()
-            is HomeViewAction.getTvShows -> handleGetTvSHows()
-            is HomeViewAction.getVietSub -> handleGetPhimVietSub()
-            is HomeViewAction.getThuyetMinh -> handleGetPhimThuyetMinh()
-            is HomeViewAction.getPhimLongTieng -> handleGetPhimLongTieng()
-            is HomeViewAction.getPhimBoDangChieu -> handleGetPhimBoDangChieu()
-            is HomeViewAction.getPhimBoDaHoanThanh -> handleGetPhimBoDaHoanThanh()
-            is HomeViewAction.getSlug -> handleGetSlug(action.name)
-            is HomeViewAction.getCategoriesMovies -> handleGetCategories(action.name)
-            is HomeViewAction.getCountriesMovies -> handleCountriesMovies(action.name)
-            is HomeViewAction.getPhimSapChieu -> handleGetComingSoon()
-            is HomeViewAction.getCountries -> handleGetCountriesMovie()
-            is HomeViewAction.getCategory -> handleGetCategories()
+            is HomeViewAction.getGenre -> handleGetGenre()
+            is HomeViewAction.getMoviePhimBo -> handleGetMoviesPhimBo(action.genreCode)
+            is HomeViewAction.getMoviePhimLe -> handleGetMoviePhimLe(action.genreCode)
+            is HomeViewAction.getMoviePhimHoatHinh -> handleGetMoviePhimHoatHinh(action.genreCode)
+            is HomeViewAction.getMovieTvShow -> handleGetMovieTvShow(action.genreCode)
+            is HomeViewAction.getMovieVietSub -> handleGetMovieVietSub(action.genreCode)
+            is HomeViewAction.getMovieThuyetMinh -> handleGetMovieThuyetMinh(action.genreCode)
+            is HomeViewAction.getMovieDangChieu -> handleGetMovieDangChieu(action.genreCode)
+            is HomeViewAction.getMovieHoanThanh -> handleGetMovieHoanThanh(action.genreCode)
+            is HomeViewAction.getMovieSimilar -> handleGetMovieSimilar(action.genreCode)
+            is HomeViewAction.getMovieByCategory -> handleGetMovieByCategory(action.genreCode)
+            is HomeViewAction.getMovieByCountry -> handleGetMovieByCountries(action.countryCode)
+            is HomeViewAction.getMovieRate -> handleGetMovieRate(action.movieId)
+            is HomeViewAction.setRateMovie -> handleSetRateMovie(action.movieId, action.rating)
+            is HomeViewAction.addFavorite -> handleAddFavorite(action.movieId)
+            is HomeViewAction.removeFavorite -> handleRemoveFavorite(action.movieId)
+            is HomeViewAction.movieById -> handleMovieById(action.movieId)
+            is HomeViewAction.getCommentByMovie -> handleGetCommentByMovie(action.movieId)
+            is HomeViewAction.getMoviesRecommendation -> handleGetMoviesRecommendation(action.movieId)
+            is HomeViewAction.createComment -> handleCreateComment(action.movieId, action.comment)
+
+
+            is HomeViewAction.getCountries -> handleCountriesMovies()
+
+            else -> {}
         }
     }
 
-
-    fun handleRemoveStateHome() =
-        setState { copy(homes = Uninitialized) }
-
-    fun handleRemoveStatePhimBo() =
-        setState { copy(phimBo = Uninitialized) }
-
-    fun handleRemoveStatePhimle() =
-        setState { copy(phimLe = Uninitialized) }
-
-    fun handleRemoveStatePhimHoatHinh() =
-        setState { copy(phimHoatHinh = Uninitialized) }
-
-    fun handleRemoveStateSlug() =
-        setState { copy(slug = Uninitialized) }
-
-    fun handleRemoveStateCategoriesMovies() =
-        setState { copy(categoriesMovies = Uninitialized) }
-
-    fun handleRemoveStateTvShows() =
-        setState { copy(tvShows = Uninitialized) }
-
-    fun handleRemoveStateVietsub() =
-        setState { copy(vietsub = Uninitialized) }
-
-    fun handleRemoveStateThuyetMinh() =
-        setState { copy(thuyetMinh = Uninitialized) }
-
-    fun handleRemoveStateLongTieng() =
-        setState { copy(longTieng = Uninitialized) }
-
-    fun handleRemoveStatePhimBoDangChieu() =
-        setState { copy(phimBoDangChieu = Uninitialized) }
-
-    fun handleRemoveStatePhimBoHoanThanh() =
-        setState { copy(phimBoHoanThanh = Uninitialized) }
-
-    fun handleRemoveState() =
-        setState { copy(phimBoHoanThanh = Uninitialized) }
-
-    fun handleRemoveStateCountries() =
-        setState { copy(countries = Uninitialized) }
-
-    fun handleRemoveStateCategories() =
-        setState { copy(category = Uninitialized) }
-
-
-    private fun handleGetHome() {
-        setState { copy(homes = Loading()) }
-        homeRepo.getHome().execute {
-            copy(homes = it)
-        }
-
-    }
-
-    private fun handleGetSlug(name: String) {
-        setState { copy(slug = Loading()) }
-        homeRepo.slug(name).execute {
-            copy(slug = it)
+    private fun handleGetMoviesRecommendation(movieId: String) {
+        setState { copy(getMoviesRecommendation = Loading()) }
+        homeRepo.getMoviesRecommendation(movieId).execute {
+            copy(getMoviesRecommendation = it)
         }
     }
 
-    private fun handleGetCategories(name: String) {
-        setState { copy(categoriesMovies = Loading()) }
-        homeRepo.categoriesMovies(name).execute {
-            copy(categoriesMovies = it)
+    private fun handleGetMovieByCategory(genreCode: String) {
+        setState { copy(getMovieByCategory = Loading()) }
+        homeRepo.getMovieByCategory(genreCode).execute {
+            copy(getMovieByCategory = it)
+        }
+    }
+    private fun handleGetMovieByCountries(countryCode: String) {
+        setState { copy(getMovieByCountry = Loading()) }
+        homeRepo.getMoviesByCountry(countryCode).execute {
+            copy(getMovieByCountry = it)
         }
     }
 
-    private fun handleCountriesMovies(name: String) {
-        setState { copy(countriesMovies = Loading()) }
-        homeRepo.countriesMovies(name).execute {
-            copy(countriesMovies = it)
+    private fun handleCreateComment(movieId: String, comment: String) {
+        setState { copy(createComment = Loading()) }
+        homeRepo.createComment(movieId, comment).execute {
+            copy(createComment = it)
         }
     }
 
-    private fun handleGetPhimBo() {
-        setState { copy(phimBo = Loading()) }
-        homeRepo.getPhimBo().execute {
-            copy(phimBo = it)
+    private fun handleGetCommentByMovie(movieId: String) {
+        setState { copy(getCommentByMovie = Loading()) }
+        homeRepo.getCommentByMovie(movieId).execute {
+            copy(getCommentByMovie = it)
         }
     }
 
-    private fun handleGetPhimLe() {
-        setState { copy(phimLe = Loading()) }
-        homeRepo.getPhimLe().execute {
-            copy(phimLe = it)
+    private fun handleMovieById(movieId: String) {
+        setState { copy(movieById = Loading()) }
+        homeRepo.getMovieById(movieId).execute {
+            copy(movieById = it)
         }
-
     }
 
-    private fun handleGetPhimHoatHinh() {
+    private fun handleRemoveFavorite(movieId: String) {
+        setState { copy(removeFavorite = Loading()) }
+        homeRepo.removeFavorite(movieId).execute {
+            copy(removeFavorite = it)
+        }
+    }
+
+    private fun handleAddFavorite(movieId: String) {
+        setState { copy(addFavorite = Loading()) }
+        homeRepo.addFavorite(movieId).execute {
+            copy(addFavorite = it)
+        }
+    }
+
+    private fun handleSetRateMovie(movieId: String, rating: Int) {
+        setState { copy(setmovieRate = Loading()) }
+        homeRepo.setMovieRate(movieId, rating).execute {
+            copy(setmovieRate = it)
+        }
+    }
+
+    private fun handleGetMovieRate(movieId: String) {
+        setState { copy(movieRateRes = Loading()) }
+        homeRepo.getMovieRateRes(movieId).execute {
+            copy(movieRateRes = it)
+        }
+    }
+
+    private fun handleGetMovieSimilar(genreCode: String) {
+        setState { copy(listMovieSimilar = Loading()) }
+        homeRepo.getMovieSimilar(genreCode).execute {
+            copy(listMovieSimilar = it)
+        }
+    }
+
+    private fun handleGetMovieHoanThanh(genreCode: String) {
+        setState { copy(movieHoanThanh = Loading()) }
+        homeRepo.getMovieHoanThanh(genreCode).execute {
+            copy(movieHoanThanh = it)
+        }
+    }
+
+    private fun handleGetMovieDangChieu(genreCode: String) {
+        setState { copy(movieDangChieu = Loading()) }
+        homeRepo.getMovieDangChieu(genreCode).execute {
+            copy(movieDangChieu = it)
+        }
+    }
+
+    private fun handleGetMovieThuyetMinh(genreCode: String) {
+        setState { copy(movieThuyetMinh = Loading()) }
+        homeRepo.getMovieThuyetMinh(genreCode).execute {
+            copy(movieThuyetMinh = it)
+        }
+    }
+
+    private fun handleGetMovieVietSub(genreCode: String) {
+        setState { copy(movieVietSub = Loading()) }
+        homeRepo.getMovieVietSub(genreCode).execute {
+            copy(movieVietSub = it)
+        }
+    }
+
+    private fun handleGetMovieTvShow(genreCode: String) {
+        setState { copy(movieTvShow = Loading()) }
+        homeRepo.getMovieTvShow(genreCode).execute {
+            copy(movieTvShow = it)
+        }
+    }
+
+    private fun handleGetMoviePhimHoatHinh(genreCode: String) {
         setState { copy(phimHoatHinh = Loading()) }
-        homeRepo.getPhimHoatHinh().execute {
+        homeRepo.getMovieHoatHinh(genreCode).execute {
             copy(phimHoatHinh = it)
         }
     }
 
-    private fun handleGetTvSHows() {
-        setState { copy(tvShows = Loading()) }
-        homeRepo.getTvShows().execute {
-            copy(tvShows = it)
+    private fun handleGetMoviePhimLe(genreCode: String) {
+        setState { copy(moviePhimLe = Loading()) }
+        homeRepo.getMoviePhimLe(genreCode).execute {
+            copy(moviePhimLe = it)
         }
     }
 
-    private fun handleGetPhimVietSub() {
-        setState { copy(vietsub = Loading()) }
-        homeRepo.getVietSub().execute {
-            copy(vietsub = it)
+    private fun handleGetMoviesPhimBo(genreCode: String) {
+        setState { copy(moviePhimBo = Loading()) }
+        homeRepo.getMoviePhimBo(genreCode).execute {
+            copy(moviePhimBo = it)
         }
     }
 
-    private fun handleGetPhimThuyetMinh() {
-        setState { copy(thuyetMinh = Loading()) }
-        homeRepo.getThuyetMinh().execute {
-            copy(thuyetMinh = it)
+    private fun handleGetGenre() {
+        setState { copy(genre = Loading()) }
+        homeRepo.getGenre().execute {
+            copy(genre = it)
         }
     }
 
-    private fun handleGetPhimLongTieng() {
-        setState { copy(longTieng = Loading()) }
-        homeRepo.getPhimLongTieng().execute {
-            copy(longTieng = it)
-        }
-    }
 
-    private fun handleGetPhimBoDangChieu() {
-        setState { copy(phimBoDangChieu = Loading()) }
-        homeRepo.getPhimBoDangChieu().execute {
-            copy(phimBoDangChieu = it)
-        }
-    }
+    fun handleRemoveStateGetGenre() =
+        setState { copy(genre = Uninitialized) }
 
-    private fun handleGetPhimBoDaHoanThanh() {
-        setState { copy(phimBoHoanThanh = Loading()) }
-        homeRepo.getPhimBoDaHoanThanh().execute {
-            copy(phimBoHoanThanh = it)
-        }
-    }
+    fun handleRemoveStateCommentByMovie() =
+        setState { copy(getCommentByMovie = Uninitialized) }
 
-    private fun handleGetComingSoon() {
-        setState { copy(phimSapChieu = Loading()) }
-        homeRepo.getPhimSapChieu().execute {
-            copy(phimSapChieu = it)
-        }
-    }
+    fun handleRemoveStateCreateComment() =
+        setState { copy(createComment = Uninitialized) }
 
-    private fun handleGetCountriesMovie() {
-        setState { copy(countries = Loading()) }
-        homeRepo.getCountriesMovie().execute {
-            copy(countries = it)
-        }
-    }
+    fun handleRemoveGetMovieById() =
+        setState { copy(movieById = Uninitialized) }
 
-    private fun handleGetCategories() {
-        setState { copy(category = Loading()) }
-        homeRepo.getCategory().execute {
-            copy(category = it)
+    fun handleRemoveStateRemoveFavorite() =
+        setState { copy(removeFavorite = Uninitialized) }
+
+    fun handleRemoveStatePhimBo() =
+        setState { copy(moviePhimBo = Uninitialized) }
+
+    fun handleRemoveStatePhimle() =
+        setState { copy(moviePhimLe = Uninitialized) }
+
+    fun handleRemoveStatePhimHoatHinh() =
+        setState { copy(phimHoatHinh = Uninitialized) }
+
+    fun handleRemoveAddFavorite() =
+        setState { copy(addFavorite = Uninitialized) }
+
+    fun handleRemoveStateCategoriesMovies() =
+        setState { copy(listMovieSimilar = Uninitialized) }
+    fun handleRemoveStateMoviesRecommendation() =
+        setState { copy(getMoviesRecommendation = Uninitialized) }
+
+    fun handleRemoveStateSetmovieRate() =
+        setState { copy(setmovieRate = Uninitialized) }
+
+    fun handleRemoveStateMovieRateRes() =
+        setState { copy(movieRateRes = Uninitialized) }
+
+    fun handleRemoveStateTvShows() =
+        setState { copy(movieTvShow = Uninitialized) }
+
+    fun handleRemoveStateVietsub() =
+        setState { copy(movieVietSub = Uninitialized) }
+
+    fun handleRemoveStateThuyetMinh() =
+        setState { copy(movieThuyetMinh = Uninitialized) }
+
+    fun handleRemoveStatePhimBoDangChieu() =
+        setState { copy(movieDangChieu = Uninitialized) }
+
+    fun handleRemoveStatePhimBoHoanThanh() =
+        setState { copy(movieHoanThanh = Uninitialized) }
+
+    fun handleRemoveStateCountries() =
+        setState { copy(countriesMovies = Uninitialized) }
+
+
+    private fun handleCountriesMovies() {
+        setState { copy(countriesMovies = Loading()) }
+        homeRepo.getCountries().execute {
+            copy(countriesMovies = it)
         }
     }
 

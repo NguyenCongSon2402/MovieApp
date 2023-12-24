@@ -5,8 +5,6 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.core.widget.addTextChangedListener
 import com.airbnb.mvrx.Fail
 import com.airbnb.mvrx.Loading
@@ -16,9 +14,8 @@ import dev.son.movie.TrackingApplication
 import dev.son.movie.adapters.SearchMovieAdapter
 import dev.son.movie.core.TrackingBaseActivity
 import dev.son.movie.databinding.ActivitySearchBinding
-import dev.son.movie.network.models.home.Items
+import dev.son.movie.network.models.movie.Movie
 import dev.son.movie.ui.MovieDetailsActivity
-import dev.son.movie.ui.TvDetailsActivity
 import dev.son.movie.utils.hide
 import dev.son.movie.utils.hideKeyboard
 import dev.son.movie.utils.show
@@ -77,36 +74,16 @@ class SearchActivity : TrackingBaseActivity<ActivitySearchBinding>(), SearchView
         views.resultsList.adapter = searchResultsAdapter
     }
 
-//    private fun handleMovieClick(movie: Movie) {
-//        //hideKeyboard()
-//        views.searchTextInput.clearFocus()
-//        MediaDetailsBottomSheet.newInstance(movie.toMediaBsData())
-//            .show(supportFragmentManager, movie.id.toString())
-//    }
 
-    private fun handleMediaClick(items: Items,itemView:View) {
+    private fun handleMediaClick(items: Movie,itemView:View) {
         hideKeyboard()
         views.searchTextInput.clearFocus()
-        val categoryList = items.category
-        val shuffledIndices = categoryList.indices.shuffled()
-        val randomIndex = shuffledIndices.first()
-        val randomCategory = categoryList[randomIndex]
-        val randomSlug = randomCategory.slug
+        val intent = Intent(this, MovieDetailsActivity::class.java)
 
-
-        val intent: Intent
-        if (items.type == "single") {
-            intent = Intent(this, MovieDetailsActivity::class.java)
-        } else {
-            intent = Intent(this, TvDetailsActivity::class.java)
-            intent.putExtra("thumbUrl", items.thumbUrl)
-        }
-        intent.putExtra("name", items.slug)
-        intent.putExtra("category", randomSlug)
-
+        intent.putExtra("movie", items)
 
         val options = ActivityOptions.makeSceneTransitionAnimation(
-            this,
+            this@SearchActivity,
             itemView,
             "my_shared_element"
         )
@@ -117,7 +94,7 @@ class SearchActivity : TrackingBaseActivity<ActivitySearchBinding>(), SearchView
         searchViewModel.subscribe(this) {
             when (it.search) {
                 is Success -> {
-                    searchResultsAdapter.submitList(it.search.invoke().data?.items)
+                    searchResultsAdapter.submitList(it.search.invoke().data)
                     views.searchResultsLoader.hide()
                     searchViewModel.handleRemoveState()
                 }

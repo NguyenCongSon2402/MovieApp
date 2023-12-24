@@ -14,7 +14,7 @@ import dev.son.movie.TrackingApplication
 import dev.son.movie.adapters.TypeMoviesAdapter
 import dev.son.movie.core.TrackingBaseActivity
 import dev.son.movie.databinding.ActivityCategoryMoviesBinding
-import dev.son.movie.network.models.home.Items
+import dev.son.movie.network.models.movie.Movie
 import dev.son.movie.ui.home.HomeViewAction
 import dev.son.movie.ui.home.HomeViewModel
 import dev.son.movie.ui.home.HomeViewState
@@ -28,8 +28,8 @@ class CategoryMoviesActivity : TrackingBaseActivity<ActivityCategoryMoviesBindin
     lateinit var homeViewModelFactory: HomeViewModel.Factory
 
     private lateinit var typeMoviesAdapter: TypeMoviesAdapter
-    private val categorySlug: String?
-        get() = intent.extras?.getString("slug")
+    private val categoryCode: String?
+        get() = intent.extras?.getString("code")
     private val categoryName: String?
         get() = intent.extras?.getString("name")
 
@@ -43,9 +43,9 @@ class CategoryMoviesActivity : TrackingBaseActivity<ActivityCategoryMoviesBindin
         setupUI()
         fetchData()
         homeViewModel.subscribe(this) {
-            when (it.categoriesMovies) {
+            when (it.getMovieByCategory) {
                 is Success -> {
-                    typeMoviesAdapter.submitList(it.categoriesMovies.invoke().data?.items)
+                    typeMoviesAdapter.submitList(it.getMovieByCategory.invoke().data)
                 }
 
                 is Fail -> {
@@ -54,9 +54,9 @@ class CategoryMoviesActivity : TrackingBaseActivity<ActivityCategoryMoviesBindin
 
                 else -> {}
             }
-            when (it.countriesMovies) {
+            when (it.getMovieByCountry) {
                 is Success -> {
-                    typeMoviesAdapter.submitList(it.countriesMovies.invoke().data?.items)
+                    typeMoviesAdapter.submitList(it.getMovieByCountry.invoke().data)
                 }
 
                 is Fail -> {
@@ -70,10 +70,10 @@ class CategoryMoviesActivity : TrackingBaseActivity<ActivityCategoryMoviesBindin
 
     private fun setUpViewModel() {
         if (categoryTitle.equals(CATEGORIES)) {
-            categorySlug?.let { HomeViewAction.getCategoriesMovies(it) }
+            categoryCode?.let { HomeViewAction.getMovieByCategory(it) }
                 ?.let { homeViewModel.handle(it) }
         } else if (categoryTitle.equals(COUNTRIES)) {
-            categorySlug?.let { HomeViewAction.getCountriesMovies(it) }
+            categoryCode?.let { HomeViewAction.getMovieByCountry(it) }
                 ?.let { homeViewModel.handle(it) }
         }
     }
@@ -93,25 +93,13 @@ class CategoryMoviesActivity : TrackingBaseActivity<ActivityCategoryMoviesBindin
 
     }
 
-    fun handleMovieClick(items: Items, itemView: View) {
-        val categoryList = items.category
-        val shuffledIndices = categoryList.indices.shuffled()
-        val randomIndex = shuffledIndices.first()
-        val randomCategory = categoryList[randomIndex]
-        val randomSlug = randomCategory.slug
-        val intent: Intent
-        if (items.type == "single") {
-            intent = Intent(this, MovieDetailsActivity::class.java)
-        } else {
-            intent = Intent(this, TvDetailsActivity::class.java)
-            intent.putExtra("thumbUrl", items.thumbUrl)
-        }
-        intent.putExtra("name", items.slug)
-        intent.putExtra("category", randomSlug)
+    fun handleMovieClick(items: Movie, itemView: View) {
+        val intent = Intent(this, MovieDetailsActivity::class.java)
 
+        intent.putExtra("movie", items)
 
         val options = ActivityOptions.makeSceneTransitionAnimation(
-            this,
+            this@CategoryMoviesActivity,
             itemView,
             "my_shared_element"
         )

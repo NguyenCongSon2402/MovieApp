@@ -28,10 +28,9 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.MediaMetadata
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.offline.Download
-import com.google.android.exoplayer2.offline.DownloadManager
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
+import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.material.tabs.TabLayout
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
@@ -39,49 +38,42 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.Abs
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
 import dev.son.movie.R
 import dev.son.movie.TrackingApplication
+import dev.son.movie.adapters.CommentAdapter
+import dev.son.movie.adapters.EpisodeItemsAdapter
 import dev.son.movie.adapters.MoviesAdapter
-import dev.son.movie.adapters.VideosController
 import dev.son.movie.core.TrackingBaseActivity
 import dev.son.movie.data.local.UserPreferences
 import dev.son.movie.databinding.ActivityMovieDetailsBinding
 import dev.son.movie.manager.DemoUtil
 import dev.son.movie.manager.DownloadTracker
-import dev.son.movie.manager.TrackSelectionDialog
-import dev.son.movie.network.models.Slug.Category
-import dev.son.movie.network.models.Slug.Item
-import dev.son.movie.network.models.Slug.Slug
-import dev.son.movie.network.models.categorymovie.CategoryMovie
-import dev.son.movie.network.models.home.Items
-import dev.son.movie.network.models.postcomment.UserIdComment
-import dev.son.movie.network.models.user.MovieId1
-import dev.son.movie.network.models.user.UserId
+import dev.son.movie.network.models.movie.ApiResponse
+import dev.son.movie.network.models.movie.Movie
+import dev.son.movie.network.models.postcomment.Comment
+import dev.son.movie.network.models.rate.RateRespone
+import dev.son.movie.network.models.user.User
 import dev.son.movie.ui.home.HomeViewAction
 import dev.son.movie.ui.home.HomeViewModel
 import dev.son.movie.ui.home.HomeViewState
-import dev.son.movie.ui.login.LoginViewAction
-import dev.son.movie.ui.login.LoginViewModel
-import dev.son.movie.ui.login.LoginViewState
 import dev.son.movie.utils.checkStatusApiRes
 import dev.son.movie.utils.extractVideoIdFromUrl
-import dev.son.movie.utils.getCurrentFormattedDateTimeWithMilliseconds
-import dev.son.movie.utils.getCurrentFormattedTime
+import dev.son.movie.utils.getListCodesByCodes
 import dev.son.movie.utils.hide
 import dev.son.movie.utils.hideKeyboard
+import dev.son.movie.utils.isNetworkAvailable
 import dev.son.movie.utils.show
 import dev.son.movie.utils.showDownloadConfirmationDialog
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import javax.inject.Inject
-import kotlin.random.Random
 
 
 @Suppress("DEPRECATION")
 class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>(),
-    HomeViewModel.Factory, LoginViewModel.Factory {
+    HomeViewModel.Factory {
 
     var exoPlayer: ExoPlayer? = null
+    private var defaultHttpDataSourceFactory: DataSource.Factory? = null
+    private var mediaSource: HlsMediaSource? = null
     var isFullScreen = false
     var isLock = false
     private lateinit var bt_fullscreen: ImageView
@@ -90,39 +82,23 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     var handler: Handler? = null
     private lateinit var mFullScreenDialog: Dialog
 
-    private var url: String? = null
     private val homeViewModel: HomeViewModel by viewModel()
-    private val loginViewModel: LoginViewModel by viewModel()
 
+    private lateinit var episodeItemsAdapter: EpisodeItemsAdapter
     private lateinit var similarMoviesItemsAdapter: MoviesAdapter
-    private lateinit var videosController: VideosController
-    private var listData: MutableList<UserIdComment> = mutableListOf()
-
-    private val movieSlug: String?
-        get() = intent.extras?.getString("name")
-    private val movieCategory: String?
-        get() = intent.extras?.getString("category")
-    private val movieID: String?
-        get() = intent.extras?.getString("id")
-    private val movieName: String?
-        get() = intent.extras?.getString("name1")
-    private val uri: String?
-        get() = intent.extras?.getString("uri")
-
-    var mtList: Boolean? = false
-    var favorite: Boolean? = false
-    private var idUser: String? = null
-    private var user: UserId = UserId()
-    private var userComment: UserIdComment = UserIdComment()
-    private val movieId1: MovieId1 = MovieId1()
-    private var item: Slug = Slug()
+    private lateinit var commentAdapter: CommentAdapter
+    private var listData: MutableList<Comment> = mutableListOf()
+    private var movie: Movie? = null
+        get() = intent.getParcelableExtra("movie")
+    private var favorite: Boolean? = false
+    private var checkShow: Boolean = false
+    private var currentUser: User = User()
     private var isDownloaded = false
+    private var coins: Int = 0
 
     @Inject
     lateinit var homeViewModelFactory: HomeViewModel.Factory
 
-    @Inject
-    lateinit var loginviewmodelFactory: LoginViewModel.Factory
 
     @Inject
     lateinit var userPreferences: UserPreferences
@@ -138,112 +114,170 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         (applicationContext as TrackingApplication).trackingComponent.inject(this)
         super.onCreate(savedInstanceState)
         showLoader(true)
-        if (!uri.isNullOrEmpty()) {
-            movieSlug?.let { homeViewModel.handle(HomeViewAction.getSlug(name = it)) }
-            movieID?.let { LoginViewAction.getComment(it) }?.let { loginViewModel.handle(it) }
-        } else {
-            movieSlug?.let { homeViewModel.handle(HomeViewAction.getSlug(name = it)) }
-            movieCategory?.let { homeViewModel.handle(HomeViewAction.getCategoriesMovies(name = it)) }
-            movieID?.let { LoginViewAction.getComment(it) }?.let { loginViewModel.handle(it) }
-        }
+        fetchData()
         setUpPlayVideo()
         setupUI()
+        resultData()
+        updateDetails()
+    }
+
+    private fun resultData() {
         homeViewModel.subscribe(this) {
-            when (it.slug) {
+            when (it.getMoviesRecommendation) {
                 is Success -> {
-                    homeViewModel.handleRemoveStateSlug()
-                    item = it.slug.invoke()
-                    showLoader(false)
-                    updateDetails(it.slug.invoke())
-                    if (!uri.isNullOrEmpty()) {
-                        val randomSlug = item.data?.item?.category?.getOrNull(
-                            Random.nextInt(
-                                item.data?.item?.category?.size ?: 0
-                            )
-                        )?.slug ?: "hanh-dong"
-                        homeViewModel.handle(HomeViewAction.getCategoriesMovies(name = randomSlug))
+                    homeViewModel.handleRemoveStateCategoriesMovies()
+                    updateSimilarMovies(it.getMoviesRecommendation.invoke())
+                }
+
+                is Fail -> {
+                    Toast.makeText(
+                        this, getString(checkStatusApiRes(it.getMoviesRecommendation)), Toast.LENGTH_SHORT
+                    ).show()
+                    homeViewModel.handleRemoveStateCategoriesMovies()
+                }
+
+                else -> {}
+            }
+            when (it.movieRateRes) {
+                is Success -> {
+                    homeViewModel.handleRemoveStateMovieRateRes()
+                    if (it.movieRateRes.invoke().data?.id != null)
+                        updateMoviesRateRes(it.movieRateRes.invoke())
+                }
+
+                is Fail -> {
+                    Toast.makeText(
+                        this, getString(checkStatusApiRes(it.movieRateRes)), Toast.LENGTH_SHORT
+                    ).show()
+                    homeViewModel.handleRemoveStateMovieRateRes()
+                }
+
+                else -> {}
+            }
+            when (it.setmovieRate) {
+                is Success -> {
+                    homeViewModel.handleRemoveStateSetmovieRate()
+                }
+
+                is Fail -> {
+                    Toast.makeText(
+                        this, getString(checkStatusApiRes(it.setmovieRate)), Toast.LENGTH_SHORT
+                    ).show()
+                    homeViewModel.handleRemoveStateSetmovieRate()
+                }
+
+                else -> {}
+            }
+            when (it.addFavorite) {
+                is Success -> {
+                    homeViewModel.handleRemoveAddFavorite()
+                    if (it.addFavorite.invoke().data.id != null) {
+                        favorite = true
+                        views.header.imgFavorite.setImageResource(R.drawable.ic_favorite)
+                    } else {
+                        Toast.makeText(
+                            this, "Vui lòng thử lại sau", Toast.LENGTH_SHORT
+                        ).show()
                     }
+                }
+
+                is Fail -> {
+                    Toast.makeText(
+                        this, getString(checkStatusApiRes(it.addFavorite)), Toast.LENGTH_SHORT
+                    ).show()
+                    homeViewModel.handleRemoveAddFavorite()
+                }
+
+                else -> {}
+            }
+            when (it.removeFavorite) {
+                is Success -> {
+                    homeViewModel.handleRemoveStateRemoveFavorite()
+                    favorite = false
+                    views.header.imgFavorite.setImageResource(R.drawable.ic_unfavorite)
+
+                    Toast.makeText(
+                        this, it.removeFavorite.invoke().message, Toast.LENGTH_SHORT
+                    ).show()
 
                 }
 
                 is Fail -> {
                     Toast.makeText(
-                        this, getString(checkStatusApiRes(it.slug)), Toast.LENGTH_SHORT
+                        this, getString(checkStatusApiRes(it.removeFavorite)), Toast.LENGTH_SHORT
                     ).show()
-                    homeViewModel.handleRemoveStateSlug()
+                    homeViewModel.handleRemoveStateRemoveFavorite()
+                }
+
+                else -> {}
+            }
+            when (it.movieById) {
+                is Success -> {
+                    var movie = it.movieById.invoke().data
+                    homeViewModel.handleRemoveGetMovieById()
+                    if (movie!!.hasFavorite) {
+                        views.header.imgFavorite.setImageResource(R.drawable.ic_favorite)
+                        favorite = true
+                    }
+                    views.header.imgRate.setImageResource(R.drawable.ic_star1)
+                    views.header.ratingText.text = movie!!.rating.toString()
+                    views.header.textViewCountRates.text =
+                        movie!!.numberOfReviews.toString() + " đánh giá"
+                    views.header.textViewCategoryMovies.text = movie!!.genre
+                    views.header.textViewCastMovies.text = movie!!.actors
+                    views.header.textViewDirectorMovies.text = movie!!.director
+                    views.header.textViewNationMovies.text = movie!!.country
+                    views.header.overviewText.text = movie?.description.toString()
+                    views.header.yearText.text = movie?.releaseYear.toString()
+                    views.header.runtimeText.text = movie?.duration.toString()
                     showLoader(false)
-                }
 
-                else -> {}
-            }
-            when (it.categoriesMovies) {
-                is Success -> {
-                    homeViewModel.handleRemoveStateCategoriesMovies()
-                    updateSimilarMovies(it.categoriesMovies.invoke())
                 }
 
                 is Fail -> {
                     Toast.makeText(
-                        this, getString(checkStatusApiRes(it.categoriesMovies)), Toast.LENGTH_SHORT
+                        this, getString(checkStatusApiRes(it.movieById)), Toast.LENGTH_SHORT
                     ).show()
-                    homeViewModel.handleRemoveStateCategoriesMovies()
+                    homeViewModel.handleRemoveGetMovieById()
                 }
 
                 else -> {}
             }
-        }
-
-        loginViewModel.subscribe(this) {
-            when (it.addTolist) {
+            when (it.getCommentByMovie) {
                 is Success -> {
-                    saveMyList(it.addTolist.invoke())
-                    loginViewModel.handleRemoveStateAddToList()
+                    listData.clear()
+                    val apiResponseComment = it.getCommentByMovie.invoke()
+                    listData = apiResponseComment.data.toMutableList()
+                    commentAdapter.setData(listData.asReversed())
+                    homeViewModel.handleRemoveStateCommentByMovie()
                 }
 
                 is Fail -> {
-                    Toast.makeText(this, "Fail", Toast.LENGTH_SHORT).show()
-                    loginViewModel.handleRemoveStateAddToList()
+                    Toast.makeText(
+                        this, getString(checkStatusApiRes(it.getCommentByMovie)), Toast.LENGTH_SHORT
+                    ).show()
+                    homeViewModel.handleRemoveStateCommentByMovie()
                 }
 
                 else -> {}
             }
-            when (it.addToFavorite) {
+            when (it.createComment) {
                 is Success -> {
-                    saveFavorite(it.addToFavorite.invoke())
-                    loginViewModel.handleRemoveStateAddToFavorite()
+                    val comment = it.createComment.invoke().data.apply {
+                        this.user = currentUser
+                    }
+                    listData.add(0, comment)
+                    commentAdapter.setData(listData)
+                    homeViewModel.handleRemoveStateCreateComment()
                 }
 
                 is Fail -> {
-                    Toast.makeText(this, "Fail", Toast.LENGTH_SHORT).show()
-                    loginViewModel.handleRemoveStateAddToFavorite()
-                }
-
-                else -> {}
-            }
-            when (it.getComments) {
-                is Success -> {
-                    listData = it.getComments.invoke()
-                    videosController.setData(listData)
-                    loginViewModel.handleRemoveStateGetComment()
-                }
-
-                is Fail -> {
-                    Toast.makeText(this, "Fail", Toast.LENGTH_SHORT).show()
-                    loginViewModel.handleRemoveStateGetComment()
-                }
-
-                else -> {}
-            }
-            when (it.addComments) {
-                is Success -> {
-                    listData.add(0, it.addComments.invoke())
-                    videosController.setData(listData)
-                    loginViewModel.handleRemoveStateAddComment()
-                }
-
-                is Fail -> {
-                    Toast.makeText(this, "Fail", Toast.LENGTH_SHORT).show()
-                    loginViewModel.handleRemoveStateAddComment()
+                    Toast.makeText(
+                        this,
+                        "createComment" + getString(checkStatusApiRes(it.createComment)),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    homeViewModel.handleRemoveStateCreateComment()
                 }
 
                 else -> {}
@@ -251,20 +285,36 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         }
     }
 
-    private fun saveFavorite(id: String) {
+    private fun fetchData() {
+//        val categoryList = getListCodesByCodes(movie?.genre.toString())
+//        val radomCategory = categoryList.random()
+
+        homeViewModel.handle(HomeViewAction.getMovieRate(movie?.id.toString()))
+        homeViewModel.handle(HomeViewAction.getMoviesRecommendation(movie?.id.toString()))
+        homeViewModel.handle(HomeViewAction.movieById(movie?.id.toString()))
+        homeViewModel.handle(HomeViewAction.getCommentByMovie(movie?.id.toString()))
+
+
+//get coins
         lifecycleScope.launch {
-            userPreferences.toggleFavoriteMovie(id)
+            userPreferences.coins.collect {
+                coins = it ?: 0
+                Log.e("COINS", coins.toString())
+            }
         }
+        lifecycleScope.launch {
+            userPreferences.user.collect {
+                currentUser = it ?: User()
+                Log.e("USER", currentUser.photoURL.toString())
+            }
+        }
+
     }
 
-    private fun saveMyList(id: String) {
-        lifecycleScope.launch {
-            userPreferences.toggleWatchedMovie(id)
-        }
-    }
 
     @SuppressLint("SetTextI18n")
     private fun setUpPlayVideo() {
+        defaultHttpDataSourceFactory = DemoUtil.getDataSourceFactory(this)
         downloadTracker = DemoUtil.getDownloadTracker(this)
         handler = Handler(Looper.getMainLooper())
         bt_fullscreen = findViewById(R.id.bt_fullscreen)
@@ -320,33 +370,45 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             }
         })
         views.header.playLl.setOnClickListener {
+            val videoURL = movie?.videoURL?.get(0)
+            if (videoURL != null) {
+                playMovie(videoURL)
+            }
+
+        }
+    }
+
+    private fun playMovie(videoURL: String) {
+        if (coins >= 0) {
             player?.pause()
             views.youtubePlayerView.release()
-            isFullScreen = !isFullScreen
             views.videoPlayerView.show()
-            views.toolbar.hide()
-            openFullscreenDialog()
+//                views.toolbar.hide()
             views.player.resizeMode =
                 AspectRatioFrameLayout.RESIZE_MODE_FIT // Đặt giá trị RESIZE_MODE_FIT
             views.thumbnail.container.hide()
             views.youtubePlayerView.hide()
-            views.content.hide()
+//                views.content.hide()
             views.youtubePlayerView.removeYouTubePlayerListener(youTubePlayerListener)
             //pass the video link and play
-            val defaultHttpDataSourceFactory = DemoUtil.getDataSourceFactory(this)
-            val mediaSource =
+            mediaSource =
                 defaultHttpDataSourceFactory?.let { it1 ->
                     HlsMediaSource.Factory(it1).createMediaSource(
                         MediaItem.fromUri(
-                            (uri ?: url).toString()
+                            videoURL
                         )
                     )
                 }
             if (mediaSource != null) {
-                exoPlayer?.setMediaSource(mediaSource)
+                exoPlayer?.setMediaSource(mediaSource!!)
             }
             exoPlayer!!.prepare()
             exoPlayer!!.play()
+            lifecycleScope.launch {
+                userPreferences.upDateCoins(5, false)
+            }
+        } else {
+            Toast.makeText(this, "Coins của bạn không đủ", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -438,41 +500,52 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         return ActivityMovieDetailsBinding.inflate(layoutInflater)
     }
 
-    private fun handleMovieClick(items: Items, posterItems: View) {
-        val categoryList = items.category
-        val shuffledIndices = categoryList.indices.shuffled()
-        val randomIndex = shuffledIndices.first()
-        val randomCategory = categoryList[randomIndex]
-        val randomSlug = randomCategory.slug
+    private fun handleMovieClick(items: Movie, posterItems: View) {
 
+        val intent = Intent(this, MovieDetailsActivity::class.java)
 
-        val intent: Intent
-        if (items.type == "single") {
-            intent = Intent(this, MovieDetailsActivity::class.java)
-        } else {
-            intent = Intent(this, TvDetailsActivity::class.java)
-            intent.putExtra("thumbUrl", items.thumbUrl)
-        }
-
-        intent.putExtra("name", items.slug)
-        intent.putExtra("category", randomSlug)
+        intent.putExtra("movie", items)
 
         val options = ActivityOptions.makeSceneTransitionAnimation(
-            this, posterItems, "my_shared_element"
+            this@MovieDetailsActivity,
+            posterItems,
+            "my_shared_element"
         )
         startActivity(intent, options.toBundle())
 
     }
 
+    private fun handleEpisodeClick(videoURL: String, position: Int) {
+
+        Toast.makeText(this, " Tập ${position + 1}", Toast.LENGTH_SHORT).show()
+        playMovie(videoURL)
+        download(videoURL, position)
+    }
+
+    @SuppressLint("SetTextI18n", "UseCompatLoadingForDrawables")
     private fun setupUI() {
-        //get Id user
-        lifecycleScope.launch {
-            userPreferences.userId.collect {
-                if (it != null) {
-                    idUser = it.userId.toString()
-                    user = it
-                }
+        // rating click
+        views.header.ratingBar.setOnRatingChangeListener { ratingBar, rating ->
+            homeViewModel.handle(
+                HomeViewAction.setRateMovie(
+                    movie?.id.toString(),
+                    rating = rating.toInt()
+                )
+            )
+        }
+
+        // show or hide review movie
+        views.header.btnShowMoreReview.setOnClickListener {
+            if (checkShow == true) {
+                views.header.introduceLl.hide()
+                views.header.overviewText.maxLines = 2
+                views.header.btnShowMoreReview.text = "xem thêm..."
+            } else {
+                views.header.introduceLl.show()
+                views.header.overviewText.maxLines = Int.MAX_VALUE
+                views.header.btnShowMoreReview.text = "ẩn bớt..."
             }
+            checkShow = !checkShow
         }
 
         initFullscreenDialog()
@@ -480,10 +553,10 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             views.youtubePlayerView.release()
             finishAfterTransition()
         }
-        views.header.titleText.text = movieName
+        views.header.titleText.text = movie?.title
         views.header.txtStateDow.text = "DownLoad"
         views.header.imgDown.setImageResource(R.drawable.ic_download)
-        Glide.with(views.imgUser).load(user.avatar).centerCrop()
+        Glide.with(views.imgUser).load(currentUser.photoURL).centerCrop()
             .error(getDrawable(R.drawable.ic_person)).into(views.imgUser)
         views.loader.root.show()
         views.content.hide()
@@ -497,11 +570,22 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             views.header.overviewText.maxLines = 10
             views.header.overviewText.isClickable = false
         }
+
+
+        // movie serie
+        if (movie?.genre?.contains("@single") ==false) {
+            views.header.playListLl.show()
+            views.header.titleListPlay.text = "Danh sách phát ${movie?.videoURL?.size} tập"
+            episodeItemsAdapter = EpisodeItemsAdapter(this::handleEpisodeClick)
+            views.header.rvListPlay.adapter = episodeItemsAdapter
+            episodeItemsAdapter.submitList(movie?.videoURL)
+            views.header.rvListPlay.isNestedScrollingEnabled = true
+        }
         similarMoviesItemsAdapter = MoviesAdapter(this::handleMovieClick)
         views.similarMoviesList.adapter = similarMoviesItemsAdapter
         views.similarMoviesList.isNestedScrollingEnabled = true
-        videosController = VideosController()
-        views.videosList.adapter = videosController.adapter
+        commentAdapter = CommentAdapter()
+        views.videosList.adapter = commentAdapter.adapter
         views.videosList.setHasFixedSize(true)
         views.videosList.addItemDecoration(
             DividerItemDecoration(
@@ -510,70 +594,17 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         )
         views.videosList.isNestedScrollingEnabled = true
 
-        // add favorite
-        lifecycleScope.launch {
-            val movieExists = userPreferences.checkFavoriteMovie(movieID.toString()).first()
-            if (movieExists) {
-                // Toast.makeText(this@MovieDetailsActivity, "True", Toast.LENGTH_SHORT).show()
-                views.header.imgFavorite.setImageResource(R.drawable.ic_favorite)
-                favorite = !favorite!!
-            } else {
-                //Toast.makeText(this@MovieDetailsActivity, "False", Toast.LENGTH_SHORT).show()
-                views.header.imgFavorite.setImageResource(R.drawable.ic_unfavorite)
-            }
-        }
 
-        // add to list
-        lifecycleScope.launch {
-            val movieExists = userPreferences.checkWatchedMovie(movieID.toString()).first()
-            if (movieExists) {
-                // Toast.makeText(this@MovieDetailsActivity, "True", Toast.LENGTH_SHORT).show()
-                views.header.igmAdd.setImageResource(R.drawable.ic_check)
-                mtList = !mtList!!
-            } else {
-                //Toast.makeText(this@MovieDetailsActivity, "False", Toast.LENGTH_SHORT).show()
-                views.header.igmAdd.setImageResource(R.drawable.ic_add)
-            }
-        }
-
-        // add
-        views.header.igmAdd.setOnClickListener {
-            mtList = !mtList!!
-            val imageResource = if (mtList == true) R.drawable.ic_check else R.drawable.ic_add
-            views.header.igmAdd.setImageResource(imageResource)
-            movieId1.apply {
-                this.movieId1 = movieID
-                this.slug = movieSlug
-                this.category = ArrayList<Category>().apply {
-                    item.data?.item?.category?.get(0)?.let { add(it) }
-                }
-                this.type = item.data?.item?.type
-                this.thumbUrl = item.data?.item?.thumbUrl
-
-            }
-
-            if (!idUser.isNullOrEmpty()) {
-                loginViewModel.handle(LoginViewAction.addToList(movieId1, idUser!!))
-            }
-        }
+// favorite click
         views.header.imgFavorite.setOnClickListener {
             favorite = !favorite!!
             val imageResource =
                 if (favorite == true) R.drawable.ic_favorite else R.drawable.ic_unfavorite
             views.header.imgFavorite.setImageResource(imageResource)
-            movieId1.apply {
-                this.movieId1 = movieID
-                this.slug = movieSlug
-                this.category = ArrayList<Category>().apply {
-                    item.data?.item?.category?.get(0)?.let { add(it) }
-                }
-                this.type = item.data?.item?.type
-                this.thumbUrl = item.data?.item?.thumbUrl
-
-            }
-
-            if (!idUser.isNullOrEmpty()) {
-                loginViewModel.handle(LoginViewAction.addToFavorite(movieId1, idUser!!))
+            if (favorite == true) {
+                homeViewModel.handle(HomeViewAction.addFavorite(movie?.id.toString()))
+            } else {
+                homeViewModel.handle(HomeViewAction.removeFavorite(movie?.id.toString()))
             }
         }
 
@@ -582,21 +613,16 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             hideKeyboard()
             views.commentTextInput.clearFocus()
         }
+
+//        Glide.with(views.imgUser).load(user?.photoURL).centerCrop()
+//            .into(holder.img_user)
         views.addIcon.setOnClickListener {
             val comment = views.commentTextInput.text.toString()
             if (!comment.isNullOrEmpty() && comment.isNotBlank()) {
-                userComment.apply {
-                    this.userId1 = user.userId
-                    this.name = user.name
-                    this.timestamp = getCurrentFormattedTime()
-                    this.text = comment
-                    this.commentId = getCurrentFormattedDateTimeWithMilliseconds()
-                    this.avatar = user.avatar
-                }
                 views.commentTextInput.setText("")
                 hideKeyboard()
                 views.commentTextInput.clearFocus()
-                loginViewModel.handle(LoginViewAction.addComment(movieID.toString(), userComment))
+                homeViewModel.handle(HomeViewAction.createComment(movie?.id.toString(), comment))
             }
         }
     }
@@ -617,39 +643,58 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     }
 
     @SuppressLint("SetTextI18n")
-    private fun updateDetails(data: Slug) {
-        url = data.data?.item?.episodes?.get(0)?.serverData?.get(0)?.linkM3u8.toString()
-        media = MediaItem.Builder().setUri(url).setMediaId(movieSlug.toString())
+    private fun updateDetails() {
+        showLoader(false)
+        // Basic details
+        Glide.with(this).load(movie?.posterHorizontal).transform(CenterCrop())
+            .into(views.thumbnail.backdropImage)
+        views.header.titleText.text = movie?.title.toString()
+        views.header.overviewText.text = movie?.description.toString()
+        views.header.yearText.text = movie?.releaseYear.toString()
+        views.header.runtimeText.text = movie?.duration.toString()
+        views.header.ratingText.text = movie?.country
+        // Videos
+        movie?.let {
+            checkAndLoadVideo(it)
+            download(movie?.videoURL?.get(0), 0)
+        }
+    }
+
+    private fun download(videoURL: String?, episode: Int) {
+        var displayTitle = movie?.title.toString()
+        var setMediaId = movie?.id.toString()
+        if (movie?.genre?.contains("@single") == false) {
+            displayTitle = "Tập ${episode + 1} " + movie?.title.toString()
+            setMediaId = movie?.id.toString() + "_$episode"
+        }
+
+        media = MediaItem.Builder().setUri(videoURL).setMediaId(setMediaId)
             .setMediaMetadata(
-                MediaMetadata.Builder().setTitle(data.data?.item?.thumbUrl)
-                    .setDisplayTitle(data?.data?.item?.name)
+                MediaMetadata.Builder().setTitle(movie?.posterHorizontal)
+                    .setDisplayTitle(displayTitle)
                     .build()
             ).build()
-        // Basic details
-        Glide.with(this).load(data.data?.seoOnPage?.seoSchema?.image).transform(CenterCrop())
-            .into(views.thumbnail.backdropImage)
-        views.header.titleText.text = data.data?.item?.name
-        views.header.overviewText.text = data.data?.item?.content
-        views.header.yearText.text = data.data?.item?.year.toString()
-        views.header.runtimeText.text = data.data?.item?.time
-        views.header.ratingText.text = data.data?.item?.lang
-        // Videos
-        checkAndLoadVideo(data.data?.item!!)
-        //videosController.setData(details.videos.results)
         if (downloadTracker?.isDownloaded(media!!) == true) {
             views.header.downloadLl.hide()
             views.header.downloadedLl.show()
+        } else {
+            views.header.downloadLl.show()
+            views.header.downloadedLl.hide()
         }
 
         if (downloadTracker?.downloading(media!!) == true) {
             isDownloaded = true
             views.header.txtStateDow.text = "Downloading"
             views.header.imgDown.setImageResource(R.drawable.ic_downloading)
+        } else {
+            isDownloaded = false
+            views.header.txtStateDow.text = "Download"
+            views.header.imgDown.setImageResource(R.drawable.ic_download)
         }
         views.header.downloadLl.setOnClickListener {
             if (isDownloaded) {
                 showDownloadConfirmationDialog(this) {
-                    downloadTracker?.removeDownload(Uri.parse(url))
+                    downloadTracker?.removeDownload(Uri.parse(movie?.videoURL?.get(0) ?: ""))
                     views.header.txtStateDow.text = "DownLoad"
                     views.header.imgDown.setImageResource(R.drawable.ic_download)
                 }
@@ -669,21 +714,24 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
                     )
                 }
             }
-
             isDownloaded = !isDownloaded
         }
-
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun updateSimilarMovies(categoryMovie: CategoryMovie) {
+    private fun updateSimilarMovies(listMovieSimilar: ApiResponse<List<Movie>>) {
         // Similar movies
-        similarMoviesItemsAdapter.submitList(categoryMovie.data?.items)
+        similarMoviesItemsAdapter.submitList(listMovieSimilar.data)
         similarMoviesItemsAdapter.notifyDataSetChanged()
     }
 
-    private fun checkAndLoadVideo(videos: Item) {
-        val trailerUrl = videos.trailerUrl
+    private fun updateMoviesRateRes(movieRateRes: ApiResponse<RateRespone>) {
+        views.header.ratingBar.rating = movieRateRes.data.rating?.toFloat() ?: 0.0f
+        views.header.imgRate.setImageResource(R.drawable.ic_star1)
+    }
+
+    private fun checkAndLoadVideo(videos: Movie) {
+        val trailerUrl = videos.trailerURL
         if (!trailerUrl.isNullOrBlank()) {
             val videoId = extractVideoIdFromUrl(trailerUrl)
             if (videoId != null && !bannerVideoLoaded) {
@@ -780,9 +828,4 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         super.onPause()
         exoPlayer!!.pause()
     }
-
-    override fun create(initialState: LoginViewState): LoginViewModel {
-        return loginviewmodelFactory.create(initialState)
-    }
-
 }

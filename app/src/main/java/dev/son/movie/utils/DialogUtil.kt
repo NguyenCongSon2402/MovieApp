@@ -5,6 +5,7 @@ import android.content.Context
 import com.saadahmedsoft.popupdialog.PopupDialog
 import com.saadahmedsoft.popupdialog.Styles
 import com.saadahmedsoft.popupdialog.listener.OnDialogButtonClickListener
+import dev.son.movie.R
 
 
 object DialogUtil {
@@ -70,4 +71,27 @@ object DialogUtil {
                 }
             })
     }
+
+    fun showDialogDelete(context: Context, confirmCallback: () -> Unit){
+        PopupDialog.getInstance(context)
+            .setStyle(Styles.ANDROID_DEFAULT)
+            .setHeading("Delete")
+            .setHeadingTextColor(R.color.red)
+            .setDescription(
+                "Are you sure you want to delete?" +
+                        " This action cannot be undone"
+            )
+            .setCancelable(false)
+            .showDialog(object : OnDialogButtonClickListener() {
+                override fun onPositiveClicked(dialog: Dialog) {
+                    super.onPositiveClicked(dialog)
+                    confirmCallback.invoke()
+                }
+
+                override fun onNegativeClicked(dialog: Dialog) {
+                    super.onNegativeClicked(dialog)
+                }
+            })
+    }
+
 }
