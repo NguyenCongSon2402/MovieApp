@@ -24,6 +24,7 @@ class HomeViewModel @AssistedInject constructor(
     override fun handle(action: HomeViewAction) {
         when (action) {
             is HomeViewAction.getGenre -> handleGetGenre()
+            is HomeViewAction.getMovieComingSoon -> handleGetMovieComingSoon(action.genreCode)
             is HomeViewAction.getMoviePhimBo -> handleGetMoviesPhimBo(action.genreCode)
             is HomeViewAction.getMoviePhimLe -> handleGetMoviePhimLe(action.genreCode)
             is HomeViewAction.getMoviePhimHoatHinh -> handleGetMoviePhimHoatHinh(action.genreCode)
@@ -182,6 +183,12 @@ class HomeViewModel @AssistedInject constructor(
             copy(moviePhimBo = it)
         }
     }
+    private fun handleGetMovieComingSoon(genreCode: String) {
+        setState { copy(movieComingSoon =  Loading()) }
+        homeRepo.getMovieComingSoon(genreCode).execute {
+            copy(movieComingSoon = it)
+        }
+    }
 
     private fun handleGetGenre() {
         setState { copy(genre = Loading()) }
@@ -193,6 +200,8 @@ class HomeViewModel @AssistedInject constructor(
 
     fun handleRemoveStateGetGenre() =
         setState { copy(genre = Uninitialized) }
+    fun handleRemoveStateGetComingSoon() =
+        setState { copy(movieComingSoon = Uninitialized) }
 
     fun handleRemoveStateCommentByMovie() =
         setState { copy(getCommentByMovie = Uninitialized) }

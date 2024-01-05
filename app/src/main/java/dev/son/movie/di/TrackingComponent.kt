@@ -17,7 +17,7 @@ import dev.son.movie.ui.SignUpActivity
 import dev.son.movie.ui.SplashActivity
 import dev.son.movie.ui.login.LoginActivity
 import dev.son.movie.ui.search.SearchActivity
-import dev.son.moviestreamhub.screens.MoreFragment
+import dev.son.movie.ui.more.MoreFragment
 import javax.inject.Singleton
 
 @Component(

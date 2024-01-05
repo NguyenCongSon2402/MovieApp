@@ -1,4 +1,4 @@
-package dev.son.moviestreamhub.screens
+package dev.son.movie.ui.more
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -32,6 +32,7 @@ import dev.son.movie.ui.MovieDetailsActivity
 import dev.son.movie.ui.login.LoginActivity
 import dev.son.movie.ui.login.AuthViewAction
 import dev.son.movie.ui.login.AuthViewModel
+import dev.son.movie.ui.rateApp.RateAppActivity
 import dev.son.movie.ui.search.SearchActivity
 import dev.son.movie.utils.DialogUtil
 import dev.son.movie.utils.checkStatusApiRes
@@ -79,7 +80,6 @@ class MoreFragment : TrackingBaseFragment<FragmentMoreBinding>() {
                         .error(getDrawable(requireContext(), R.drawable.ic_person))
                         .into(views.imgUser)
                     views.txtName.text = it.name
-                    views.textCoins.text = it.coins.toString()
                     authViewModel.handle(AuthViewAction.getCommentedMovies)
                     authViewModel.handle(AuthViewAction.getFavoriteList)
                     Log.e("ADMIN", "${it.isAdmin}")
@@ -101,8 +101,6 @@ class MoreFragment : TrackingBaseFragment<FragmentMoreBinding>() {
         views.mylis.adapter = myListAdapter
         favoriteListAdapter = FavoriteListAdapter(this::handleMediaClick)
         views.favoriteList.adapter = favoriteListAdapter
-//        historyListAdapter = HistoryListAdapter(this::handleItemClick)
-//        views.historyList.adapter = historyListAdapter
         views.layoutSignOut.setSingleClickListener {
             DialogUtil.showAlertDialogLogOut(requireActivity()) {
                 lifecycleScope.launch {
@@ -111,7 +109,7 @@ class MoreFragment : TrackingBaseFragment<FragmentMoreBinding>() {
                         startActivity(Intent(activity, LoginActivity::class.java))
                         requireActivity().finish()
                     } else {
-                        Toast.makeText(requireContext(), "Hãy tử lại", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Hãy thử lại", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -125,6 +123,10 @@ class MoreFragment : TrackingBaseFragment<FragmentMoreBinding>() {
         views.searchButton2.setSingleClickListener {
             startActivity(Intent(activity, SearchActivity::class.java))
         }
+        views.layoutSupport.setOnClickListener {
+            startActivity(Intent(requireContext(), RateAppActivity::class.java))
+        }
+
     }
 
     private fun handleMediaClick(items: Movie, itemView: View) {

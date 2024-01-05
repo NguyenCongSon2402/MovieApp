@@ -184,4 +184,8 @@ dependencies {
     //rate
     implementation 'me.zhanghai.android.materialratingbar:library:1.4.0'
 
+
+    //rcv
+    implementation 'com.google.android.flexbox:flexbox:3.0.0'
+
 }

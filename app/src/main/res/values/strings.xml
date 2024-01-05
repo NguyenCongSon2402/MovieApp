@@ -152,4 +152,26 @@
     <string name="delete">Delete</string>
     <string name="add">Thêm</string>
     <string name="edt">Sửa</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="_return">Return</string>
+    <string name="send_us_some">Send us some the feedback!</string>
+    <string name="found_a_bug"> Found a bug? Have a suggestion? Fill out the from below and we’ll take a look</string>
+    <string name="enter">Enter your feedback here! ( min 6 characters)</string>
+    <string name="submit">Submit</string>
+    <string name="crashes_bugs">Crashes &amp; Bugs</string>
+    <string name="susggestion">Susggestion</string>
+    <string name="others">Others</string>
+    <string name="play">Play</string>
+    <string name="introduction">Introduction</string>
+    <string name="downloads">Tải về</string>
+    <string name="countries">Quốc gia</string>
+    <string name="categories">Thể loại</string>
+    <string name="like">Yêu thích</string>
+    <string name="share">Chia sẻ</string>
+    <string name="rate">Đánh giá</string>
+    <string name="watch_movie_in_n_virtual_reality">Xem phim trong\\n\nThực tế ảo</string>
+    <string name="download_and_watch_offline_n_wherever_you_are">Tải xuống và xem ngoại tuyến\\n\ndù bạn ở đâu</string>
+    <string name="get_in">Bắt đầu</string>
+    <string name="resume_download">Tiếp tục tải xuống</string>
 </resources>

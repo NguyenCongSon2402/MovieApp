@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/pause_download"
-        android:title="Pause download"/>
+        android:title="@string/exo_download_paused"/>
 
     <item android:id="@+id/resume_download"
-        android:title="Resume download"/>
+        android:title="@string/resume_download"/>
 
     <item android:id="@+id/cancel_download"
-        android:title="Cancel download"/>
+        android:title="@string/exo_download_removing"/>
 
     <item android:id="@+id/delete_download"
-        android:title="Delete download"/>
+        android:title="@string/exo_download_removing"/>
 </menu>

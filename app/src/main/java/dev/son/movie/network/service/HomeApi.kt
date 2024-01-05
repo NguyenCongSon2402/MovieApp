@@ -31,6 +31,8 @@ interface HomeApi {
     fun getCountries(): Observable<ApiResponse<List<Genre>>>
 
     @GET("movies/genre/{genreId}")
+    fun getMovieComingSoon(@Path("genreId") genreId: String): Observable<ApiResponse<List<Movie>>>
+    @GET("movies/genre/{genreId}")
     fun getMoviesPhimBo(@Path("genreId") genreId: String): Observable<ApiResponse<List<Movie>>>
 
     @GET("movies/genre/{genreId}")

@@ -81,7 +81,7 @@
                 android:background="?selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
-                android:text="Countries"
+                android:text="@string/countries"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
@@ -95,7 +95,7 @@
                 android:background="?selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
-                android:text="Categories"
+                android:text="@string/categories"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="16sp" />

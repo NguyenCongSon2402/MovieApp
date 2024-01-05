@@ -28,7 +28,7 @@ class CommingSoonMovieAdapter(private val onItemClick: (Movie, View) -> Unit) :
 
 class MovieItemsViewHolder(
     var binding: ItemUpcomingMovieBinding,
-    private val onItemClick: ((Movie,View) -> Unit)
+    private val onItemClick: ((Movie, View) -> Unit)
 ) :
     RecyclerView.ViewHolder(binding.root) {
 
@@ -41,19 +41,19 @@ class MovieItemsViewHolder(
         Glide.with(binding.backdropImage).load(items.posterHorizontal).transform(CenterCrop())
             .into(binding.backdropImage)
         binding.backdropImage.clipToOutline = true
-//        binding.titleText.text = items.name
-//        binding.arrivalDateText.text = items.year.toString()
-//        binding.hdText.text = items.quality
-//        binding.runtimeText.text = items.time
-//        binding.langText.text = items.lang
-//        binding.episodeCurrentText.text = items.episodeCurrent
+        binding.titleText.text = items.title
+        binding.arrivalDateText.text = items.releaseYear.toString()
+        binding.runtimeText.text = items.duration
+        binding.ratingText.text = items.rating?.toString() ?: "0"
+
+        binding.textViewCountRates.text = items.numberOfReviews?.toString() ?: "0 "
 //        val categories = items.category
+//
+//        val categoryNames = categories?.joinToString("-") { it.name.toString() }
+//
+//        binding.genresText.text = categoryNames ?: "No categories available"
 
-        //val categoryNames = categories?.joinToString("-") { it.name.toString() }
-
-        //binding.genresText.text = categoryNames ?: "No categories available"
-
-        itemView.setOnClickListener { onItemClick(items,itemView) }
+        itemView.setOnClickListener { onItemClick(items, itemView) }
     }
 }
 

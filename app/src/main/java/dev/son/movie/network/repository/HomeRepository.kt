@@ -19,6 +19,8 @@ import io.reactivex.schedulers.Schedulers
 class HomeRepository(val api: HomeApi) {
     fun getGenre(): Observable<ApiResponse<List<Genre>>> = api.getGenres().subscribeOn(Schedulers.io())
     fun getCountries(): Observable<ApiResponse<List<Genre>>> = api.getCountries().subscribeOn(Schedulers.io())
+    fun getMovieComingSoon(genreCode: String): Observable<ApiResponse<List<Movie>>> =
+        api.getMovieComingSoon(genreCode).subscribeOn(Schedulers.io())
     fun getMoviePhimBo(genreCode: String): Observable<ApiResponse<List<Movie>>> =
         api.getMoviesPhimBo(genreCode).subscribeOn(Schedulers.io())
     fun getMoviePhimLe(genreCode: String): Observable<ApiResponse<List<Movie>>> =

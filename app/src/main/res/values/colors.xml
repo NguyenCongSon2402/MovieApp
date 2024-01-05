@@ -21,4 +21,7 @@
     <color name="bottom_sheet_bg">#2B2B2B</color>
     <color name="purple">#793BDD</color>
     <color name="main">#1F1D2B</color>
+    <color name="back_gr_sendus">#BBCFF8</color>
+    <color name="text_color">#333333</color>
+    <color name="color_primary">#2076FF</color>
 </resources>

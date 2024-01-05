@@ -9,6 +9,7 @@ sealed class HomeViewAction : NimpeViewModelAction {
 
     object getGenre : HomeViewAction()
     object getCountries : HomeViewAction()
+    data class  getMovieComingSoon(val genreCode:String):HomeViewAction()
     data class  getMoviePhimBo(val genreCode:String):HomeViewAction()
     data class  getMoviePhimLe(val genreCode:String):HomeViewAction()
     data class  getMoviePhimHoatHinh(val genreCode:String):HomeViewAction()

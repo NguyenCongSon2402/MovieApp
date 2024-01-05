@@ -147,7 +147,35 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:text="Play"
+            android:text="@string/play"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/coming_soon_ll"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/light_button_bg"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_video_library"
+            app:tint="@color/black" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="Coming soon"
             android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -177,7 +205,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:text="Download"
+            android:text="@string/downloads"
             android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -240,7 +268,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Introduction"
+        android:text="@string/introduction"
         android:textColor="@color/white"
         android:textSize="16sp"
         android:textStyle="bold" />
@@ -401,7 +429,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Like"
+                android:text="@string/like"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -426,7 +454,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Share"
+                android:text="@string/share"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -450,7 +478,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Rate"
+                android:text="@string/rate"
                 android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>

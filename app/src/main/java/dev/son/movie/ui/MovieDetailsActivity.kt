@@ -79,6 +79,8 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     private lateinit var bt_fullscreen: ImageView
     private lateinit var bt_lockscreen: ImageView
     private lateinit var progress_bar: ProgressBar
+    private lateinit var sec_mid: LinearLayout
+    private lateinit var sec_bottom: LinearLayout
     var handler: Handler? = null
     private lateinit var mFullScreenDialog: Dialog
 
@@ -90,6 +92,8 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     private var listData: MutableList<Comment> = mutableListOf()
     private var movie: Movie? = null
         get() = intent.getParcelableExtra("movie")
+    private val isComingSoon: Boolean
+        get() = intent.getBooleanExtra("comingson", false)
     private var favorite: Boolean? = false
     private var checkShow: Boolean = false
     private var currentUser: User = User()
@@ -131,7 +135,9 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
 
                 is Fail -> {
                     Toast.makeText(
-                        this, getString(checkStatusApiRes(it.getMoviesRecommendation)), Toast.LENGTH_SHORT
+                        this,
+                        getString(checkStatusApiRes(it.getMoviesRecommendation)),
+                        Toast.LENGTH_SHORT
                     ).show()
                     homeViewModel.handleRemoveStateCategoriesMovies()
                 }
@@ -320,6 +326,8 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         bt_fullscreen = findViewById(R.id.bt_fullscreen)
         bt_lockscreen = findViewById(R.id.exo_lock)
         progress_bar = findViewById(R.id.progress_bar)
+        sec_mid = findViewById<LinearLayout>(R.id.sec_controlvid1)
+        sec_bottom = findViewById<LinearLayout>(R.id.sec_controlvid2)
         bt_fullscreen.setOnClickListener {
             if (!isFullScreen) {
                 openFullscreenDialog()
@@ -332,13 +340,13 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             if (!isLock) {
                 bt_lockscreen.setImageDrawable(
                     ContextCompat.getDrawable(
-                        applicationContext, R.drawable.ic_baseline_lock
+                        this, R.drawable.ic_baseline_lock
                     )
                 )
             } else {
                 bt_lockscreen.setImageDrawable(
                     ContextCompat.getDrawable(
-                        applicationContext, R.drawable.ic_outline_lock_open
+                        this, R.drawable.ic_outline_lock_open
                     )
                 )
             }
@@ -379,36 +387,32 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     }
 
     private fun playMovie(videoURL: String) {
-        if (coins >= 0) {
-            player?.pause()
-            views.youtubePlayerView.release()
-            views.videoPlayerView.show()
+        player?.pause()
+        views.youtubePlayerView.release()
+        views.videoPlayerView.show()
 //                views.toolbar.hide()
-            views.player.resizeMode =
-                AspectRatioFrameLayout.RESIZE_MODE_FIT // Đặt giá trị RESIZE_MODE_FIT
-            views.thumbnail.container.hide()
-            views.youtubePlayerView.hide()
+        views.player.resizeMode =
+            AspectRatioFrameLayout.RESIZE_MODE_FIT // Đặt giá trị RESIZE_MODE_FIT
+        views.thumbnail.container.hide()
+        views.youtubePlayerView.hide()
 //                views.content.hide()
-            views.youtubePlayerView.removeYouTubePlayerListener(youTubePlayerListener)
-            //pass the video link and play
-            mediaSource =
-                defaultHttpDataSourceFactory?.let { it1 ->
-                    HlsMediaSource.Factory(it1).createMediaSource(
-                        MediaItem.fromUri(
-                            videoURL
-                        )
+        views.youtubePlayerView.removeYouTubePlayerListener(youTubePlayerListener)
+        //pass the video link and play
+        mediaSource =
+            defaultHttpDataSourceFactory?.let { it1 ->
+                HlsMediaSource.Factory(it1).createMediaSource(
+                    MediaItem.fromUri(
+                        videoURL
                     )
-                }
-            if (mediaSource != null) {
-                exoPlayer?.setMediaSource(mediaSource!!)
+                )
             }
-            exoPlayer!!.prepare()
-            exoPlayer!!.play()
-            lifecycleScope.launch {
-                userPreferences.upDateCoins(5, false)
-            }
-        } else {
-            Toast.makeText(this, "Coins của bạn không đủ", Toast.LENGTH_SHORT).show()
+        if (mediaSource != null) {
+            exoPlayer?.setMediaSource(mediaSource!!)
+        }
+        exoPlayer!!.prepare()
+        exoPlayer!!.play()
+        lifecycleScope.launch {
+            userPreferences.upDateCoins(5, false)
         }
     }
 
@@ -477,11 +481,9 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     }
 
     private fun lockScreen(lock: Boolean) {
-        val sec_mid = findViewById<LinearLayout>(R.id.sec_controlvid1)
-        val sec_bottom = findViewById<LinearLayout>(R.id.sec_controlvid2)
         if (lock) {
-            sec_mid.visibility = View.INVISIBLE
-            sec_bottom.visibility = View.INVISIBLE
+            sec_mid.visibility = View.GONE
+            sec_bottom.visibility = View.GONE
         } else {
             sec_mid.visibility = View.VISIBLE
             sec_bottom.visibility = View.VISIBLE
@@ -524,6 +526,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
 
     @SuppressLint("SetTextI18n", "UseCompatLoadingForDrawables")
     private fun setupUI() {
+
         // rating click
         views.header.ratingBar.setOnRatingChangeListener { ratingBar, rating ->
             homeViewModel.handle(
@@ -554,15 +557,21 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             finishAfterTransition()
         }
         views.header.titleText.text = movie?.title
-        views.header.txtStateDow.text = "DownLoad"
+        views.header.txtStateDow.text = getString(R.string.downloads)
         views.header.imgDown.setImageResource(R.drawable.ic_download)
         Glide.with(views.imgUser).load(currentUser.photoURL).centerCrop()
             .error(getDrawable(R.drawable.ic_person)).into(views.imgUser)
-        views.loader.root.show()
+        //views.loader.root.show()
         views.content.hide()
         views.youtubePlayerView.hide()
         views.thumbnail.container.hide()
         views.commentContainer.hide()
+
+        if (isComingSoon) {
+            views.header.playLl.hide()
+            views.header.comingSoonLl.show()
+            views.header.downloadLl.hide()
+        }
         views.thumbnail.playContainer.setOnClickListener { replayVideo() }
         views.youtubePlayerView.addYouTubePlayerListener(youTubePlayerListener)
         views.tabLayout.addOnTabSelectedListener(tabSelectedListener)
@@ -573,7 +582,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
 
 
         // movie serie
-        if (movie?.genre?.contains("@single") ==false) {
+        if (movie?.genre?.contains("@single") == false) {
             views.header.playListLl.show()
             views.header.titleListPlay.text = "Danh sách phát ${movie?.videoURL?.size} tập"
             episodeItemsAdapter = EpisodeItemsAdapter(this::handleEpisodeClick)
@@ -655,9 +664,18 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         views.header.ratingText.text = movie?.country
         // Videos
         movie?.let {
-            checkAndLoadVideo(it)
-            download(movie?.videoURL?.get(0), 0)
+            it.videoURL?.let { videoURLs ->
+                if (videoURLs.isNotEmpty()) {
+                    checkAndLoadVideo(it)
+                    download(videoURLs[0], 0)
+                } else {
+                    // Xử lý khi danh sách video URL rỗng
+                }
+            } ?: run {
+                // Xử lý khi videoURL là null
+            }
         }
+
     }
 
     private fun download(videoURL: String?, episode: Int) {
@@ -684,11 +702,11 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
 
         if (downloadTracker?.downloading(media!!) == true) {
             isDownloaded = true
-            views.header.txtStateDow.text = "Downloading"
+            views.header.txtStateDow.text = getString(R.string.exo_download_downloading)
             views.header.imgDown.setImageResource(R.drawable.ic_downloading)
         } else {
             isDownloaded = false
-            views.header.txtStateDow.text = "Download"
+            views.header.txtStateDow.text = getString(R.string.downloads)
             views.header.imgDown.setImageResource(R.drawable.ic_download)
         }
         views.header.downloadLl.setOnClickListener {
@@ -699,7 +717,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
                     views.header.imgDown.setImageResource(R.drawable.ic_download)
                 }
             } else {
-                views.header.txtStateDow.text = "Downloading"
+                views.header.txtStateDow.text = getString(R.string.exo_download_downloading)
                 views.header.imgDown.setImageResource(R.drawable.ic_downloading)
                 val renderersFactory = DemoUtil.buildRenderersFactory(this)
                 media?.let { it1 ->
@@ -708,7 +726,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
                         it1,
                         renderersFactory,
                         onDownloadCancel = {
-                            views.header.txtStateDow.text = "DownLoad"
+                            views.header.txtStateDow.text =getString(R.string.downloads)
                             views.header.imgDown.setImageResource(R.drawable.ic_download)
                         }
                     )

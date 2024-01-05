@@ -17,6 +17,7 @@ import dev.son.movie.network.models.rate.RateRespone
 
 data class HomeViewState(
     val genre: Async<ApiResponse<List<Genre>>> = Uninitialized,
+    val movieComingSoon: Async<ApiResponse<List<Movie>>> = Uninitialized,
     val moviePhimBo: Async<ApiResponse<List<Movie>>> = Uninitialized,
     val moviePhimLe: Async<ApiResponse<List<Movie>>> = Uninitialized,
     val phimHoatHinh: Async<ApiResponse<List<Movie>>> = Uninitialized,

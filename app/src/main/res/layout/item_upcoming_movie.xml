@@ -101,6 +101,14 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
+            <TextView
+                android:id="@+id/year_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                tools:text="2016" />
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -137,37 +145,59 @@
                 android:orientation="horizontal">
 
                 <ImageView
+                    android:id="@+id/img_rate"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
-                    android:src="@drawable/ic_language"
+                    android:contentDescription="Add"
+                    android:src="@drawable/ic_star"
                     app:tint="@color/text_secondary" />
 
                 <TextView
-                    android:id="@+id/lang_text"
+                    android:id="@+id/rating_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="0dp"
                     android:textColor="@color/text_secondary"
                     android:textSize="12sp"
-                    tools:text="8.8" />
-                <ImageView
-                    android:layout_marginStart="8dp"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:src="@drawable/img_clapper_board"
-                    app:tint="@color/text_secondary" />
+                    tools:text="0" />
 
                 <TextView
-                    android:id="@+id/episode_current_text"
+                    android:id="@+id/textView_count_rates"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="0dp"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp"
-                    tools:text="8.8" />
+                    android:layout_gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:text="0 đánh giá"
+                    android:textSize="12sp" />
             </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/viewll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:gravity="center"
+                android:orientation="horizontal">
 
+                <ImageView
+                    android:id="@+id/img_view"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:contentDescription="Add"
+                    android:src="@drawable/ic_view"
+                    app:tint="@color/text_secondary" />
+
+                <TextView
+                    android:id="@+id/view_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="0dp"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"
+                    tools:text="0" />
+
+
+            </LinearLayout>
         </LinearLayout>
 
         <TextView

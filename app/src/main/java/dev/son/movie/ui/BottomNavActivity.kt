@@ -25,7 +25,7 @@ import dev.son.movie.ui.home.HomeViewState
 import dev.son.movie.ui.login.AuthViewModel
 import dev.son.movie.ui.login.AuthViewState
 import dev.son.moviestreamhub.screens.DownloadsFragment
-import dev.son.moviestreamhub.screens.MoreFragment
+import dev.son.movie.ui.more.MoreFragment
 import javax.inject.Inject
 
 

@@ -44,7 +44,6 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        views.loader.root.show()
         views.loader.root.startShimmer()
         setupUI()
     }
