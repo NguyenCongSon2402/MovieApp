@@ -180,6 +180,7 @@
     <string name="movies_now_showing">Phim Bộ Đang Chiếu</string>
     <string name="completed_series">Phim Bộ Hoàn Thành</string>
     <string name="language">Ngôn ngữ</string>
+    <string name="dob_is_not_emty">Ngày sinh không được để trống</string>
 
 
 </resources>

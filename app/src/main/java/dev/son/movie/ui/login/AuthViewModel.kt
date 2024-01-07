@@ -14,6 +14,7 @@ import dev.son.movie.core.TrackingViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dev.son.movie.network.models.Register
 import dev.son.movie.network.models.user.LoginRequest
 import dev.son.movie.network.models.user.UserId
 import dev.son.movie.network.repository.UserRepository
@@ -27,6 +28,7 @@ class AuthViewModel @AssistedInject constructor(
     override fun handle(action: AuthViewAction) {
         when (action) {
             is AuthViewAction.auth -> handleLogin(action.loginRequest)
+            is AuthViewAction.register -> handleRegister(action.registrationInfo)
             is AuthViewAction.saveToken -> handleSaveToken(action.token)
             is AuthViewAction.getCurrentUser -> handleGetCurrentUser()
             is AuthViewAction.upDateUser -> handleUpDateUser(action.user)
@@ -82,6 +84,12 @@ class AuthViewModel @AssistedInject constructor(
             copy(tokenResponse = it)
         }
     }
+    private fun handleRegister(registrationInfo: Register) {
+        setState { copy(register = Loading()) }
+        userRepository.register(registrationInfo).execute {
+            copy(register = it)
+        }
+    }
 
 
     fun handleRemoveStateGetFavorite() =
@@ -95,6 +103,8 @@ class AuthViewModel @AssistedInject constructor(
 
     fun handleRemoveUpLoadr() =
         setState { copy(upLoadImage = Uninitialized) }
+    fun handleRemoveRegister() =
+        setState { copy(register = Uninitialized) }
 
 
     @AssistedFactory

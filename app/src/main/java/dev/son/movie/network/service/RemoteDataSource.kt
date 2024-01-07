@@ -34,7 +34,7 @@ class RemoteDataSource(val userPreferences: UserPreferences) {
 
     companion object {
         private const val BASE_URL =
-            "http://10.2.8.10:3100/api/v1/"
+            "http://192.168.1.14:3100/api/v1/"
         private const val BASE_IMG = "https://img.ophim9.cc/uploads/movies/"
         private const val DEFAULT_USER_AGENT = "Nimpe-Android"
         private const val DEFAULT_CONTENT_TYPE = "application/json"

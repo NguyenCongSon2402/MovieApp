@@ -27,6 +27,7 @@ data class AuthViewState(
     val upLoadImage: Async<String> = Uninitialized,
 
     val tokenResponse: Async<TokenResponse> = Uninitialized,
+    val register: Async<ApiResponse<String>> = Uninitialized,
     val currentUser: Async<ApiResponse<User>> = Uninitialized
 ) : MvRxState {
     fun isLoadding() = user is Loading

@@ -28,7 +28,7 @@
                 style="@style/TextAppearance.AppCompat.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="More"
+                android:text="@string/Manager"
                 android:textColor="@color/white" />
 
             <Space

@@ -205,4 +205,5 @@
     <string name="language_filipino" translatable="false">Filipino</string>
     <string name="language_ukrainian" translatable="false">Ukrainian</string>
     <string name="language_afrikaans" translatable="false">Afrikaans</string>
+    <string name="dob_is_not_emty">Date of birth not empty</string>
 </resources>

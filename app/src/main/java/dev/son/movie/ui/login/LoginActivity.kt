@@ -80,6 +80,12 @@ class LoginActivity : TrackingBaseActivity<ActivityLoginScreenBinding>(), AuthVi
     }
 
     private fun setUpUi() {
+        val email = intent.getStringExtra("email")
+        val password = intent.getStringExtra("password")
+        if (!email.isNullOrEmpty() && !password.isNullOrEmpty()) {
+            views.edtEmail.setText(email)
+            views.password.setText(password)
+        }
         views.loginSubmit.setOnClickListener {
             views.loading.show()
             loginSubmit()
