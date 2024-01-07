@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <string name="app_id_live">ca-app-pub-7182834619756575~7738106401</string>
+    <string name="app_name">Movie Stream Hub</string>
+    <string name="home_tab_label">ホーム</string>
+    <string name="coming_soon_tab_label">近日公開</string>
+    <string name="downloads_tab_label">ダウンロード</string>
+    <string name="smart_downloads">スマートダウンロード</string>
+    <string name="introducing_downloads_for_you">コンテンツをダウンロード</string>
+    <string name="we_ll_download_a_personalized">あなたのためにパーソナライズされた映画やショーをダウンロードしますので、いつでもスマートフォンで視聴できます。</string>
+    <string name="set_up">設定</string>
+    <string name="find_something_to_download">ダウンロードするコンテンツを見つける</string>
+    <string name="success">成功</string>
+    <string name="http200">200</string>
+    <string name="http401">401</string>
+    <string name="http403">403</string>
+    <string name="http404">404</string>
+    <string name="http500">500</string>
+    <string name="more_like_this">これと似てる</string>
+    <string name="trailers_amp_more"><![CDATA[予告編＆その他]]></string>
+    <string name="choose_a_tab">タブを選択</string>
+    <string name="sign_in">サインイン</string>
+    <string name="account">メール</string>
+    <string name="password">パスワード</string>
+    <string name="forgot_passwor">パスワードをお忘れですか</string>
+    <string name="loggin">サインイン</string>
+    <string name="signinwith">または、以下でサインイン</string>
+    <string name="sign_up">新規登録</string>
+    <string name="don_t_have_an_account">アカウントがありませんか？</string>
+    <string name="confirm_password">パスワードを確認</string>
+    <string name="privacy">プライバシー</string>
+    <string name="remember_me" translatable="false">私を覚えている</string>
+    <string name="and"> および </string>
+    <string name="policy">ポリシー</string>
+    <string name="i_agree_with">同意します </string>
+    <string name="username_not_empty">メールが空ではありません</string>
+    <string name="password_not_empty">パスワードが空ではありません</string>
+    <string name="registration_failed_please_try_again">失敗しました</string>
+    <string name="Manager">マネージャー</string>
+    <string name="sign_up_success">サインアップ成功</string>
+    <string name="comment">コメント</string>
+    <string name="propose">提案</string>
+    <string name="notification">通知</string>
+    <string name="my_list">コメントリスト</string>
+    <string name="desception_my_list">My Listにコンテンツを追加すると、その作業がここに表示されます</string>
+    <string name="title_button_my_list">追加するコンテンツを見つける</string>
+    <string name="watching_movie">視聴履歴</string>
+    <string name="favorite_list">お気に入りリスト</string>
+    <string name="setting">設定</string>
+    <string name="logout">ログアウト</string>
+    <string name="support">サポート</string>
+
+
+    <string name="label_download">ダウンロード</string>
+    <string name="label_play_video_offline">オフラインでビデオを再生</string>
+
+    <string name="app_id_def">CC1AD845</string>
+    <string name="app_id_drm">A12D4273</string>
+    <string name="exo_download_completed">ダウンロード完了</string>
+    <string name="exo_download_description">ダウンロード</string>
+    <string name="exo_download_downloading">ダウンロード中</string>
+    <string name="exo_download_failed">ダウンロードに失敗しました</string>
+    <string name="exo_download_notification_channel_name">ダウンロード</string>
+    <string name="exo_download_paused">ダウンロードが一時停止しました</string>
+    <string name="exo_download_paused_for_network">ネットワーク待機中のダウンロード</string>
+    <string name="exo_download_paused_for_wifi">Wi-Fi待機中のダウンロード</string>
+    <string name="exo_download_removing">ダウンロードを削除しています</string>
+    <string name="Video" />
+    <string name="AUDIO">オーディオ</string>
+    <string name="title_text">テキスト</string>
+    <string name="profile">プロフィール</string>
+    <string name="dislay_name">表示名</string>
+    <string name="email">Eメール</string>
+    <string name="change_password">パスワードの変更</string>
+    <string name="dob">生年月日</string>
+    <string name="cancel">キャンセル</string>
+    <string name="save">保存</string>
+    <string name="edit">編集</string>
+    <string name="dislay_name_not_Emty">表示名が空ではありません</string>
+    <string name="oldpassword">古いパスワード</string>
+    <string name="send">送信</string>
+    <string name="email_is_empty">Eメールが空です</string>
+    <string name="rewarded_interstitial_ad_id_live">ca-app-pub-7182834619756575/4143557899</string>
+    <string name="adUnitIdTest">ca-app-pub-3940256099942544/5224354917</string>
+    <string name="play_list">プレイリスト</string>
+    <string name="admin">管理者パネル</string>
+    <string name="category">カテゴリ</string>
+    <string name="topic">トピック</string>
+    <string name="country">国</string>
+    <string name="delete">削除</string>
+    <string name="add">追加</string>
+    <string name="edt">編集</string>
+    <string name="_return">戻る</string>
+    <string name="send_us_some">フィードバックを送信してください！</string>
+    <string name="found_a_bug">バグを見つけましたか？提案はありますか？以下のフォームに入力してください。確認いたします。</string>
+    <string name="enter">ここにフィードバックを入力してください！（最小6文字）</string>
+    <string name="submit">提出</string>
+    <string name="crashes_bugs">クラッシュ＆バグ</string>
+    <string name="susggestion">提案</string>
+    <string name="others">その他</string>
+    <string name="play">再生</string>
+    <string name="introduction">紹介</string>
+    <string name="downloads">ダウンロード</string>
+    <string name="countries">国</string>
+    <string name="categories">カテゴリ</string>
+    <string name="like">いいね</string>
+    <string name="share">共有</string>
+    <string name="rate">評価</string>
+    <string name="watch_movie_in_n_virtual_reality">映画を\nバーチャルリアリティで視聴</string>
+    <string name="download_and_watch_offline_n_wherever_you_are">ダウンロードしてオフラインで\nいつでもどこでも視聴</string>
+    <string name="get_in">入る</string>
+    <string name="resume_download">ダウンロードを再開</string>
+    <string name="info">詳細</string>
+    <string name="data_not_available">データは利用できません</string>
+    <string name="series_movie">シリーズ映画</string>
+    <string name="feature_film">長編映画</string>
+    <string name="cartoon">アニメ</string>
+    <string name="tv_show">テレビ番組</string>
+    <string name="vietsub">ViệtSub</string>
+    <string name="demos">デモ</string>
+    <string name="movies_now_showing">現在上映中の映画</string>
+    <string name="completed_series">完結シリーズ</string>
+    <string name="language">言語</string>
+    <string name="language_english" translatable="false">英語</string>
+    <string name="language_spain" translatable="false">スペイン語</string>
+    <string name="language_portugal" translatable="false">ポルトガル語</string>
+    <string name="language_hindi" translatable="false">ヒンディー語</string>
+    <string name="language_germany" translatable="false">ドイツ語</string>
+    <string name="language_brazil" translatable="false">ブラジルポルトガル語</string>
+    <string name="language_japan" translatable="false">日本語</string>
+    <string name="language_korean" translatable="false">韓国語</string>
+    <string name="language_france" translatable="false">フランス語</string>
+    <string name="language_china" translatable="false">中国語</string>
+    <string name="language_indo" translatable="false">インドネシア語</string>
+    <string name="language_dutch_nl" translatable="false">オランダ語</string>
+    <string name="language_danish_da" translatable="false">デンマーク語</string>
+    <string name="language_zuhu_zu" translatable="false">ズールー語</string>
+    <string name="language_viet_nam" translatable="false">ベトナム語</string>
+    <string name="language_irish_en_ie" translatable="false">アイリッシュ語</string>
+    <string name="language_italian_it" translatable="false">イタリア語</string>
+    <string name="language_polish_pl" translatable="false">ポーランド語</string>
+    <string name="language_russian" translatable="false">ロシア語</string>
+    <string name="language_turkish" translatable="false">トルコ語</string>
+    <string name="language_malay" translatable="false">マレー語</string>
+    <string name="language_filipino" translatable="false">フィリピン語</string>
+    <string name="language_ukrainian" translatable="false">ウクライナ語</string>
+    <string name="language_afrikaans" translatable="false">アフリカーンス語</string>
+</resources>

@@ -89,7 +89,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 val fragment = ItemPickerFragment.newInstance(it1, COUNTRIES)
                 fragment.show(childFragmentManager, "ItemPickerFragmentTag")
             } ?: run {
-                Toast.makeText(requireContext(), "Dữ liệu không có sẵn", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.data_not_available), Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -99,7 +99,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
                 val fragment = ItemPickerFragment.newInstance(it1, CATEGORIES)
                 fragment.show(childFragmentManager, "ItemPickerFragmentTag1")
             } ?: run {
-                Toast.makeText(requireContext(), "Dữ liệu không có sẵn", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.data_not_available), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -230,7 +230,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         when (it.moviePhimBo) {
             is Success -> {
                 val data = it.moviePhimBo.invoke().apply {
-                    this.titlePage = "Phim Bộ"
+                    this.titlePage = getString(R.string.series_movie)
                 }
                 if (!data.data.isNullOrEmpty()) {
                     val index = 0
@@ -261,7 +261,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         when (it.moviePhimLe) {
             is Success -> {
                 val data = it.moviePhimLe.invoke().apply {
-                    this.titlePage = "Phim Lẻ"
+                    this.titlePage = getString(R.string.feature_film)
                 }
                 if (!data.data.isNullOrEmpty()) {
                     val index = 1
@@ -293,7 +293,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         when (it.phimHoatHinh) {
             is Success -> {
                 val data = it.phimHoatHinh.invoke().apply {
-                    this.titlePage = "Phim Hoạt Hình"
+                    this.titlePage = getString(R.string.cartoon)
                 }
                 if (!data.data.isNullOrEmpty()) {
                     val index = 2
@@ -325,7 +325,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         when (it.movieTvShow) {
             is Success -> {
                 val data = it.movieTvShow.invoke().apply {
-                    this.titlePage = "Tv Show"
+                    this.titlePage = getString(R.string.tv_show)
                 }
                 if (!data.data.isNullOrEmpty()) {
                     val index = 3
@@ -357,7 +357,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         when (it.movieVietSub) {
             is Success -> {
                 val data = it.movieVietSub.invoke().apply {
-                    this.titlePage = "VietSub"
+                    this.titlePage = getString(R.string.vietsub)
                 }
                 if (!data.data.isNullOrEmpty()) {
                     val index = 4
@@ -389,7 +389,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         when (it.movieThuyetMinh) {
             is Success -> {
                 val data = it.movieThuyetMinh.invoke().apply {
-                    this.titlePage = "Phim Thuyết Minh"
+                    this.titlePage = getString(R.string.demos)
                 }
                 if (!data.data.isNullOrEmpty()) {
                     val index = 5
@@ -421,7 +421,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         when (it.movieDangChieu) {
             is Success -> {
                 val data = it.movieDangChieu.invoke().apply {
-                    this.titlePage = "Phim Bộ Đang Chiếu"
+                    this.titlePage = getString(R.string.movies_now_showing)
                 }
                 if (!data.data.isNullOrEmpty()) {
                     val index = 6
@@ -453,7 +453,7 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
         when (it.movieHoanThanh) {
             is Success -> {
                 val data = it.movieHoanThanh.invoke().apply {
-                    this.titlePage = "Phim Bộ Hoàn Thành"
+                    this.titlePage = getString(R.string.completed_series)
                 }
                 if (!data.data.isNullOrEmpty()) {
                     val index = 7

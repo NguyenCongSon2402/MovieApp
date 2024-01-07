@@ -1,0 +1,195 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <string name="app_id_live">ca-app-pub-7182834619756575~7738106401</string>
+    <string name="app_name">Movie Stream Hub</string>
+    <string name="home_tab_label">Tuis</string>
+    <string name="coming_soon_tab_label">Binnekort</string>
+    <string name="downloads_tab_label">Aflaaibestande</string>
+    <string name="smart_downloads">Slim Aflaaibestande</string>
+    <string name="introducing_downloads_for_you">Laai inhoud af</string>
+    <string name="we_ll_download_a_personalized">Ons gaan \'n gepersonaliseerde seleksie van rolprente en vertonings vir jou aflaai, sodat daar altyd iets is om op jou foon te kyk.</string>
+    <string name="set_up">STEL OP</string>
+    <string name="find_something_to_download">Vind iets om af te laai</string>
+    <string name="success">Sukses</string>
+    <string name="http200">200</string>
+    <string name="http401">401</string>
+    <string name="http403">403</string>
+    <string name="http404">404</string>
+    <string name="http500">500</string>
+    <string name="more_like_this">MEER SOOS DIT</string>
+    <string name="trailers_amp_more"><![CDATA[PRETTERS &amp; MEER]]></string>
+    <string name="choose_a_tab">Kies \'n lappie</string>
+    <string name="sign_in">Meld aan</string>
+    <string name="account">E-pos</string>
+    <string name="password">Wagwoord</string>
+    <string name="forgot_passwor">Wagwoord vergeet</string>
+    <string name="loggin">Meld Aan</string>
+    <string name="signinwith">Of meld aan met</string>
+    <string name="sign_up">Teken aan</string>
+    <string name="don_t_have_an_account">Het jy nie \'n rekening nie?</string>
+    <string name="confirm_password">Bevestig wagwoord</string>
+    <string name="privacy">Privaatheid</string>
+    <string name="remember_me" translatable="false">Onthou my</string>
+    <string name="and"> en </string>
+    <string name="policy">Beleid</string>
+    <string name="i_agree_with">Ek stem saam met </string>
+    <string name="username_not_empty">E-pos nie leeg nie</string>
+    <string name="password_not_empty">Wagwoord nie leeg nie</string>
+    <string name="registration_failed_please_try_again">Misluk</string>
+    <string name="Manager">Bestuurder</string>
+    <string name="sign_up_success">Teken Aan Sukses</string>
+    <string name="comment">Kommentaar</string>
+    <string name="propose">Stel voor</string>
+    <string name="notification">Kennisgewing</string>
+    <string name="my_list">Gekommentariseerde Lys</string>
+    <string name="desception_my_list">Wanneer jy inhoud by My Lys voeg, sal daardie werk hier verskyn</string>
+    <string name="title_button_my_list">Vind inhoud om by te voeg</string>
+    <string name="watching_movie">Kyk geskiedenis</string>
+    <string name="favorite_list">Gunsteling Lys</string>
+    <string name="setting">Instelling</string>
+    <string name="logout">Teken uit</string>
+    <string name="support">Ondersteuning</string>
+
+    <!--    Offline EXOPLAYER-->
+
+    <string name="track_selection_title">Kies snitte</string>
+
+    <string name="unexpected_intent_action">Onverwagte voorneme aksie: <xliff:g id="action">%1$s</xliff:g></string>
+
+    <string name="error_cleartext_not_permitted">Duidelike teksverkeer nie toegelaat nie</string>
+
+    <string name="error_generic">Afspeling het misluk</string>
+
+    <string name="error_unrecognized_abr_algorithm">Onherkenbare ABR-algoritme</string>
+
+    <string name="error_unrecognized_stereo_mode">Onherkenbare stereomodus</string>
+
+    <string name="error_drm_unsupported_before_api_18">Beskermde inhoud nie ondersteun op API-vlakke onder 18 nie</string>
+
+    <string name="error_drm_unsupported_scheme">Hierdie toestel ondersteun nie die vereiste DRM-skema nie</string>
+
+    <string name="error_drm_unknown">\'N Onbekende DRM-fout het voorgekom</string>
+
+    <string name="error_no_decoder">Hierdie toestel bied nie \'n dekodeerder vir <xliff:g id="mime_type">%1$s</xliff:g></string>
+
+    <string name="error_no_secure_decoder">Hierdie toestel bied nie \'n veilige dekodeerder vir <xliff:g id="mime_type">%1$s</xliff:g></string>
+
+    <string name="error_querying_decoders">Kan nie toestel dekodeerders navraag doen nie</string>
+
+    <string name="error_instantiating_decoder">Kan nie dekodeerder instansieer nie <xliff:g id="decoder_name">%1$s</xliff:g></string>
+
+    <string name="error_unsupported_video">Media sluit videomelodieë in, maar geen daarvan kan deur hierdie toestel afgespeel word nie</string>
+
+    <string name="error_unsupported_audio">Media sluit klankmelodieë in, maar geen daarvan kan deur hierdie toestel afgespeel word nie</string>
+
+    <string name="storage_permission_denied">Toestemming om tot berging toe te tree, is geweier</string>
+
+    <string name="sample_list_load_error">Een of meer monsterlyste het misluk om te laai</string>
+
+    <string name="ima_not_loaded">Speel monster sonder advertensies, omdat die IMA-uitbreiding nie gelaai is nie</string>
+
+    <string name="unsupported_ads_in_concatenation">Speel monster sonder advertensies, omdat advertensies nie in samevoegings ondersteun word nie</string>
+
+    <string name="download_start_error">Kon nie aflaai begin nie</string>
+
+    <string name="download_playlist_unsupported">Hierdie demo-app ondersteun nie die aflaai van afspeellyste nie</string>
+
+    <string name="download_drm_unsupported">Hierdie demo-app ondersteun nie die aflaai van beskermde inhoud nie</string>
+
+    <string name="download_scheme_unsupported">Hierdie demo-app ondersteun slegs die aflaai van http-strome</string>
+
+    <string name="download_live_unsupported">Hierdie demo-app ondersteun nie die aflaai van lewende inhoud nie</string>
+
+    <string name="download_ads_unsupported">IMA ondersteun nie aanlynadvertensies nie</string>
+
+    <string name="prefer_extension_decoders">Bevooroordeel uitbreidingsdekodeerders</string>
+
+    <string name="random_abr">Aktiveer lukrake ABR</string>
+
+    <string name="tunneling">Versoek multimedia-tonneling</string>
+
+    <string name="download_start_error_offline_license">Kon nie aanlynlisensie bekom nie</string>
+
+    <string name="media_route_menu_title">Speel op&#8230;</string>
+    <string name="label_download">AFSLAAN</string>
+    <string name="label_play_video_offline">Speel Video Aanlyn</string>
+
+    <string name="app_id_def">CC1AD845</string>
+    <string name="app_id_drm">A12D4273</string>
+    <string name="exo_download_completed">Aflaai voltooi</string>
+    <string name="exo_download_description">Aflaai</string>
+    <string name="exo_download_downloading">Aflaai</string>
+    <string name="exo_download_failed">Aflaai misluk</string>
+    <string name="exo_download_notification_channel_name">Aflaai</string>
+    <string name="exo_download_paused">Aflaai gepouseer</string>
+    <string name="exo_download_paused_for_network">Aflaai wag vir netwerk</string>
+    <string name="exo_download_paused_for_wifi">Aflaai wag vir WiFi</string>
+    <string name="exo_download_removing">Verwyder aflaai</string>
+    <string name="Video" />
+    <string name="AUDIO">Klank</string>
+    <string name="title_text">Teks</string>
+    <string name="profile">Profiel</string>
+    <string name="dislay_name">Vertoonnaam</string>
+    <string name="email">E-pos</string>
+    <string name="change_password">Verander wagwoord</string>
+    <string name="dob">Geboortedatum</string>
+    <string name="cancel">Kanselleer</string>
+    <string name="save">Stoor</string>
+    <string name="edit">Wysig</string>
+    <string name="dislay_name_not_Emty">Vertoonnaam nie leeg nie</string>
+    <string name="oldpassword">Ou wagwoord</string>
+    <string name="send">Stuur</string>
+    <string name="email_is_empty">E-pos nie leeg nie</string>
+    <string name="rewarded_interstitial_ad_id_live">ca-app-pub-7182834619756575/4143557899</string>
+    <string name="adUnitIdTest">ca-app-pub-3940256099942544/5224354917</string>
+    <string name="play_list">Afspeellys</string>
+    <string name="admin">Admin-paneel</string>
+    <string name="category">Kategorie</string>
+    <string name="topic">Onderwerp</string>
+    <string name="country">Land</string>
+    <string name="delete">Skrap</string>
+    <string name="add">Voeg by</string>
+    <string name="edt">Wysig</string>
+    <string name="_return">Terug</string>
+    <string name="send_us_some">Stuur vir ons terugvoer!</string>
+    <string name="found_a_bug">Het jy \'n fout gevind? Het \'n voorstel? Vul die vorm hieronder in, en ons gaan kyk daarna</string>
+    <string name="enter">Voer jou terugvoer hier in! (min 6 karakters)</string>
+    <string name="submit">Indien</string>
+    <string name="crashes_bugs">Stort &amp; Foute</string>
+    <string name="susggestion">Voorstel</string>
+    <string name="others">Ander</string>
+    <string name="play">Speel</string>
+    <string name="introduction">Inleiding</string>
+    <string name="downloads">Aflaaibestande</string>
+    <string name="countries">Lande</string>
+    <string name="categories">Kategorieë</string>
+    <string name="like">Hou van</string>
+    <string name="share">Deel</string>
+    <string name="rate">Beoordeel</string>
+    <string name="watch_movie_in_n_virtual_reality">Kyk films in Virtuele Werklikheid</string>
+    <string name="download_and_watch_offline_n_wherever_you_are">Laai af en kyk af in jou eie tyd</string>
+    <string name="get_in">Kom binne</string>
+    <string name="resume_download">Hervat Aflaai</string>
+    <string name="info">Besonderhede</string>
+    <string name="data_not_available">Data nie beskikbaar nie</string>
+    <string name="series_movie">Reeks film</string>
+    <string name="feature_film">Kenmerkende film</string>
+    <string name="cartoon">Tekenfilm</string>
+    <string name="tv_show">TV-program</string>
+    <string name="vietsub">Vietnamees</string>
+    <string name="demos">Demos</string>
+    <string name="movies_now_showing">Huidige Films</string>
+    <string name="completed_series">Voltooide Reekse</string>
+    <string name="language">Taal</string>
+    <string name="language_english" translatable="false">English</string>
+    <string name="language_spain" translatable="false">Espalier</string>
+    <string name="language_portugal" translatable="false">Portuguese</string>
+    <string name="language_hindi" translatable="false">भारतीय भाषा</string>
+    <string name="language_germany" translatable="false">Deutsch</string>
+    <string name="language_brazil" translatable="false">Lingua Brasilia</string>
+    <string name="language_japan" translatable="false">日本</string>
+    <string name="language_korean" translatable="false">한국어</string>
+    <string name="language_france" translatable="false">Francais</string>
+    <string name="language_china" translatable="false">中国人</string>
+
+</resources>

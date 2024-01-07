@@ -28,6 +28,7 @@ import dev.son.movie.databinding.FragmentMoreBinding
 import dev.son.movie.network.models.movie.Movie
 import dev.son.movie.ui.AccountActivity
 import dev.son.movie.ui.AdminActivity
+import dev.son.movie.ui.LanguageActivity
 import dev.son.movie.ui.MovieDetailsActivity
 import dev.son.movie.ui.login.LoginActivity
 import dev.son.movie.ui.login.AuthViewAction
@@ -125,6 +126,9 @@ class MoreFragment : TrackingBaseFragment<FragmentMoreBinding>() {
         }
         views.layoutSupport.setOnClickListener {
             startActivity(Intent(requireContext(), RateAppActivity::class.java))
+        }
+        views.layoutSetting.setOnClickListener {
+            startActivity(Intent(requireContext(), LanguageActivity::class.java))
         }
 
     }

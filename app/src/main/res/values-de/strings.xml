@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <string name="app_id_live">ca-app-pub-7182834619756575~7738106401</string>
+    <string name="app_name">Movie Stream Hub</string>
+    <string name="home_tab_label">Startseite</string>
+    <string name="coming_soon_tab_label">Demnächst</string>
+    <string name="downloads_tab_label">Downloads</string>
+    <string name="smart_downloads">Intelligente Downloads</string>
+    <string name="introducing_downloads_for_you">Inhalte herunterladen</string>
+    <string name="we_ll_download_a_personalized">Wir werden eine personalisierte Auswahl von Filmen und Shows für Sie herunterladen, damit es immer etwas zum Anschauen auf Ihrem Telefon gibt.</string>
+    <string name="set_up">EINRICHTEN</string>
+    <string name="find_something_to_download">Finde etwas zum Herunterladen</string>
+    <string name="success">Erfolg</string>
+    <string name="http200">200</string>
+    <string name="http401">401</string>
+    <string name="http403">403</string>
+    <string name="http404">404</string>
+    <string name="http500">500</string>
+    <string name="more_like_this">MEHR DAVON</string>
+    <string name="trailers_amp_more"><![CDATA[TRAILER & MEHR]]></string>
+    <string name="choose_a_tab">Wählen Sie einen Tab</string>
+    <string name="sign_in">Anmelden</string>
+    <string name="account">E-Mail</string>
+    <string name="password">Passwort</string>
+    <string name="forgot_passwor">Passwort vergessen</string>
+    <string name="loggin">Anmelden</string>
+    <string name="signinwith">Oder melden Sie sich an mit</string>
+    <string name="sign_up">Registrieren</string>
+    <string name="don_t_have_an_account">Sie haben noch kein Konto?</string>
+    <string name="confirm_password">Passwort bestätigen</string>
+    <string name="privacy">Datenschutz</string>
+    <string name="remember_me" translatable="false">Erinnere dich an mich</string>
+    <string name="and"> und </string>
+    <string name="policy">Richtlinie</string>
+    <string name="i_agree_with">Ich stimme zu mit </string>
+    <string name="username_not_empty">E-Mail darf nicht leer sein</string>
+    <string name="password_not_empty">Passwort darf nicht leer sein</string>
+    <string name="registration_failed_please_try_again">Fehlgeschlagen</string>
+    <string name="Manager">Manager</string>
+    <string name="sign_up_success">Registrierung erfolgreich</string>
+    <string name="comment">Kommentar</string>
+    <string name="propose">Vorschlagen</string>
+    <string name="notification">Benachrichtigung</string>
+    <string name="my_list">Kommentierte Liste</string>
+    <string name="desception_my_list">Immer wenn Sie Inhalte zu Meine Liste hinzufügen, erscheint diese Arbeit hier</string>
+    <string name="title_button_my_list">Inhalt zum Hinzufügen finden</string>
+    <string name="watching_movie">Wiedergabeverlauf</string>
+    <string name="favorite_list">Favoritenliste</string>
+    <string name="setting">Einstellungen</string>
+    <string name="logout">Abmelden</string>
+    <string name="support">Unterstützung</string>
+
+
+    <string name="label_download">HERUNTERLADEN</string>
+    <string name="label_play_video_offline">Video offline abspielen</string>
+
+    <string name="app_id_def">CC1AD845</string>
+    <string name="app_id_drm">A12D4273</string>
+    <string name="exo_download_completed">Download abgeschlossen</string>
+    <string name="exo_download_description">Herunterladen</string>
+    <string name="exo_download_downloading">Wird heruntergeladen</string>
+    <string name="exo_download_failed">Download fehlgeschlagen</string>
+    <string name="exo_download_notification_channel_name">Downloads</string>
+    <string name="exo_download_paused">Downloads pausiert</string>
+    <string name="exo_download_paused_for_network">Downloads warten auf Netzwerk</string>
+    <string name="exo_download_paused_for_wifi">Downloads warten auf WLAN</string>
+    <string name="exo_download_removing">Downloads entfernen</string>
+    <string name="Video" />
+    <string name="AUDIO">Audio</string>
+    <string name="title_text">Text</string>
+    <string name="profile">Profil</string>
+    <string name="dislay_name">Anzeigename</string>
+    <string name="email">E-Mail</string>
+    <string name="change_password">Passwort ändern</string>
+    <string name="dob">Geburtsdatum</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="save">Speichern</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="dislay_name_not_Emty">Anzeigename darf nicht leer sein</string>
+    <string name="oldpassword">Altes Passwort</string>
+    <string name="send">Senden</string>
+    <string name="email_is_empty">E-Mail darf nicht leer sein</string>
+    <string name="rewarded_interstitial_ad_id_live">ca-app-pub-7182834619756575/4143557899</string>
+    <string name="adUnitIdTest">ca-app-pub-3940256099942544/5224354917</string>
+    <string name="play_list">Wiedergabeliste</string>
+    <string name="admin">Admin-Panel</string>
+    <string name="category">Kategorie</string>
+    <string name="topic">Thema</string>
+    <string name="country">Land</string>
+    <string name="delete">Löschen</string>
+    <string name="add">Hinzufügen</string>
+    <string name="edt">Bearbeiten</string>
+    <string name="_return">Zurück</string>
+    <string name="send_us_some">Senden Sie uns Feedback!</string>
+    <string name="found_a_bug">Einen Fehler gefunden? Haben Sie einen Vorschlag? Füllen Sie das Formular unten aus, und wir werden es uns ansehen</string>
+    <string name="enter">Geben Sie Ihr Feedback hier ein! (mindestens 6 Zeichen)</string>
+    <string name="submit">Absenden</string>
+    <string name="crashes_bugs">Abstürze &amp; Fehler</string>
+    <string name="susggestion">Vorschlag</string>
+    <string name="others">Andere</string>
+    <string name="play">Abspielen</string>
+    <string name="introduction">Einführung</string>
+    <string name="downloads">Downloads</string>
+    <string name="countries">Länder</string>
+    <string name="categories">Kategorien</string>
+    <string name="like">Gefällt mir</string>
+    <string name="share">Teilen</string>
+    <string name="rate">Bewerten</string>
+    <string name="watch_movie_in_n_virtual_reality">Filme in der\nvirtuellen Realität ansehen</string>
+    <string name="download_and_watch_offline_n_wherever_you_are">Herunterladen und offline ansehen\negal wo Sie sind</string>
+    <string name="get_in">Hinein</string>
+    <string name="resume_download">Download fortsetzen</string>
+    <string name="info">Details</string>
+    <string name="data_not_available">Daten nicht verfügbar</string>
+    <string name="series_movie">Serienfilm</string>
+    <string name="feature_film">Spielfilm</string>
+    <string name="cartoon">Zeichentrickfilm</string>
+    <string name="tv_show">TV-Show</string>
+    <string name="vietsub">VietSub</string>
+    <string name="demos">Demos</string>
+    <string name="movies_now_showing">Derzeit laufende Filme</string>
+    <string name="completed_series">Abgeschlossene Serien</string>
+    <string name="language">Sprache</string>
+    <string name="language_english" translatable="false">Englisch</string>
+    <string name="language_spain" translatable="false">Spanisch</string>
+    <string name="language_portugal" translatable="false">Portugiesisch</string>
+    <string name="language_hindi" translatable="false">Hindi</string>
+    <string name="language_germany" translatable="false">Deutsch</string>
+    <string name="language_brazil" translatable="false">Portugiesisch (Brasilien)</string>
+    <string name="language_japan" translatable="false">Japanisch</string>
+    <string name="language_korean" translatable="false">Koreanisch</string>
+    <string name="language_france" translatable="false">Französisch</string>
+    <string name="language_china" translatable="false">Chinesisch</string>
+    <string name="language_indo" translatable="false">Indonesisch</string>
+    <string name="language_dutch_nl" translatable="false">Niederländisch</string>
+    <string name="language_danish_da" translatable="false">Dänisch</string>
+    <string name="language_zuhu_zu" translatable="false">Zulu</string>
+    <string name="language_viet_nam" translatable="false">Vietnamesisch</string>
+    <string name="language_irish_en_ie" translatable="false">Irisch</string>
+    <string name="language_italian_it" translatable="false">Italienisch</string>
+    <string name="language_polish_pl" translatable="false">Polnisch</string>
+    <string name="language_russian" translatable="false">Russisch</string>
+    <string name="language_turkish" translatable="false">Türkisch</string>
+    <string name="language_malay" translatable="false">Malaiisch</string>
+    <string name="language_filipino" translatable="false">Filipino</string>
+    <string name="language_ukrainian" translatable="false">Ukrainisch</string>
+    <string name="language_afrikaans" translatable="false">Afrikaans</string>
+</resources>

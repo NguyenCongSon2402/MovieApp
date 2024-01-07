@@ -38,6 +38,7 @@ import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
+import com.mobiai.base.language.LanguageUtil
 import dev.son.movie.R
 import dev.son.movie.di.DaggerTrackingComponent
 
@@ -100,7 +101,7 @@ abstract class TrackingBaseActivity<VB : ViewBinding> : AppCompatActivity(){
         }
         Timber.v("Injecting dependencies into ${javaClass.simpleName} took $timeForInjection ms")
         super.onCreate(savedInstanceState)
-
+        LanguageUtil.setupLanguage(this)
         doBeforeSetContentView()
 
         // Hack for font size

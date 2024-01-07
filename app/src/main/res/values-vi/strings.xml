@@ -10,7 +10,7 @@
     <string name="we_ll_download_a_personalized">Chúng tôi sẽ tải về một bộ sưu tập phim và chương trình truyền hình cá nhân hóa dành riêng cho bạn, để luôn có điều gì đó để xem trên điện thoại của bạn.</string>
     <string name="set_up">CÀI ĐẶT</string>
     <string name="find_something_to_download">Tìm Điều gì đó để Tải về</string>
-    <string name="success">Success</string>
+    <string name="success">Thành công</string>
     <string name="http200">200</string>
     <string name="http401">401</string>
     <string name="http403">403</string>
@@ -24,26 +24,26 @@
     <string name="password">Mật khẩu</string>
     <string name="forgot_passwor">Quên mật khẩu</string>
     <string name="loggin">Đăng nhập</string>
-    <string name="signinwith">Or sign in with</string>
+    <string name="signinwith">Hoặc đăng nhập bằng</string>
     <string name="sign_up">Đăng ký</string>
     <string name="don_t_have_an_account">Bạn chưa có tài khoản?</string>
     <string name="confirm_password">Xác nhận mật khẩu</string>
-    <string name="privacy">privacy</string>
-    <string name="and"> and </string>
-    <string name="policy">policy</string>
-    <string name="i_agree_with">I Agree with </string>
-    <string name="username_not_empty">Email not empty</string>
-    <string name="password_not_empty">Password not empty</string>
-    <string name="registration_failed_please_try_again">failed</string>
+    <string name="privacy">Quyền riêng tư</string>
+    <string name="and"> và </string>
+    <string name="policy">Chính sách</string>
+    <string name="i_agree_with">Tôi đồng ý với </string>
+    <string name="username_not_empty">Email không được để trống</string>
+    <string name="password_not_empty">Mật khẩu không được để trống</string>
+    <string name="registration_failed_please_try_again">Đăng ký không thành công</string>
     <string name="Manager">Quản lý</string>
-    <string name="sign_up_success">Đăng nhập thành công</string>
+    <string name="sign_up_success">Đăng ký thành công</string>
     <string name="comment">Bình luận</string>
-    <string name="propose">Propose</string>
+    <string name="propose">Đề xuất</string>
     <string name="notification">Thông báo</string>
-    <string name="my_list">Danh sách bình luận</string>
+    <string name="my_list">Danh sách bình luận của tôi</string>
     <string name="desception_my_list">Mỗi khi bạn thêm một nội dung vào Danh sách của tôi, tác phẩm đó sẽ xuất hiện ở đây</string>
     <string name="title_button_my_list">Tìm nội dung để thêm</string>
-    <string name="watching_movie">Watching history</string>
+    <string name="watching_movie">Lịch sử xem</string>
     <string name="favorite_list">Danh sách yêu thích</string>
     <string name="setting">Cài đặt</string>
     <string name="logout">Đăng xuất</string>
@@ -51,65 +51,65 @@
 
     <!--    Offline EXOPLAYER-->
 
-    <string name="track_selection_title">Select tracks</string>
+    <string name="track_selection_title">Chọn đường dẫn</string>
 
-    <string name="unexpected_intent_action">Unexpected intent action: <xliff:g id="action">%1$s</xliff:g></string>
+    <string name="unexpected_intent_action">Hành động intent không mong muốn: <xliff:g id="action">%1$s</xliff:g></string>
 
-    <string name="error_cleartext_not_permitted">Cleartext traffic not permitted</string>
+    <string name="error_cleartext_not_permitted">Giao thông văn bản không được phép</string>
 
-    <string name="error_generic">Playback failed</string>
+    <string name="error_generic">Phát lại thất bại</string>
 
-    <string name="error_unrecognized_abr_algorithm">Unrecognized ABR algorithm</string>
+    <string name="error_unrecognized_abr_algorithm">Thuật toán ABR không được nhận diện</string>
 
-    <string name="error_unrecognized_stereo_mode">Unrecognized stereo mode</string>
+    <string name="error_unrecognized_stereo_mode">Chế độ stereo không được nhận diện</string>
 
-    <string name="error_drm_unsupported_before_api_18">Protected content not supported on API levels below 18</string>
+    <string name="error_drm_unsupported_before_api_18">Nội dung được bảo vệ không được hỗ trợ trên các phiên bản API dưới 18</string>
 
-    <string name="error_drm_unsupported_scheme">This device does not support the required DRM scheme</string>
+    <string name="error_drm_unsupported_scheme">Thiết bị này không hỗ trợ kịch bản DRM cần thiết</string>
 
-    <string name="error_drm_unknown">An unknown DRM error occurred</string>
+    <string name="error_drm_unknown">Đã xảy ra một lỗi DRM không xác định</string>
 
-    <string name="error_no_decoder">This device does not provide a decoder for <xliff:g id="mime_type">%1$s</xliff:g></string>
+    <string name="error_no_decoder">Thiết bị này không cung cấp bộ giải mã cho <xliff:g id="mime_type">%1$s</xliff:g></string>
 
-    <string name="error_no_secure_decoder">This device does not provide a secure decoder for <xliff:g id="mime_type">%1$s</xliff:g></string>
+    <string name="error_no_secure_decoder">Thiết bị này không cung cấp bộ giải mã an toàn cho <xliff:g id="mime_type">%1$s</xliff:g></string>
 
-    <string name="error_querying_decoders">Unable to query device decoders</string>
+    <string name="error_querying_decoders">Không thể truy vấn bộ giải mã của thiết bị</string>
 
-    <string name="error_instantiating_decoder">Unable to instantiate decoder <xliff:g id="decoder_name">%1$s</xliff:g></string>
+    <string name="error_instantiating_decoder">Không thể khởi tạo bộ giải mã <xliff:g id="decoder_name">%1$s</xliff:g></string>
 
-    <string name="error_unsupported_video">Media includes video tracks, but none are playable by this device</string>
+    <string name="error_unsupported_video">Phương tiện bao gồm các đoạn video, nhưng không có đoạn nào có thể phát được trên thiết bị này</string>
 
-    <string name="error_unsupported_audio">Media includes audio tracks, but none are playable by this device</string>
+    <string name="error_unsupported_audio">Phương tiện bao gồm các đoạn âm thanh, nhưng không có đoạn nào có thể phát được trên thiết bị này</string>
 
-    <string name="storage_permission_denied">Permission to access storage was denied</string>
+    <string name="storage_permission_denied">Quyền truy cập bộ nhớ bị từ chối</string>
 
-    <string name="sample_list_load_error">One or more sample lists failed to load</string>
+    <string name="sample_list_load_error">Một hoặc nhiều danh sách mẫu không tải được</string>
 
-    <string name="ima_not_loaded">Playing sample without ads, as the IMA extension was not loaded</string>
+    <string name="ima_not_loaded">Đang phát mẫu mà không có quảng cáo, vì phần mở rộng IMA không được tải</string>
 
-    <string name="unsupported_ads_in_concatenation">Playing sample without ads, as ads are not supported in concatenations</string>
+    <string name="unsupported_ads_in_concatenation">Đang phát mẫu mà không có quảng cáo, vì quảng cáo không được hỗ trợ trong việc nối mẫu</string>
 
-    <string name="download_start_error">Failed to start download</string>
+    <string name="download_start_error">Không thể bắt đầu tải xuống</string>
 
-    <string name="download_playlist_unsupported">This demo app does not support downloading playlists</string>
+    <string name="download_playlist_unsupported">Ứng dụng demo này không hỗ trợ tải xuống danh sách phát</string>
 
-    <string name="download_drm_unsupported">This demo app does not support downloading protected content</string>
+    <string name="download_drm_unsupported">Ứng dụng demo này không hỗ trợ tải xuống nội dung được bảo vệ</string>
 
-    <string name="download_scheme_unsupported">This demo app only supports downloading http streams</string>
+    <string name="download_scheme_unsupported">Ứng dụng demo này chỉ hỗ trợ tải xuống luồng http</string>
 
-    <string name="download_live_unsupported">This demo app does not support downloading live content</string>
+    <string name="download_live_unsupported">Ứng dụng demo này không hỗ trợ tải xuống nội dung trực tiếp</string>
 
-    <string name="download_ads_unsupported">IMA does not support offline ads</string>
+    <string name="download_ads_unsupported">IMA không hỗ trợ quảng cáo ngoại tuyến</string>
 
-    <string name="prefer_extension_decoders">Prefer extension decoders</string>
+    <string name="prefer_extension_decoders">Ưu tiên bộ giải mã mở rộng</string>
 
-    <string name="random_abr">Enable random ABR</string>
+    <string name="random_abr">Bật ABR ngẫu nhiên</string>
 
-    <string name="tunneling">Request multimedia tunneling</string>
+    <string name="tunneling">Yêu cầu đường hầm đa phương tiện</string>
 
-    <string name="download_start_error_offline_license">Failed to obtain offline license</string>
+    <string name="download_start_error_offline_license">Không thể có được giấy phép ngoại tuyến</string>
 
-    <string name="media_route_menu_title">Play on&#8230;</string>
+    <string name="media_route_menu_title">Phát trên&#8230;</string>
     <string name="label_download">TẢI XUỐNG</string>
     <string name="label_play_video_offline">Phát video ngoại tuyến</string>
 
@@ -125,7 +125,7 @@
     <string name="exo_download_paused_for_wifi">Tải xuống đang chờ WiFi</string>
     <string name="exo_download_removing">Xóa nội dung tải xuống</string>
     <string name="Video" />
-    <string name="AUDIO">Audio</string>
+    <string name="AUDIO">Âm thanh</string>
     <string name="title_text">Văn bản</string>
     <string name="profile">Hồ Sơ</string>
     <string name="dislay_name">Tên hiển thị</string>
@@ -135,10 +135,10 @@
     <string name="cancel">Quay lại</string>
     <string name="save">Lưu</string>
     <string name="edit">Sửa</string>
-    <string name="dislay_name_not_Emty">Tên không để trống</string>
+    <string name="dislay_name_not_Emty">Tên không được để trống</string>
     <string name="oldpassword">Mật khẩu cũ</string>
     <string name="send">Gửi</string>
-    <string name="email_is_empty">E-mail không để trống</string>
+    <string name="email_is_empty">E-mail không được để trống</string>
     <string name="rewarded_interstitial_ad_id_live">ca-app-pub-7182834619756575/4143557899</string>
     <string name="adUnitIdTest">ca-app-pub-3940256099942544/5224354917</string>
     <string name="play_list">Danh sách phát</string>
@@ -165,9 +165,21 @@
     <string name="like">Yêu thích</string>
     <string name="share">Chia sẻ</string>
     <string name="rate">Đánh giá</string>
-    <string name="download_and_watch_offline_n_wherever_you_are">Tải xuống và xem ngoại tuyến\\n\ndù bạn ở đâu</string>
+    <string name="watch_movie_in_n_virtual_reality">Xem phim trong\nthực tế ảo</string>
+    <string name="download_and_watch_offline_n_wherever_you_are">Tải xuống và xem ngoại tuyến\ndù bạn ở đâu</string>
     <string name="get_in">Bắt đầu</string>
     <string name="resume_download">Tiếp tục tải xuống</string>
+    <string name="info">Chi tiết</string>
+    <string name="data_not_available">Dữ liệu không có sẵn</string>
+    <string name="series_movie">Phim Bộ</string>
+    <string name="feature_film">Phim Lẻ</string>
+    <string name="cartoon">Phim Hoạt Hình</string>
+    <string name="tv_show">Chương trình truyền hình</string>
+    <string name="vietsub">Phụ đề tiếng Việt</string>
+    <string name="demos">Phim Thuyết Minh</string>
+    <string name="movies_now_showing">Phim Bộ Đang Chiếu</string>
+    <string name="completed_series">Phim Bộ Hoàn Thành</string>
+    <string name="language">Ngôn ngữ</string>
 
 
 </resources>

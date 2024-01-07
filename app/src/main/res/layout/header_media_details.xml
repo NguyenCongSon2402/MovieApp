@@ -175,7 +175,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:text="Coming soon"
+            android:text="@string/coming_soon_tab_label"
             android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold" />

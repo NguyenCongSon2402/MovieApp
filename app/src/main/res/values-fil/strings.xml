@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_id_live">ca-app-pub-7182834619756575~7738106401</string>
+    <string name="app_name">Movie Stream Hub</string>
+    <string name="home_tab_label">Bahay</string>
+    <string name="coming_soon_tab_label">Mag-uumapaw</string>
+    <string name="downloads_tab_label">Mga Download</string>
+    <string name="smart_downloads">Matalinong Mga Download</string>
+    <string name="introducing_downloads_for_you">I-download ang Nilalaman</string>
+    <string name="we_ll_download_a_personalized">I-download namin ang isang personalisadong seleksyon ng mga pelikula at palabas para sa iyo, kaya\'t laging mayroong mapapanood sa iyong telepono.</string>
+    <string name="set_up">ITAKDA</string>
+    <string name="find_something_to_download">Maghanap ng Isang Bagay na I-download</string>
+    <string name="success">Tagumpay</string>
+    <string name="http200">200</string>
+    <string name="http401">401</string>
+    <string name="http403">403</string>
+    <string name="http404">404</string>
+    <string name="http500">500</string>
+    <string name="more_like_this">Higit Pa Katulad Nito</string>
+    <string name="trailers_amp_more"><![CDATA[MGA TRAILER AT HIGIT PA]]></string>
+    <string name="choose_a_tab">Pumili ng isang tab</string>
+    <string name="sign_in">Mag-sign in</string>
+    <string name="account">Email</string>
+    <string name="password">Password</string>
+    <string name="forgot_passwor">Nakalimutan ang Password</string>
+    <string name="loggin">Mag-sign In</string>
+    <string name="signinwith">O mag-sign in gamit ang</string>
+    <string name="sign_up">Mag-sign up</string>
+    <string name="don_t_have_an_account">Wala kang account?</string>
+    <string name="confirm_password">Kumpirmahin ang Password</string>
+    <string name="privacy">Privacy</string>
+    <string name="remember_me" translatable="false">Tandaan mo ako</string>
+    <string name="and"> at </string>
+    <string name="policy">Patakaran</string>
+    <string name="i_agree_with">Sumasang-ayon ako sa </string>
+    <string name="username_not_empty">Hindi pwedeng walang Email</string>
+    <string name="password_not_empty">Hindi pwedeng walang Password</string>
+    <string name="registration_failed_please_try_again">Nabigo</string>
+    <string name="Manager">Pamamahala</string>
+    <string name="sign_up_success">Matagumpay na Pagsanib</string>
+    <string name="comment">Komento</string>
+    <string name="propose">Magmungkahi</string>
+    <string name="notification">Abiso</string>
+    <string name="my_list">Listahan ng Binati</string>
+    <string name="desception_my_list">Tuwing idinadagdag mo ang nilalaman sa Aking Listahan, ang gawang iyon ay magiging makikita rito</string>
+    <string name="title_button_my_list">Maghanap ng nilalaman na idadagdag</string>
+    <string name="watching_movie">Kasaysayan ng Pagsusuri</string>
+    <string name="favorite_list">Paboritong Listahan</string>
+    <string name="setting">Paggamit</string>
+    <string name="logout">Mag-logout</string>
+    <string name="support">Suporta</string>
+    <string name="label_download">I-DOWNLOAD</string>
+    <string name="label_play_video_offline">I-play ang Video Nang Offline</string>
+    <string name="app_id_def">CC1AD845</string>
+    <string name="app_id_drm">A12D4273</string>
+    <string name="exo_download_completed">Nakumpleto ang Pag-download</string>
+    <string name="exo_download_description">I-download</string>
+    <string name="exo_download_downloading">Nagdo-download</string>
+    <string name="exo_download_failed">Nabigo sa Pag-download</string>
+    <string name="exo_download_notification_channel_name">Mga Pag-download</string>
+    <string name="exo_download_paused">Itinigil ang Pag-download</string>
+    <string name="exo_download_paused_for_network">Naghihintay para sa network ang Pag-download</string>
+    <string name="exo_download_paused_for_wifi">Naghihintay para sa WiFi ang Pag-download</string>
+    <string name="exo_download_removing">Binubura ang mga i-download</string>
+    <string name="Video" />
+    <string name="AUDIO">Audio</string>
+    <string name="title_text">Teksto</string>
+    <string name="profile">Profile</string>
+    <string name="dislay_name">Pangalan na Ipapakita</string>
+    <string name="email">E-mail</string>
+    <string name="change_password">Baguhin ang Password</string>
+    <string name="dob">Petsa ng Kapanganakan</string>
+    <string name="cancel">Kanselahin</string>
+    <string name="save">I-save</string>
+    <string name="edit">I-edit</string>
+    <string name="dislay_name_not_Emty">Hindi pwedeng walang pangalan na ipapakita</string>
+    <string name="oldpassword">Lumang Password</string>
+    <string name="send">Ipadala</string>
+    <string name="email_is_empty">Hindi pwedeng walang E-mail</string>
+    <string name="rewarded_interstitial_ad_id_live">ca-app-pub-7182834619756575/4143557899</string>
+    <string name="adUnitIdTest">ca-app-pub-3940256099942544/5224354917</string>
+    <string name="play_list">Listahan ng Pagtutugma</string>
+    <string name="admin">Panel ng Admin</string>
+    <string name="category">Kategorya</string>
+    <string name="topic">Paksa</string>
+    <string name="country">Bansa</string>
+    <string name="delete">Tanggalin</string>
+    <string name="add">Idagdag</string>
+    <string name="edt">I-edit</string>
+    <string name="_return">Ibalik</string>
+    <string name="send_us_some">Magpadala ng Feedback!</string>
+    <string name="found_a_bug">Nakakita ng Bug? May Mungkahi? Punan ang form sa ibaba, at titingnan namin ito</string>
+    <string name="enter">Ilagay ang iyong feedback dito! (minsan 6 na character)</string>
+    <string name="submit">Ipasa</string>
+    <string name="crashes_bugs">Pagsabog at Mga Bug</string>
+    <string name="susggestion">Mungkahi</string>
+    <string name="others">Iba</string>
+    <string name="play">I-play</string>
+    <string name="introduction">Pakilala</string>
+    <string name="downloads">Mga Pag-download</string>
+    <string name="countries">Mga Bansa</string>
+    <string name="categories">Mga Kategorya</string>
+    <string name="like">Katulad</string>
+    <string name="share">Ibahagi</string>
+    <string name="rate">I-rate</string>
+    <string name="watch_movie_in_n_virtual_reality">Manood ng mga pelikula sa\nVirtual Reality</string>
+    <string name="download_and_watch_offline_n_wherever_you_are">I-download at manood nang offline\nkahit nasaan ka</string>
+    <string name="get_in">Pumasok</string>
+    <string name="resume_download">I-resume ang Pag-download</string>
+    <string name="info">Mga Detalye</string>
+    <string name="data_not_available">Wala ang Data</string>
+    <string name="series_movie">Serye ng Pelikula</string>
+    <string name="feature_film">Pelikulang Pangunahin</string>
+    <string name="cartoon">Cartoon</string>
+    <string name="tv_show">Palabas sa Telebisyon</string>
+    <string name="vietsub">Việt Sub</string>
+    <string name="demos">Mga Demo</string>
+    <string name="movies_now_showing">Mga Pelikula Na Ipinalabas Ngayon</string>
+    <string name="completed_series">Kumpletong Serye</string>
+    <string name="language">Wika</string>
+    <string name="language_english" translatable="false">Ingles</string>
+    <string name="language_spain" translatable="false">Espanyol</string>
+    <string name="language_portugal" translatable="false">Portuges</string>
+    <string name="language_hindi" translatable="false">Intsik</string>
+    <string name="language_germany" translatable="false">Aleman</string>
+    <string name="language_brazil" translatable="false">Pilipino</string>
+    <string name="language_japan" translatable="false">Hapones</string>
+    <string name="language_korean" translatable="false">Koreano</string>
+    <string name="language_france" translatable="false">Pranses</string>
+    <string name="language_china" translatable="false">Intsik</string>
+    <string name="language_indo" translatable="false">Indones</string>
+    <string name="language_dutch_nl" translatable="false">Hollandes</string>
+    <string name="language_danish_da" translatable="false">Danish</string>
+    <string name="language_zuhu_zu" translatable="false">Zulu</string>
+    <string name="language_viet_nam" translatable="false">Vietnamese</string>
+    <string name="language_irish_en_ie" translatable="false">Irish</string>
+    <string name="language_italian_it" translatable="false">Italyano</string>
+    <string name="language_polish_pl" translatable="false">Polish</string>
+    <string name="language_russian" translatable="false">Ruso</string>
+    <string name="language_turkish" translatable="false">Turko</string>
+    <string name="language_malay" translatable="false">Malay</string>
+    <string name="language_filipino" translatable="false">Pilipino</string>
+    <string name="language_ukrainian" translatable="false">Ukranyano</string>
+    <string name="language_afrikaans" translatable="false">Afrikano</string>
+</resources>

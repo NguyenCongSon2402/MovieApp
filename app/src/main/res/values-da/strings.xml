@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <string name="app_id_live">ca-app-pub-7182834619756575~7738106401</string>
+    <string name="app_name">Movie Stream Hub</string>
+    <string name="home_tab_label">Hjem</string>
+    <string name="coming_soon_tab_label">Kommer Snart</string>
+    <string name="downloads_tab_label">Downloads</string>
+    <string name="smart_downloads">Smart Downloads</string>
+    <string name="introducing_downloads_for_you">Download indhold</string>
+    <string name="we_ll_download_a_personalized">Vi downloader et personligt udvalg af film og shows til dig, så der altid er noget at se på din telefon.</string>
+    <string name="set_up">OPSÆTNING</string>
+    <string name="find_something_to_download">Find Noget at Downloade</string>
+    <string name="success">Succes</string>
+    <string name="http200">200</string>
+    <string name="http401">401</string>
+    <string name="http403">403</string>
+    <string name="http404">404</string>
+    <string name="http500">500</string>
+    <string name="more_like_this">MERE SOM DETTE</string>
+    <string name="trailers_amp_more"><![CDATA[TRAILERE & MERE]]></string>
+    <string name="choose_a_tab">Vælg en fane</string>
+    <string name="sign_in">Log ind</string>
+    <string name="account">E-mail</string>
+    <string name="password">Adgangskode</string>
+    <string name="forgot_passwor">Glemt adgangskode</string>
+    <string name="loggin">Log Ind</string>
+    <string name="signinwith">Eller log ind med</string>
+    <string name="sign_up">Tilmeld dig</string>
+    <string name="don_t_have_an_account">Har du ikke en konto?</string>
+    <string name="confirm_password">Bekræft adgangskode</string>
+    <string name="privacy">Privatliv</string>
+    <string name="remember_me" translatable="false">Husk mig</string>
+    <string name="and"> og </string>
+    <string name="policy">Politik</string>
+    <string name="i_agree_with">Jeg er enig med </string>
+    <string name="username_not_empty">E-mail må ikke være tom</string>
+    <string name="password_not_empty">Adgangskode må ikke være tom</string>
+    <string name="registration_failed_please_try_again">Mislykkedes</string>
+    <string name="Manager">Manager</string>
+    <string name="sign_up_success">Tilmelding Vellykket</string>
+    <string name="comment">Kommentar</string>
+    <string name="propose">Foreslå</string>
+    <string name="notification">Underretning</string>
+    <string name="my_list">Kommenteret Liste</string>
+    <string name="desception_my_list">Hver gang du tilføjer indhold til Min Liste, vil det arbejde dukke op her</string>
+    <string name="title_button_my_list">Find indhold at tilføje</string>
+    <string name="watching_movie">Seerhistorie</string>
+    <string name="favorite_list">Foretrukken Liste</string>
+    <string name="setting">Indstillinger</string>
+    <string name="logout">Log Ud</string>
+    <string name="support">Support</string>
+
+    <string name="label_download">DOWNLOAD</string>
+    <string name="label_play_video_offline">Afspil video offline</string>
+
+    <string name="app_id_def">CC1AD845</string>
+    <string name="app_id_drm">A12D4273</string>
+    <string name="exo_download_completed">Download fuldført</string>
+    <string name="exo_download_description">Download</string>
+    <string name="exo_download_downloading">Downloader</string>
+    <string name="exo_download_failed">Download mislykkedes</string>
+    <string name="exo_download_notification_channel_name">Downloads</string>
+    <string name="exo_download_paused">Downloads sat på pause</string>
+    <string name="exo_download_paused_for_network">Downloads venter på netværk</string>
+    <string name="exo_download_paused_for_wifi">Downloads venter på WiFi</string>
+    <string name="exo_download_removing">Fjerner downloads</string>
+    <string name="Video" />
+    <string name="AUDIO">Lyd</string>
+    <string name="title_text">Tekst</string>
+    <string name="profile">Profil</string>
+    <string name="dislay_name">Visningsnavn</string>
+    <string name="email">E-mail</string>
+    <string name="change_password">Ændr adgangskode</string>
+    <string name="dob">Fødselsdag</string>
+    <string name="cancel">Annuller</string>
+    <string name="save">Gem</string>
+    <string name="edit">Rediger</string>
+    <string name="dislay_name_not_Emty">Visningsnavn må ikke være tomt</string>
+    <string name="oldpassword">Gammel adgangskode</string>
+    <string name="send">Send</string>
+    <string name="email_is_empty">E-mail må ikke være tomt</string>
+    <string name="rewarded_interstitial_ad_id_live">ca-app-pub-7182834619756575/4143557899</string>
+    <string name="adUnitIdTest">ca-app-pub-3940256099942544/5224354917</string>
+    <string name="play_list">Spilleliste</string>
+    <string name="admin">Adminpanel</string>
+    <string name="category">Kategori</string>
+    <string name="topic">Emne</string>
+    <string name="country">Land</string>
+    <string name="delete">Slet</string>
+    <string name="add">Tilføj</string>
+    <string name="edt">Rediger</string>
+    <string name="_return">Returnér</string>
+    <string name="send_us_some">Send os nogle feedback!</string>
+    <string name="found_a_bug">Har du fundet en fejl? Har du en suggestion? Udfyld formularen nedenfor, og vi kigger på det</string>
+    <string name="enter">Indtast din feedback her! (mindst 6 tegn)</string>
+    <string name="submit">Indsend</string>
+    <string name="crashes_bugs">Nedbrud og fejl</string>
+    <string name="susggestion">Forslag</string>
+    <string name="others">Andre</string>
+    <string name="play">Afspil</string>
+    <string name="introduction">Introduktion</string>
+    <string name="downloads">Downloads</string>
+    <string name="countries">Lande</string>
+    <string name="categories">Kategorier</string>
+    <string name="like">Synes godt om</string>
+    <string name="share">Del</string>
+    <string name="rate">Bedøm</string>
+    <string name="watch_movie_in_n_virtual_reality">Se film i\nVirtuel Virkelighed</string>
+    <string name="download_and_watch_offline_n_wherever_you_are">Download og se offline\nhvor som helst, du er</string>
+    <string name="get_in">Kom ind</string>
+    <string name="resume_download">Genoptag download</string>
+    <string name="info">Detaljer</string>
+    <string name="data_not_available">Data ikke tilgængelige</string>
+    <string name="series_movie">Seriefilm</string>
+    <string name="feature_film">Spillefilm</string>
+    <string name="cartoon">Tegnefilm</string>
+    <string name="tv_show">TV-serie</string>
+    <string name="vietsub">Vietsub</string>
+    <string name="demos">Demos</string>
+    <string name="movies_now_showing">Film i biografen nu</string>
+    <string name="completed_series">Afsluttede serier</string>
+    <string name="language">Sprog</string>
+    <string name="language_english" translatable="false">Engelsk</string>
+    <string name="language_spain" translatable="false">Spansk</string>
+    <string name="language_portugal" translatable="false">Portugisisk</string>
+    <string name="language_hindi" translatable="false">Hindi</string>
+    <string name="language_germany" translatable="false">Tysk</string>
+    <string name="language_brazil" translatable="false">Portugisisk (Brasilien)</string>
+    <string name="language_japan" translatable="false">Japansk</string>
+    <string name="language_korean" translatable="false">Koreansk</string>
+    <string name="language_france" translatable="false">Fransk</string>
+    <string name="language_china" translatable="false">Kinesisk</string>
+    <string name="language_indo" translatable="false">Indonesisk</string>
+    <string name="language_dutch_nl" translatable="false">Hollandsk</string>
+    <string name="language_danish_da" translatable="false">Dansk</string>
+    <string name="language_zuhu_zu" translatable="false">Zulu</string>
+    <string name="language_viet_nam" translatable="false">Vietnamesisk</string>
+    <string name="language_irish_en_ie" translatable="false">Irsk</string>
+    <string name="language_italian_it" translatable="false">Italiensk</string>
+    <string name="language_polish_pl" translatable="false">Polsk</string>
+    <string name="language_russian" translatable="false">Russisk</string>
+    <string name="language_turkish" translatable="false">Tyrkisk</string>
+    <string name="language_malay" translatable="false">Malaysisk</string>
+    <string name="language_filipino" translatable="false">Filippinsk</string>
+    <string name="language_ukrainian" translatable="false">Ukrainsk</string>
+    <string name="language_afrikaans" translatable="false">Afrikaans</string>
+</resources>
