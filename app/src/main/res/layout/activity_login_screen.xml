@@ -103,8 +103,7 @@
                     android:checked="true"
                     android:text="Remember me"
                     android:textColor="@color/white"
-                    android:textSize="15sp"
-                    android:visibility="gone" />
+                    android:textSize="15sp" />
 
                 <TextView
                     android:id="@+id/txt_forgot"

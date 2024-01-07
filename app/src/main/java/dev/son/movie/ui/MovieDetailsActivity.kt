@@ -431,8 +431,8 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     }
 
     private fun openFullscreenDialog() {
-        views.toolbar.hide()
-        views.content.hide()
+//        views.toolbar.hide()
+//        views.content.hide()
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         (views.player.parent as ViewGroup).removeView(views.player)
         mFullScreenDialog.addContentView(
