@@ -26,7 +26,7 @@ import dev.son.movie.network.models.movie.Movie
 import dev.son.movie.ui.MovieDetailsActivity
 import dev.son.movie.ui.home.HomeViewAction
 import dev.son.movie.ui.home.HomeViewModel
-import dev.son.movie.utils.checkStatusApiRes
+
 
 
 class ComingSoonFragment : TrackingBaseFragment<FragmentComingSoonBinding>() {
@@ -144,12 +144,12 @@ class ComingSoonFragment : TrackingBaseFragment<FragmentComingSoonBinding>() {
             }
 
             is Fail -> {
-                Toast.makeText(
-                    activity,
-                    "genre " +
-                            checkStatusApiRes(it.genre),
-                    Toast.LENGTH_SHORT
-                ).show()
+//                Toast.makeText(
+//                    activity,
+//                    "genre " +
+//                            checkStatusApiRes(it.genre),
+//                    Toast.LENGTH_SHORT
+//                ).show()
             }
 
             else -> {}
@@ -162,7 +162,7 @@ class ComingSoonFragment : TrackingBaseFragment<FragmentComingSoonBinding>() {
 
             is Fail -> {
                 homeViewModel.handleRemoveStateGetComingSoon()
-                Log.d(TAG, checkStatusApiRes(it.movieComingSoon).toString())
+                //Log.d(TAG, checkStatusApiRes(it.movieComingSoon).toString())
             }
 
             else -> {}

@@ -54,7 +54,6 @@ import dev.son.movie.network.models.user.User
 import dev.son.movie.ui.home.HomeViewAction
 import dev.son.movie.ui.home.HomeViewModel
 import dev.son.movie.ui.home.HomeViewState
-import dev.son.movie.utils.checkStatusApiRes
 import dev.son.movie.utils.extractVideoIdFromUrl
 import dev.son.movie.utils.hide
 import dev.son.movie.utils.hideKeyboard
@@ -132,11 +131,11 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
                 }
 
                 is Fail -> {
-                    Toast.makeText(
-                        this,
-                        getString(checkStatusApiRes(it.getMoviesRecommendation)),
-                        Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(
+//                        this,
+//                        getString(checkStatusApiRes(it.getMoviesRecommendation)),
+//                        Toast.LENGTH_SHORT
+//                    ).show()
                     homeViewModel.handleRemoveStateCategoriesMovies()
                 }
 
@@ -150,9 +149,9 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
                 }
 
                 is Fail -> {
-                    Toast.makeText(
-                        this, getString(checkStatusApiRes(it.movieRateRes)), Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(
+//                        this, getString(checkStatusApiRes(it.movieRateRes)), Toast.LENGTH_SHORT
+//                    ).show()
                     homeViewModel.handleRemoveStateMovieRateRes()
                 }
 
@@ -164,9 +163,9 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
                 }
 
                 is Fail -> {
-                    Toast.makeText(
-                        this, getString(checkStatusApiRes(it.setmovieRate)), Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(
+//                        this, getString(checkStatusApiRes(it.setmovieRate)), Toast.LENGTH_SHORT
+//                    ).show()
                     homeViewModel.handleRemoveStateSetmovieRate()
                 }
 
@@ -186,9 +185,9 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
                 }
 
                 is Fail -> {
-                    Toast.makeText(
-                        this, getString(checkStatusApiRes(it.addFavorite)), Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(
+//                        this, getString(checkStatusApiRes(it.addFavorite)), Toast.LENGTH_SHORT
+//                    ).show()
                     homeViewModel.handleRemoveAddFavorite()
                 }
 
@@ -207,9 +206,9 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
                 }
 
                 is Fail -> {
-                    Toast.makeText(
-                        this, getString(checkStatusApiRes(it.removeFavorite)), Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(
+//                        this, getString(checkStatusApiRes(it.removeFavorite)), Toast.LENGTH_SHORT
+//                    ).show()
                     homeViewModel.handleRemoveStateRemoveFavorite()
                 }
 
@@ -239,9 +238,9 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
                 }
 
                 is Fail -> {
-                    Toast.makeText(
-                        this, getString(checkStatusApiRes(it.movieById)), Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(
+//                        this, getString(checkStatusApiRes(it.movieById)), Toast.LENGTH_SHORT
+//                    ).show()
                     homeViewModel.handleRemoveGetMovieById()
                 }
 
@@ -257,9 +256,9 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
                 }
 
                 is Fail -> {
-                    Toast.makeText(
-                        this, getString(checkStatusApiRes(it.getCommentByMovie)), Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(
+//                        this, getString(checkStatusApiRes(it.getCommentByMovie)), Toast.LENGTH_SHORT
+//                    ).show()
                     homeViewModel.handleRemoveStateCommentByMovie()
                 }
 
@@ -276,11 +275,11 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
                 }
 
                 is Fail -> {
-                    Toast.makeText(
-                        this,
-                        "createComment" + getString(checkStatusApiRes(it.createComment)),
-                        Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(
+//                        this,
+//                        "createComment" + getString(checkStatusApiRes(it.createComment)),
+//                        Toast.LENGTH_SHORT
+//                    ).show()
                     homeViewModel.handleRemoveStateCreateComment()
                 }
 
@@ -431,8 +430,8 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
     }
 
     private fun openFullscreenDialog() {
-//        views.toolbar.hide()
-//        views.content.hide()
+        views.toolbar.hide()
+        views.content.hide()
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         (views.player.parent as ViewGroup).removeView(views.player)
         mFullScreenDialog.addContentView(
@@ -519,7 +518,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
 
     private fun handleEpisodeClick(videoURL: String, position: Int) {
 
-        Toast.makeText(this, " Tập ${position + 1}", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, " Tập ${position + 1}", Toast.LENGTH_SHORT).show()
         playMovie(videoURL)
         download(videoURL, position)
     }

@@ -36,7 +36,6 @@ import dev.son.movie.ui.login.AuthViewModel
 import dev.son.movie.ui.rateApp.RateAppActivity
 import dev.son.movie.ui.search.SearchActivity
 import dev.son.movie.utils.DialogUtil
-import dev.son.movie.utils.checkStatusApiRes
 import dev.son.movie.utils.hide
 import dev.son.movie.utils.setSingleClickListener
 import dev.son.movie.utils.show
@@ -188,11 +187,11 @@ class MoreFragment : TrackingBaseFragment<FragmentMoreBinding>() {
             is Fail -> {
                 views.mylis.hide()
                 views.layoutEmptyList.show()
-                Toast.makeText(
-                    requireContext(),
-                    getString(checkStatusApiRes(it.getCommentedMovies)),
-                    Toast.LENGTH_SHORT
-                ).show()
+//                Toast.makeText(
+//                    requireContext(),
+//                    getString(checkStatusApiRes(it.getCommentedMovies)),
+//                    Toast.LENGTH_SHORT
+//                ).show()
                 authViewModel.handleRemoveStateGetCommentedMovies()
             }
 
@@ -215,11 +214,11 @@ class MoreFragment : TrackingBaseFragment<FragmentMoreBinding>() {
             is Fail -> {
                 views.mylis.hide()
                 views.layoutEmptyList.show()
-                Toast.makeText(
-                    requireContext(),
-                    getString(checkStatusApiRes(it.getFavoriteList)),
-                    Toast.LENGTH_SHORT
-                ).show()
+//                Toast.makeText(
+//                    requireContext(),
+//                    getString(checkStatusApiRes(it.getFavoriteList)),
+//                    Toast.LENGTH_SHORT
+//                ).show()
                 authViewModel.handleRemoveStateGetFavorite()
             }
 

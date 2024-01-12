@@ -54,7 +54,6 @@ import dev.son.movie.network.models.user.User
 import dev.son.movie.ui.home.HomeViewAction
 import dev.son.movie.ui.home.HomeViewModel
 import dev.son.movie.ui.home.HomeViewState
-import dev.son.movie.utils.checkStatusApiRes
 import dev.son.movie.utils.extractVideoIdFromUrl
 import dev.son.movie.utils.hide
 import dev.son.movie.utils.hideKeyboard
@@ -141,9 +140,9 @@ class PlayMovieOfflineActivity : TrackingBaseActivity<ActivityMovieDetailsBindin
                 }
 
                 is Fail -> {
-                    Toast.makeText(
-                        this, getString(checkStatusApiRes(it.getMoviesRecommendation)), Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(
+//                        this, getString(checkStatusApiRes(it.getMoviesRecommendation)), Toast.LENGTH_SHORT
+//                    ).show()
                     homeViewModel.handleRemoveStateMoviesRecommendation()
                 }
 
@@ -157,9 +156,9 @@ class PlayMovieOfflineActivity : TrackingBaseActivity<ActivityMovieDetailsBindin
                 }
 
                 is Fail -> {
-                    Toast.makeText(
-                        this, getString(checkStatusApiRes(it.movieRateRes)), Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(
+//                        this, getString(checkStatusApiRes(it.movieRateRes)), Toast.LENGTH_SHORT
+//                    ).show()
                     homeViewModel.handleRemoveStateMovieRateRes()
                 }
 
@@ -171,9 +170,9 @@ class PlayMovieOfflineActivity : TrackingBaseActivity<ActivityMovieDetailsBindin
                 }
 
                 is Fail -> {
-                    Toast.makeText(
-                        this, getString(checkStatusApiRes(it.setmovieRate)), Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(
+//                        this, getString(checkStatusApiRes(it.setmovieRate)), Toast.LENGTH_SHORT
+//                    ).show()
                     homeViewModel.handleRemoveStateSetmovieRate()
                 }
 
@@ -193,9 +192,9 @@ class PlayMovieOfflineActivity : TrackingBaseActivity<ActivityMovieDetailsBindin
                 }
 
                 is Fail -> {
-                    Toast.makeText(
-                        this, getString(checkStatusApiRes(it.addFavorite)), Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(
+//                        this, getString(checkStatusApiRes(it.addFavorite)), Toast.LENGTH_SHORT
+//                    ).show()
                     homeViewModel.handleRemoveAddFavorite()
                 }
 
@@ -214,9 +213,9 @@ class PlayMovieOfflineActivity : TrackingBaseActivity<ActivityMovieDetailsBindin
                 }
 
                 is Fail -> {
-                    Toast.makeText(
-                        this, getString(checkStatusApiRes(it.removeFavorite)), Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(
+//                        this, getString(checkStatusApiRes(it.removeFavorite)), Toast.LENGTH_SHORT
+//                    ).show()
                     homeViewModel.handleRemoveStateRemoveFavorite()
                 }
 
@@ -251,9 +250,9 @@ class PlayMovieOfflineActivity : TrackingBaseActivity<ActivityMovieDetailsBindin
                 }
 
                 is Fail -> {
-                    Toast.makeText(
-                        this, getString(checkStatusApiRes(it.movieById)), Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(
+//                        this, getString(checkStatusApiRes(it.movieById)), Toast.LENGTH_SHORT
+//                    ).show()
                     homeViewModel.handleRemoveGetMovieById()
                     showLoader(false)
                 }
@@ -270,9 +269,9 @@ class PlayMovieOfflineActivity : TrackingBaseActivity<ActivityMovieDetailsBindin
                 }
 
                 is Fail -> {
-                    Toast.makeText(
-                        this, getString(checkStatusApiRes(it.getCommentByMovie)), Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(
+//                        this, getString(checkStatusApiRes(it.getCommentByMovie)), Toast.LENGTH_SHORT
+//                    ).show()
                     homeViewModel.handleRemoveStateCommentByMovie()
                 }
 
@@ -289,11 +288,11 @@ class PlayMovieOfflineActivity : TrackingBaseActivity<ActivityMovieDetailsBindin
                 }
 
                 is Fail -> {
-                    Toast.makeText(
-                        this,
-                        "createComment" + getString(checkStatusApiRes(it.createComment)),
-                        Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(
+//                        this,
+//                        "createComment" + getString(checkStatusApiRes(it.createComment)),
+//                        Toast.LENGTH_SHORT
+//                    ).show()
                     homeViewModel.handleRemoveStateCreateComment()
                 }
 

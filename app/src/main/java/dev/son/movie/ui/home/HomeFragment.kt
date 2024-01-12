@@ -27,7 +27,6 @@ import dev.son.movie.network.models.movie.Genre
 import dev.son.movie.network.models.movie.Movie
 import dev.son.movie.ui.MovieDetailsActivity
 import dev.son.movie.ui.search.SearchActivity
-import dev.son.movie.utils.checkStatusApiRes
 import dev.son.movie.utils.hide
 import dev.son.movie.utils.show
 import kotlin.math.min
@@ -198,12 +197,12 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             }
 
             is Fail -> {
-                Toast.makeText(
-                    activity,
-                    "genre " +
-                            checkStatusApiRes(it.genre),
-                    Toast.LENGTH_SHORT
-                ).show()
+//                Toast.makeText(
+//                    activity,
+//                    "genre " +
+//                            checkStatusApiRes(it.genre),
+//                    Toast.LENGTH_SHORT
+//                ).show()
                 homeViewModel.handleRemoveStateGetGenre()
             }
 
@@ -216,12 +215,12 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             }
 
             is Fail -> {
-                Toast.makeText(
-                    activity,
-                    "countriesMovies " +
-                            checkStatusApiRes(it.countriesMovies),
-                    Toast.LENGTH_SHORT
-                ).show()
+//                Toast.makeText(
+//                    activity,
+//                    "countriesMovies " +
+//                            checkStatusApiRes(it.countriesMovies),
+//                    Toast.LENGTH_SHORT
+//                ).show()
                 homeViewModel.handleRemoveStateCountries()
             }
 
@@ -247,12 +246,12 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             }
 
             is Fail -> {
-                Toast.makeText(
-                    activity,
-                    "phimBo " +
-                            checkStatusApiRes(it.moviePhimBo),
-                    Toast.LENGTH_SHORT
-                ).show()
+//                Toast.makeText(
+//                    activity,
+//                    "phimBo " +
+//                            checkStatusApiRes(it.moviePhimBo),
+//                    Toast.LENGTH_SHORT
+//                ).show()
                 homeViewModel.handleRemoveStateGetGenre()
             }
 
@@ -279,12 +278,12 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             }
 
             is Fail -> {
-                Toast.makeText(
-                    activity,
-                    "phimLe " +
-                            checkStatusApiRes(it.moviePhimLe),
-                    Toast.LENGTH_SHORT
-                ).show()
+//                Toast.makeText(
+//                    activity,
+//                    "phimLe " +
+//                            checkStatusApiRes(it.moviePhimLe),
+//                    Toast.LENGTH_SHORT
+//                ).show()
                 homeViewModel.handleRemoveStatePhimle()
             }
 
@@ -311,12 +310,12 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             }
 
             is Fail -> {
-                Toast.makeText(
-                    activity,
-                    "phimHoatHinh " +
-                            checkStatusApiRes(it.phimHoatHinh),
-                    Toast.LENGTH_SHORT
-                ).show()
+//                Toast.makeText(
+//                    activity,
+//                    "phimHoatHinh " +
+//                            checkStatusApiRes(it.phimHoatHinh),
+//                    Toast.LENGTH_SHORT
+//                ).show()
                 homeViewModel.handleRemoveStatePhimHoatHinh()
             }
 
@@ -343,12 +342,12 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             }
 
             is Fail -> {
-                Toast.makeText(
-                    activity,
-                    "tvShow " +
-                            checkStatusApiRes(it.movieTvShow),
-                    Toast.LENGTH_SHORT
-                ).show()
+//                Toast.makeText(
+//                    activity,
+//                    "tvShow " +
+//                            checkStatusApiRes(it.movieTvShow),
+//                    Toast.LENGTH_SHORT
+//                ).show()
                 homeViewModel.handleRemoveStateTvShows()
             }
 
@@ -375,12 +374,12 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             }
 
             is Fail -> {
-                Toast.makeText(
-                    activity,
-                    "VietSub " +
-                            checkStatusApiRes(it.movieVietSub),
-                    Toast.LENGTH_SHORT
-                ).show()
+//                Toast.makeText(
+//                    activity,
+//                    "VietSub " +
+//                            checkStatusApiRes(it.movieVietSub),
+//                    Toast.LENGTH_SHORT
+//                ).show()
                 homeViewModel.handleRemoveStateTvShows()
             }
 
@@ -407,12 +406,12 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             }
 
             is Fail -> {
-                Toast.makeText(
-                    activity,
-                    "ThuyetMinh " +
-                            checkStatusApiRes(it.movieThuyetMinh),
-                    Toast.LENGTH_SHORT
-                ).show()
+//                Toast.makeText(
+//                    activity,
+//                    "ThuyetMinh " +
+//                            checkStatusApiRes(it.movieThuyetMinh),
+//                    Toast.LENGTH_SHORT
+//                ).show()
                 homeViewModel.handleRemoveStateThuyetMinh()
             }
 
@@ -439,12 +438,12 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             }
 
             is Fail -> {
-                Toast.makeText(
-                    activity,
-                    "dangChieu " +
-                            checkStatusApiRes(it.movieDangChieu),
-                    Toast.LENGTH_SHORT
-                ).show()
+//                Toast.makeText(
+//                    activity,
+//                    "dangChieu " +
+//                            checkStatusApiRes(it.movieDangChieu),
+//                    Toast.LENGTH_SHORT
+//                ).show()
                 homeViewModel.handleRemoveStatePhimBoDangChieu()
             }
 
@@ -471,12 +470,12 @@ class HomeFragment : TrackingBaseFragment<FragmentFeedBinding>() {
             }
 
             is Fail -> {
-                Toast.makeText(
-                    activity,
-                    "haonThanh " +
-                            checkStatusApiRes(it.movieHoanThanh),
-                    Toast.LENGTH_SHORT
-                ).show()
+//                Toast.makeText(
+//                    activity,
+//                    "haonThanh " +
+//                            checkStatusApiRes(it.movieHoanThanh),
+//                    Toast.LENGTH_SHORT
+//                ).show()
                 homeViewModel.handleRemoveStatePhimBoHoanThanh()
             }
 

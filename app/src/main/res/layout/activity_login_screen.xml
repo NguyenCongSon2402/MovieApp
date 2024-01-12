@@ -74,6 +74,8 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
                 android:layout_marginBottom="16dp"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="@color/gray"
                 android:background="@drawable/splash_btn_background"
                 app:hintEnabled="false">
 

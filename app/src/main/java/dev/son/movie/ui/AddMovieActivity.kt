@@ -42,8 +42,6 @@ import dev.son.movie.ui.search.SearchViewAction
 import dev.son.movie.ui.search.SearchViewModel
 import dev.son.movie.ui.search.SearchViewState
 import dev.son.movie.utils.PermissionUtils
-import dev.son.movie.utils.checkStatusApiRes
-import dev.son.movie.utils.convertBitmapToBase64
 import dev.son.movie.utils.hide
 import dev.son.movie.utils.show
 import javax.inject.Inject
@@ -513,12 +511,12 @@ class AddMovieActivity : TrackingBaseActivity<ActivityAddMovieBinding>(), Search
 
                 is Fail -> {
                     //views.loading.hide()
-                    Toast.makeText(
-                        this,
-                        "genre " +
-                                checkStatusApiRes(it.genre),
-                        Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(
+//                        this,
+//                        "genre " +
+//                                checkStatusApiRes(it.genre),
+//                        Toast.LENGTH_SHORT
+//                    ).show()
                     homeViewModel.handleRemoveStateGetGenre()
                 }
 
@@ -551,12 +549,12 @@ class AddMovieActivity : TrackingBaseActivity<ActivityAddMovieBinding>(), Search
                 }
 
                 is Fail -> {
-                    Toast.makeText(
-                        this,
-                        "countriesMovies " +
-                                checkStatusApiRes(it.countriesMovies),
-                        Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(
+//                        this,
+//                        "countriesMovies " +
+//                                checkStatusApiRes(it.countriesMovies),
+//                        Toast.LENGTH_SHORT
+//                    ).show()
                     homeViewModel.handleRemoveStateCountries()
                 }
 
@@ -575,12 +573,12 @@ class AddMovieActivity : TrackingBaseActivity<ActivityAddMovieBinding>(), Search
                 }
 
                 is Fail -> {
-                    Toast.makeText(
-                        this,
-                        "addMovie " +
-                                checkStatusApiRes(it.addMovie),
-                        Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(
+//                        this,
+//                        "addMovie " +
+//                                checkStatusApiRes(it.addMovie),
+//                        Toast.LENGTH_SHORT
+//                    ).show()
                     searchViewModel.handleRemoveStateAddMovie()
                 }
 
@@ -597,12 +595,12 @@ class AddMovieActivity : TrackingBaseActivity<ActivityAddMovieBinding>(), Search
                 }
 
                 is Fail -> {
-                    Toast.makeText(
-                        this,
-                        "updateMovie " +
-                                checkStatusApiRes(it.updateMovie),
-                        Toast.LENGTH_SHORT
-                    ).show()
+//                    Toast.makeText(
+//                        this,
+//                        "updateMovie " +
+//                                checkStatusApiRes(it.updateMovie),
+//                        Toast.LENGTH_SHORT
+//                    ).show()
                     searchViewModel.handleRemoveStateUpdateMovie()
                 }
 

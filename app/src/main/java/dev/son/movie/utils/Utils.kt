@@ -84,33 +84,33 @@ fun convertStringToFormattedDate(dateString: String): String {
 }
 
 
-fun <T> checkStatusApiRes(err: Fail<T>): Int {
-    return when (err.error.message!!.trim()) {
-        "HTTP 200" -> {
-            R.string.http200
-        }
-
-        "HTTP 401" -> {
-            R.string.http401
-        }
-
-        "HTTP 403" -> {
-            R.string.http403
-        }
-
-        "HTTP 404" -> {
-            R.string.http404
-        }
-
-        "HTTP 500" -> {
-            R.string.http500
-        }
-
-        else -> {
-            R.string.http500
-        }
-    }
-}
+//fun <T> checkStatusApiRes(err: Fail<T>): Int {
+//    return when (err.error.message!!.trim()) {
+//        "HTTP 200" -> {
+//            R.string.http200
+//        }
+//
+//        "HTTP 401" -> {
+//            R.string.http401
+//        }
+//
+//        "HTTP 403" -> {
+//            R.string.http403
+//        }
+//
+//        "HTTP 404" -> {
+//            R.string.http404
+//        }
+//
+//        "HTTP 500" -> {
+//            R.string.http500
+//        }
+//
+//        else -> {
+//            R.string.http500
+//        }
+//    }
+//}
 
 fun showDownloadConfirmationDialog(context: Context, onDownloadConfirmed: () -> Unit) {
     val dialogBuilder = AlertDialog.Builder(context)
