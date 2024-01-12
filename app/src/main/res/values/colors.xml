@@ -24,4 +24,5 @@
     <color name="back_gr_sendus">#BBCFF8</color>
     <color name="text_color">#333333</color>
     <color name="color_primary">#2076FF</color>
+    <color name="gnt_gray">#808080</color>
 </resources>

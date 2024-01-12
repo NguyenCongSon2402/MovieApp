@@ -38,8 +38,11 @@
                 app:titleTextColor="@color/text_primary" />
 
             <RelativeLayout
+                android:id="@+id/ll_img"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true">
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/img_profile"
@@ -134,11 +137,11 @@
                     android:id="@+id/edt_pass"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:layout_marginBottom="20dp"
                     android:enabled="false"
-                    android:layout_centerHorizontal="true"
                     android:inputType="textEmailAddress"
                     android:textColor="@color/white"
                     android:textStyle="bold"
@@ -148,8 +151,8 @@
                     android:id="@+id/img_changePass"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:layout_centerHorizontal="true"
                     android:layout_alignEnd="@id/edt_pass"
+                    android:layout_centerHorizontal="true"
                     android:src="@drawable/img_change_pass" />
 
                 <ImageView

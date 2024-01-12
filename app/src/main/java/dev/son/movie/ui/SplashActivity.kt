@@ -10,6 +10,7 @@ import com.airbnb.mvrx.viewModel
 import dev.son.movie.R
 
 import dev.son.movie.TrackingApplication
+import dev.son.movie.adsutils.MyInterstitialAds
 import dev.son.movie.core.TrackingBaseActivity
 import dev.son.movie.data.local.UserPreferences
 import dev.son.movie.databinding.ActivitySplashBinding
@@ -29,6 +30,8 @@ class SplashActivity : TrackingBaseActivity<ActivitySplashBinding>(), AuthViewMo
     private val authViewModel: AuthViewModel by viewModel()
     private var token: String? = null
 
+    private lateinit var myInterstitialAds: MyInterstitialAds
+
     @Inject
     lateinit var userPreferences: UserPreferences
 
@@ -36,23 +39,23 @@ class SplashActivity : TrackingBaseActivity<ActivitySplashBinding>(), AuthViewMo
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as TrackingApplication).trackingComponent.inject(this)
         super.onCreate(savedInstanceState)
-        fetchData()
+        interstitial()
         resultData()
-        views.button.setSingleClickListener {
-//            if (currentUser != null) {
-//                Intent(this, BottomNavActivity::class.java).also {
-//                    it.putExtra("userId", currentUser.uid)
-//                    startActivity(it)
-//                    finish()
-//                }
-//            } else {
-//                Intent(this, LoginActivity::class.java).also {
-//                    startActivity(it)
-//                    finish()
-//                }
-//            }
+    }
+
+
+    private fun interstitial() {
+        myInterstitialAds = MyInterstitialAds(this)
+        myInterstitialAds.loadInterstitialAds(R.string.interstitial_ads1) { success ->
+            if (success) {
+                // Quảng cáo đã được tải thành công
+                fetchData()
+            } else {
+                fetchData()
+            }
         }
     }
+
 
     private fun resultData() {
         authViewModel.subscribe(this) { it1 ->
@@ -63,28 +66,38 @@ class SplashActivity : TrackingBaseActivity<ActivitySplashBinding>(), AuthViewMo
                             val isUserSaved =
                                 userPreferences.saveUserData(it1.currentUser.invoke().data)
                             if (isUserSaved) {
-                                val intent = Intent(this@SplashActivity, BottomNavActivity::class.java)
-                                startActivity(intent)
-                                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                                val intent =
+                                    Intent(this@SplashActivity, BottomNavActivity::class.java)
+                                myInterstitialAds.showInterstitialAds {
+                                    startActivity(intent)
+                                }
+                                overridePendingTransition(
+                                    R.anim.slide_in_right,
+                                    R.anim.slide_out_left
+                                )
                                 finish()
                             } else {
                                 // Xử lý khi lưu token không thành công
-                                Toast.makeText(this@SplashActivity, "Vui Lòng thử lại", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@SplashActivity,
+                                    "Vui Lòng thử lại",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     } else {
-                        Intent(this, LoginActivity::class.java).also {
-                            startActivity(it)
-                            finish()
+                        myInterstitialAds.showInterstitialAds {
+                            startActivity(Intent(this, LoginActivity::class.java))
                         }
+                        finish()
                     }
                 }
 
                 is Fail -> {
-                    Intent(this, LoginActivity::class.java).also {
-                        startActivity(it)
-                        finish()
+                    myInterstitialAds.showInterstitialAds {
+                        startActivity(Intent(this, LoginActivity::class.java))
                     }
+                    finish()
                 }
 
                 else -> {}
@@ -99,10 +112,10 @@ class SplashActivity : TrackingBaseActivity<ActivitySplashBinding>(), AuthViewMo
         if (token != null) {
             authViewModel.handle(AuthViewAction.getCurrentUser)
         } else {
-            Intent(this, LoginActivity::class.java).also {
-                startActivity(it)
-                finish()
+            myInterstitialAds.showInterstitialAds {
+                startActivity(Intent(this, LoginActivity::class.java))
             }
+            finish()
         }
 
     }

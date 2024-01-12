@@ -191,5 +191,8 @@
     <string name="language_korean" translatable="false">한국어</string>
     <string name="language_france" translatable="false">Francais</string>
     <string name="language_china" translatable="false">中国人</string>
+    <string name="interstitial_ads1">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="banner_ads1">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="search">Search</string>
 
 </resources>

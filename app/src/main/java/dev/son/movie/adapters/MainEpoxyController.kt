@@ -1,5 +1,6 @@
 package dev.son.movie.adapters
 
+import android.util.Log
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
@@ -26,7 +27,7 @@ class MainEpoxyController(private val onMediaClick: (Movie, View) -> Unit) :
         data.let { categories ->
             HeaderModel_()
                 .id("header")
-                .data(categories.random())
+                .data(categories[0])
                 .onInfoClick(onMediaClick)
                 .addTo(this)
 
@@ -65,6 +66,7 @@ abstract class HeaderModel : EpoxyModelWithHolder<HeaderModel.HeaderHolder>() {
     }
 
     override fun bind(holder: HeaderHolder) {
+        Log.e("DataNull", "${data?.data?.size}")
         if (data != null) {
             val movie = data?.data?.random()
 

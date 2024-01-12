@@ -4,6 +4,7 @@ package dev.son.movie.utils
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Matrix
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
@@ -124,26 +125,30 @@ fun showDownloadConfirmationDialog(context: Context, onDownloadConfirmed: () -> 
     val dialog = dialogBuilder.create()
     dialog.show()
 }
+
 fun getNamesByCodes(codes: String): String {
     val names = codes.split(", ")
         .map { it.trim() }
         .filter { !it.contains("@") }
-        .mapNotNull { getNameByCode(it) ?:"" }
+        .mapNotNull { getNameByCode(it) ?: "" }
     return names.joinToString("-")
 }
+
 fun getListNamesByCodes(codes: String): List<String> {
     val names = codes.split(", ")
         .map { it.trim() }
         .filter { !it.contains("@") }
-        .mapNotNull { getNameByCode(it) ?:"" }
+        .mapNotNull { getNameByCode(it) ?: "" }
     return names
 }
+
 fun getListCodesByCodes(codes: String): List<String> {
     val names = codes.split(", ")
         .map { it.trim() }
         .filter { !it.contains("@") }
     return names
 }
+
 fun getNameByCode(code: String): String? {
     val genres: Array<Genre> = arrayOf(
         Genre("Hành Động", "action"),
@@ -180,12 +185,14 @@ fun getNameByCode(code: String): String? {
     val genre = genres.find { it.code == code }
     return genre?.name ?: ""
 }
+
 fun parseTitle(inputString: String): String {
     val regex = Regex("""Tập (\d+)? (.+)""")
     val matchResult = regex.matchEntire(inputString)
 
     return matchResult?.groups?.get(2)?.value ?: inputString
 }
+
 fun isNetworkAvailable(context: Context): Boolean {
     val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -201,10 +208,33 @@ fun isNetworkAvailable(context: Context): Boolean {
         return networkInfo != null && networkInfo.isConnected
     }
 }
- fun convertBitmapToBase64(bitmap: Bitmap): String? {
+
+fun convertBitmapToBase64(bitmap: Bitmap): String? {
     val byteArrayOutputStream = ByteArrayOutputStream()
     bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
     val byteArray = byteArrayOutputStream.toByteArray()
     val base64Image = Base64.encodeToString(byteArray, Base64.DEFAULT)
     return "data:image/png;base64,$base64Image"
+}
+
+fun resizeImage(originalBitmap: Bitmap, maxWidth: Int): Bitmap {
+    val originalWidth = originalBitmap.width
+    val originalHeight = originalBitmap.height
+
+    // Tính tỉ lệ giảm kích thước
+    val aspectRatio: Float = originalWidth.toFloat() / originalHeight.toFloat()
+    val newHeight = (maxWidth / aspectRatio).toInt()
+
+    // Tạo một matrix để thực hiện chuyển đổi
+    val scaleMatrix = Matrix()
+    scaleMatrix.postScale(maxWidth.toFloat() / originalWidth, newHeight.toFloat() / originalHeight)
+
+    // Tạo một bitmap mới với kích thước đã giảm
+    val resizedBitmap =
+        Bitmap.createBitmap(originalBitmap, 0, 0, originalWidth, originalHeight, scaleMatrix, false)
+
+    // Giải phóng bộ nhớ của bitmap ban đầu
+    originalBitmap.recycle()
+
+    return resizedBitmap
 }

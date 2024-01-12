@@ -120,4 +120,7 @@
     <string name="demos">डेमो</string>
     <string name="movies_now_showing">वर्तमान में दिखाए जा रहे फ़िल्में</string>
     <string name="completed_series">पूरी सीर</string>
+    <string name="interstitial_ads1">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="banner_ads1">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="search">Search</string>
 </resources>

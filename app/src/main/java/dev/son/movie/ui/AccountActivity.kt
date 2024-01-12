@@ -6,6 +6,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
@@ -31,6 +32,7 @@ import dev.son.movie.utils.DialogUtil
 import dev.son.movie.utils.PermissionUtils
 import dev.son.movie.utils.convertBitmapToBase64
 import dev.son.movie.utils.hide
+import dev.son.movie.utils.resizeImage
 import dev.son.movie.utils.setSingleClickListener
 import dev.son.movie.utils.show
 import kotlinx.coroutines.launch
@@ -171,7 +173,7 @@ class AccountActivity : TrackingBaseActivity<ActivityAccountBinding>(), AuthView
             showButtonEdit(true)
         }
 
-        views.imgEdit.setOnClickListener {
+        views.llImg.setOnClickListener {
             // Kiểm tra quyền trước khi truy cập Gallery.
             if (PermissionUtils.shouldAskForPermission(
                     this,
@@ -224,14 +226,24 @@ class AccountActivity : TrackingBaseActivity<ActivityAccountBinding>(), AuthView
                     // Xử lý kết quả ở đây.
                     try {
                         image = result.data?.data
-                        views.imgProfile.setImageURI(image)
+                        Glide.with(this@AccountActivity)
+                            .load(image)
+                            .placeholder(R.drawable.placeholder)
+                            .into(views.imgProfile)
 
-                        val imageStr=convertBitmapToBase64((views.imgProfile.drawable as BitmapDrawable).bitmap)
-                        val imgUser = HashMap<String, Any>()
-                        imageStr?.let {
-                            imgUser["photoURL"] = it
-                            authViewModel.handle(AuthViewAction.upDateUser(imgUser))
-                            views.loading.show()
+                        val inputStream = image?.let { contentResolver.openInputStream(it) }
+                        if (inputStream != null) {
+                            val originalBitmap = BitmapFactory.decodeStream(inputStream)
+
+                            inputStream.close()
+                            val resizedBitmap = resizeImage(originalBitmap, 150)
+                            val imageStr = convertBitmapToBase64(resizedBitmap)
+                            val imgUser = HashMap<String, Any>()
+                            imageStr?.let {
+                                imgUser["photoURL"] = it
+                                authViewModel.handle(AuthViewAction.upDateUser(imgUser))
+                                views.loading.show()
+                            }
                         }
 
                     } catch (e: Exception) {

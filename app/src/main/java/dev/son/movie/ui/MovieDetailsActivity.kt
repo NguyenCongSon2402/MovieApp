@@ -56,10 +56,8 @@ import dev.son.movie.ui.home.HomeViewModel
 import dev.son.movie.ui.home.HomeViewState
 import dev.son.movie.utils.checkStatusApiRes
 import dev.son.movie.utils.extractVideoIdFromUrl
-import dev.son.movie.utils.getListCodesByCodes
 import dev.son.movie.utils.hide
 import dev.son.movie.utils.hideKeyboard
-import dev.son.movie.utils.isNetworkAvailable
 import dev.son.movie.utils.show
 import dev.son.movie.utils.showDownloadConfirmationDialog
 import kotlinx.coroutines.delay
@@ -378,7 +376,9 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
             }
         })
         views.header.playLl.setOnClickListener {
-            val videoURL = movie?.videoURL?.get(0)
+            val videoURL = movie?.videoURL?.takeIf { it.isNotEmpty() }?.get(0)
+
+
             if (videoURL != null) {
                 playMovie(videoURL)
             }
@@ -666,13 +666,13 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         movie?.let {
             it.videoURL?.let { videoURLs ->
                 if (videoURLs.isNotEmpty()) {
-                    checkAndLoadVideo(it)
+                    checkAndLoadVideo(it.trailerURL)
                     download(videoURLs[0], 0)
                 } else {
-                    // Xử lý khi danh sách video URL rỗng
+                    checkAndLoadVideo(it.trailerURL)
                 }
             } ?: run {
-                // Xử lý khi videoURL là null
+                checkAndLoadVideo(it.trailerURL)
             }
         }
 
@@ -726,7 +726,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
                         it1,
                         renderersFactory,
                         onDownloadCancel = {
-                            views.header.txtStateDow.text =getString(R.string.downloads)
+                            views.header.txtStateDow.text = getString(R.string.downloads)
                             views.header.imgDown.setImageResource(R.drawable.ic_download)
                         }
                     )
@@ -748,8 +748,7 @@ class MovieDetailsActivity : TrackingBaseActivity<ActivityMovieDetailsBinding>()
         views.header.imgRate.setImageResource(R.drawable.ic_star1)
     }
 
-    private fun checkAndLoadVideo(videos: Movie) {
-        val trailerUrl = videos.trailerURL
+    private fun checkAndLoadVideo(trailerUrl: String) {
         if (!trailerUrl.isNullOrBlank()) {
             val videoId = extractVideoIdFromUrl(trailerUrl)
             if (videoId != null && !bannerVideoLoaded) {

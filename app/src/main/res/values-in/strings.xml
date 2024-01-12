@@ -121,5 +121,8 @@
     <string name="demos">डेमो</string>
     <string name="movies_now_showing">अभी दिखाई जा रही फिल्में</string>
     <string name="completed_series">अभी दिखाई जा </string>
+    <string name="interstitial_ads1">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="banner_ads1">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="search">Search</string>
 </resources>
 

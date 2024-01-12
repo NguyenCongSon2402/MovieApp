@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import com.airbnb.mvrx.viewModel
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.rewarded.RewardedAd
@@ -13,6 +14,8 @@ import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.google.android.gms.ads.rewardedinterstitial.RewardedInterstitialAd
 import dev.son.movie.R
 import dev.son.movie.TrackingApplication
+import dev.son.movie.adsutils.ShimmerHelper
+import dev.son.movie.adsutils.loadBannerAds
 import dev.son.movie.core.TrackingBaseActivity
 import dev.son.movie.data.local.UserPreferences
 import dev.son.movie.databinding.ActivityBottomNavBinding
@@ -64,14 +67,27 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), Home
 
     @Inject
     lateinit var homeViewModelFactory: HomeViewModel.Factory
+    private lateinit var shimmerHelper: ShimmerHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (applicationContext as TrackingApplication).trackingComponent.inject(this)
         setTheme(R.style.Base_Theme_MovieStreamHub)
         super.onCreate(savedInstanceState)
+        initAdsBanerMain()
         //loadAndShowRewardedInterstitialAd()
         getData()
         setupUI()
+    }
+
+    private fun initAdsBanerMain() {
+        shimmerHelper = ShimmerHelper(this)
+        shimmerHelper.setContent(views.adsFrameLayout)
+        shimmerHelper.startShimmer(R.layout.shimmer_layout_banner, views.adsFrameLayout)
+
+        loadBannerAds(this, views.adsFrameLayout, AdSize.FULL_BANNER, R.string.banner_ads1) {
+            shimmerHelper.stopShimmer()
+            Log.e("stopShimmer", "stopShimmer")
+        }
     }
 
     private fun showRewardedInterstitialAd() {
@@ -145,7 +161,7 @@ class BottomNavActivity : TrackingBaseActivity<ActivityBottomNavBinding>(), Home
 
 
     private fun getData() {
-        token= userPreferences.token
+        token = userPreferences.token
         homeViewModel.handle(HomeViewAction.getGenre)
         homeViewModel.handle(HomeViewAction.getCountries)
     }
